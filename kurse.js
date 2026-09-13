@@ -187,6 +187,13 @@ const MATERIAL = [
     info:"Schaltnetze bauen, boolesche Ausdrücke eingeben, Wahrheitstabellen erzeugen und als SVG exportieren. Mit zehn Aufgaben vom Umkehrer bis zum Volladdierer.",
     stand:"2026-09", neu:true },
 
+   { fach:"informatik", klasse:11, bereich:"technische-informatik",
+    titel:"Der Von-Neumann-Rechner — Selbstlernkurs",
+    typ:"uebung",
+    url:"inf/sekii/von-neumann.html",
+    info:"Aufbau, Befehlszyklus und Befehlssatz mit anklickbarem Schaubild, Zuordnungsübung, Schritt-für-Schritt-Simulation und Selbsttest. Enthält die Aufgaben 1.4.2 bis 1.4.4 mit aufklappbaren Lösungen.",
+    stand:"2026-09", neu:true },
+
   /* Vorlagen zum Kopieren — Raute vor der Zeile entfernen und anpassen:
 
   { fach:"informatik", klasse:10, bereich:"python-turtle",
