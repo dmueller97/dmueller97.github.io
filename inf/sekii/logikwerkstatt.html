@@ -1,0 +1,2311 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logikwerkstatt – Schaltnetze, boolesche Algebra, Wahrheitstabellen</title>
+<style>
+:root{
+  --bg:#0E1A1C; --panel:#142528; --panel2:#0F1F22; --line:#23393E; --line2:#2E4A50;
+  --ink:#DFEAEB; --ink2:#9FB6B9; --muted:#6F8A8F;
+  --hi:#FFC24B; --hi-glow:rgba(255,194,75,.45);
+  --lo:#4A6469;
+  --brand:#2FB3A0; --ok:#58C08C; --bad:#E4573D;
+  --gate:#1A2E33; --gate-line:#78A0A6; --grid:#1A2E32;
+  --sel:#2FB3A0; --tipbg:rgba(18,34,37,.80);
+  --r:10px;
+}
+[data-theme="light"]{
+  --bg:#F2F4F3; --panel:#FFFFFF; --panel2:#F7F9F8; --line:#D8E0DF; --line2:#C2CFCE;
+  --ink:#14242A; --ink2:#4A6066; --muted:#7B8F94;
+  --hi:#E08A00; --hi-glow:rgba(224,138,0,.30);
+  --lo:#9DAFB2;
+  --gate:#FFFFFF; --gate-line:#2C4249; --grid:#E4EAE9; --tipbg:rgba(255,255,255,.82);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  font-size:14px; line-height:1.45;
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.mono{font-family:ui-monospace,"Cascadia Mono","Consolas","DejaVu Sans Mono",monospace}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+/* ---------- Kopfzeile ---------- */
+header{
+  display:flex;align-items:center;gap:14px;
+  padding:8px 14px;background:var(--panel);border-bottom:1px solid var(--line);
+  flex:0 0 auto;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:baseline;gap:9px;margin-right:4px}
+.brand b{font-size:17px;font-weight:650;letter-spacing:-.2px}
+.brand span{color:var(--muted);font-size:12px}
+.spacer{flex:1}
+.btn{
+  background:var(--panel2);border:1px solid var(--line2);border-radius:8px;
+  padding:6px 11px;color:var(--ink);transition:border-color .12s,background .12s;
+}
+.btn:hover{border-color:var(--brand)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#06211E;font-weight:600}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.small{padding:4px 8px;font-size:12.5px}
+.btn.armed{border-color:var(--bad);color:var(--bad)}
+.seg{display:flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden}
+.seg button{background:transparent;border:0;padding:6px 10px;font-size:12.5px;color:var(--ink2)}
+.seg button[aria-pressed="true"]{background:var(--brand);color:#06211E;font-weight:600}
+.menu{position:relative}
+.menu>.pop{
+  position:absolute;right:0;top:calc(100% + 6px);z-index:40;min-width:250px;
+  background:var(--panel);border:1px solid var(--line2);border-radius:var(--r);
+  padding:6px;box-shadow:0 18px 40px rgba(0,0,0,.38);display:none
+}
+.menu.open>.pop{display:block}
+.pop button{display:block;width:100%;text-align:left;background:transparent;border:0;padding:7px 9px;border-radius:6px}
+.pop button:hover{background:var(--panel2)}
+.pop hr{border:0;border-top:1px solid var(--line);margin:5px 2px}
+.pop .hint{color:var(--muted);font-size:11.5px;padding:4px 9px}
+.pop .grp{color:var(--muted);font-size:10.5px;letter-spacing:.3px;padding:7px 9px 2px;font-weight:700}
+.pop{max-height:74vh;overflow-y:auto}
+
+/* ---------- Layout ---------- */
+main{flex:1;display:flex;min-height:0}
+aside.palette{
+  width:186px;flex:0 0 auto;background:var(--panel);border-right:1px solid var(--line);
+  overflow-y:auto;padding:10px;
+}
+.pgroup{margin-bottom:14px}
+.pgroup h3{margin:0 0 6px;font-size:12px;font-weight:600;color:var(--muted)}
+.pitem{
+  display:flex;align-items:center;gap:9px;padding:5px 7px;border-radius:8px;
+  border:1px solid transparent;cursor:grab;user-select:none;margin-bottom:2px;
+}
+.pitem:hover{border-color:var(--line2);background:var(--panel2)}
+.pitem svg{flex:0 0 auto}
+.pitem span{font-size:13px}
+.pitem small{color:var(--muted);font-size:11px;display:block;line-height:1.1}
+
+section.stage{flex:1;min-width:0;position:relative;background:var(--bg)}
+#canvas{width:100%;height:100%;display:block;touch-action:none}
+.stagehint{
+  position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);
+  color:var(--muted);text-align:center;pointer-events:none;max-width:380px;
+}
+.zoombar{position:absolute;left:12px;bottom:12px;display:flex;gap:6px;background:var(--panel);
+  border:1px solid var(--line2);border-radius:8px;padding:4px}
+.zoombar button{background:transparent;border:0;padding:3px 9px;border-radius:5px;color:var(--ink2)}
+.zoombar button:hover{background:var(--panel2);color:var(--ink)}
+
+aside.panel{
+  width:392px;flex:0 0 auto;background:var(--panel);border-left:1px solid var(--line);
+  display:flex;flex-direction:column;min-height:0;
+}
+.tabs{display:flex;border-bottom:1px solid var(--line);flex:0 0 auto}
+.tabs button{flex:1;background:transparent;border:0;border-bottom:2px solid transparent;padding:10px 4px;color:var(--ink2);font-size:13px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--brand);font-weight:600}
+.tabbody{flex:1;overflow-y:auto;padding:14px}
+.tabbody h4{margin:0 0 8px;font-size:13.5px;font-weight:650}
+.tabbody h4.sub{margin-top:18px}
+.note{color:var(--muted);font-size:12.5px;margin:0 0 10px}
+.field{width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:9px 10px}
+.tokens{display:flex;flex-wrap:wrap;gap:5px;margin:9px 0}
+.tip{
+  position:fixed;z-index:80;width:270px;padding:11px 13px;border-radius:12px;
+  background:var(--tipbg);border:1px solid var(--line2);
+  -webkit-backdrop-filter:blur(10px) saturate(1.4);backdrop-filter:blur(10px) saturate(1.4);
+  box-shadow:0 16px 38px rgba(0,0,0,.34);font-size:12.5px;line-height:1.42;
+  opacity:0;transform:translateY(5px);transition:opacity .13s,transform .13s;pointer-events:none
+}
+.tip.show{opacity:1;transform:none}
+.tip b{display:block;font-size:13.5px;margin-bottom:3px}
+.tip p{margin:0;color:var(--ink2)}
+.tip .alt{display:block;color:var(--muted);font-size:11.5px;margin-top:8px}
+.tip table.tt{width:auto;margin:8px 0 0}
+.tip table.tt th,.tip table.tt td{padding:1px 9px;font-size:11.5px}
+.tok{
+  background:var(--panel2);border:1px solid var(--line2);border-radius:7px;
+  padding:3px 9px;font-size:14px;cursor:grab;user-select:none;
+}
+.tok:hover{border-color:var(--brand)}
+.tok.var{color:var(--hi)}
+.row{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}
+.status{font-size:12.5px;padding:7px 9px;border-radius:8px;margin:8px 0;border:1px solid var(--line2);background:var(--panel2)}
+.status.ok{border-color:rgba(88,192,140,.5)}
+.status.bad{border-color:rgba(228,87,61,.55);color:var(--bad)}
+.out{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 10px;margin:7px 0;font-size:13px;overflow-x:auto}
+.out b{color:var(--muted);font-weight:500;display:block;font-size:11.5px;margin-bottom:2px}
+
+table.tt{border-collapse:collapse;font-size:12.5px;width:100%;margin-bottom:6px}
+table.tt th,table.tt td{border:1px solid var(--line);padding:3px 7px;text-align:center}
+table.tt th{background:var(--panel2);font-weight:600;color:var(--ink2)}
+table.tt td.v1{color:var(--hi);font-weight:700}
+table.tt td.v0{color:var(--muted)}
+table.tt tr.cur td{background:rgba(47,179,160,.14)}
+table.tt th.grp{background:rgba(47,179,160,.12);color:var(--ink)}
+table.tt.staged th{padding:4px 8px;vertical-align:bottom}
+table.tt.staged th .ex{font-family:ui-monospace,monospace;font-size:12px;white-space:nowrap}
+table.tt.staged th small{display:block;font-weight:400;color:var(--muted);font-size:9.5px;margin-top:1px}
+table.tt th.off{opacity:.4}
+table.tt td.off{color:var(--muted);opacity:.5}
+.tblbox{margin-bottom:16px}
+.tblbox header{background:none;border:0;padding:0 0 5px;display:flex;align-items:center;gap:8px}
+.tblbox header .t{font-size:13px;font-weight:600}
+.tblbox header .x{color:var(--muted);font-size:12px}
+.scroll{overflow-x:auto}
+
+.task{border:1px solid var(--line);border-radius:var(--r);padding:10px 11px;margin-bottom:8px;background:var(--panel2);cursor:pointer}
+.task:hover{border-color:var(--line2)}
+.task.active{border-color:var(--brand)}
+.task .h{display:flex;align-items:center;gap:8px}
+.task .n{color:var(--muted);font-size:12px;width:18px;flex:0 0 auto}
+.task .t{font-weight:600;font-size:13.5px;flex:1}
+.task .s{letter-spacing:1px;color:var(--hi);font-size:12px}
+.task.done{border-color:rgba(88,192,140,.45)}
+.task.done .n{color:var(--ok);font-weight:700}
+.task.flash{animation:solved 1.4s ease-out 1}
+@keyframes solved{
+  0%{border-color:var(--ok);box-shadow:0 0 0 0 rgba(88,192,140,.42)}
+  70%{border-color:var(--ok);box-shadow:0 0 0 9px rgba(88,192,140,0)}
+  100%{box-shadow:none}
+}
+.status .stars{color:var(--hi);letter-spacing:1px}
+.task p{margin:5px 0 0 26px;color:var(--ink2);font-size:12.5px}
+.progress{height:5px;background:var(--panel2);border-radius:3px;overflow:hidden;margin:6px 0 14px}
+.progress i{display:block;height:100%;background:var(--brand);transition:width .4s}
+
+.insp{display:grid;grid-template-columns:100px 1fr;gap:8px 10px;align-items:center;font-size:13px}
+.insp label{color:var(--ink2)}
+.kbd{font-size:11px;border:1px solid var(--line2);border-radius:4px;padding:0 4px;color:var(--muted)}
+
+footer{
+  flex:0 0 auto;display:flex;align-items:center;gap:16px;padding:5px 14px;
+  background:var(--panel);border-top:1px solid var(--line);font-size:12px;color:var(--muted)
+}
+footer .warn{color:var(--bad)}
+
+/* ---------- Schaltbild ---------- */
+.wire{fill:none;stroke:var(--lo);stroke-width:2.2;stroke-linecap:round}
+.wire.on{stroke:var(--hi);stroke-width:2.6;filter:drop-shadow(0 0 5px var(--hi-glow))}
+.wire.sel{stroke:var(--sel);stroke-dasharray:6 3}
+.whit{fill:none;stroke:transparent;stroke-width:12;cursor:pointer}
+.gbody{fill:var(--gate);stroke:var(--gate-line);stroke-width:1.7}
+.stub{stroke:var(--gate-line);stroke-width:1.7;fill:none}
+.stub.on{stroke:var(--hi)}
+.bub{fill:var(--gate);stroke:var(--gate-line);stroke-width:1.7}
+.sym{fill:var(--ink);font-size:15px;text-anchor:middle;font-family:ui-monospace,monospace}
+.lbl{fill:var(--ink2);font-size:11px;text-anchor:middle}
+.tag{fill:var(--muted);font-size:9.5px;text-anchor:middle}
+.port{fill:var(--panel);stroke:var(--gate-line);stroke-width:1.6;r:5;transition:r .08s}
+.port.on{fill:var(--hi);stroke:var(--hi)}
+.port.hot{stroke:var(--brand);stroke-width:3;r:9}
+#canvas.wiring .port{stroke:var(--brand)}
+#canvas.wiring .comp{cursor:crosshair}
+.comp{cursor:move}
+.comp.selected .gbody,.comp.selected .swbody,.comp.selected .ledg{stroke:var(--sel);stroke-width:2.6}
+.marquee{fill:rgba(47,179,160,.13);stroke:var(--sel);stroke-width:1.6;stroke-dasharray:6 4}
+.ledg{fill:var(--gate);stroke:var(--gate-line);stroke-width:1.7}
+.ledg.on{fill:var(--hi);stroke:var(--hi);filter:drop-shadow(0 0 9px var(--hi-glow))}
+.swbody{fill:var(--gate);stroke:var(--gate-line);stroke-width:1.7;cursor:pointer}
+.swknob{fill:var(--lo);transition:transform .12s}
+.swknob.on{fill:var(--hi)}
+.val{font-size:16px;font-weight:700;text-anchor:middle;font-family:ui-monospace,monospace;fill:var(--muted)}
+.probe{stroke-dasharray:5 3}
+.knoten{fill:var(--gate-line);stroke:none}
+.knoten.on{fill:var(--hi)}
+.frmbg{fill:rgba(47,179,160,.05);stroke:none;pointer-events:none}
+.frm{fill:none;stroke:var(--line2);stroke-width:1.6;stroke-dasharray:7 5}
+.frmkopf{fill:rgba(47,179,160,.12);stroke:none;cursor:move}
+.frmtitel{fill:var(--ink2);font-size:12px;font-weight:600}
+.note{fill:var(--panel);stroke:var(--line2);stroke-width:1.4}
+.notetxt{fill:var(--ink2);font-size:12.5px}
+.griff{fill:var(--line2);cursor:nwse-resize}
+.comp.selected .frm,.comp.selected .note{stroke:var(--sel);stroke-width:2.4}
+.val.on{fill:var(--hi);font-weight:700}
+.ghost{opacity:.55}
+
+dialog{
+  border:1px solid var(--line2);border-radius:var(--r);background:var(--panel);color:var(--ink);
+  padding:16px;max-width:min(720px,92vw);width:620px;
+}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+dialog h3{margin:0 0 8px;font-size:15px}
+dialog textarea{width:100%;height:260px;background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:9px;font-family:ui-monospace,monospace;font-size:12px}
+.toast{
+  position:fixed;left:50%;bottom:46px;transform:translateX(-50%);max-width:min(560px,88vw);text-align:center;
+  background:var(--panel);border:1px solid var(--brand);border-radius:9px;padding:9px 15px;
+  box-shadow:0 12px 34px rgba(0,0,0,.4);z-index:99;font-size:13px;opacity:0;transition:opacity .2s,transform .2s
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:980px){
+  aside.palette{width:132px}
+  aside.panel{width:330px}
+}
+</style>
+</head>
+<body data-theme="dark">
+
+<header>
+  <div class="brand"><b>Logikwerkstatt</b><span>Schaltnetze &amp; boolesche Algebra</span></div>
+  <div class="seg" role="group" aria-label="Schaltzeichen">
+    <button id="symDin" aria-pressed="true" title="Rechteck-Symbole nach DIN EN 60617">DIN</button>
+    <button id="symUs" aria-pressed="false" title="Amerikanische Symbole (IEEE)">IEEE</button>
+  </div>
+  <button class="btn small" id="themeBtn" title="Hell/Dunkel umschalten">Hell</button>
+  <div class="spacer"></div>
+  <div class="menu" id="mExamples">
+    <button class="btn" data-toggle>Beispiele</button>
+    <div class="pop" id="exPop"></div>
+  </div>
+  <div class="menu" id="mExport">
+    <button class="btn" data-toggle>Speichern &amp; Export</button>
+    <div class="pop">
+      <button data-act="svg-dark">Schaltung als SVG (Bildschirmfarben)</button>
+      <button data-act="svg-print">Schaltung als SVG für Arbeitsblatt (s/w)</button>
+      <button data-act="png">Schaltung als PNG</button>
+      <hr>
+      <button data-act="json">Schaltung speichern (.json)</button>
+      <button data-act="open">Schaltung laden (.json)</button>
+      <button data-act="paste">Aus Zwischenablage einfügen</button>
+      <hr>
+      <button data-act="csv-all">Alle Tabellen als CSV</button>
+      <button data-act="svg-table">Wahrheitstabelle als SVG</button>
+      <button data-act="svg-staged">Stufentabelle als SVG</button>
+      <button data-act="svg-blank">Stufentabelle leer zum Ausfüllen</button>
+      <div class="hint">SVG lässt sich in Word, LibreOffice und Inkscape direkt einfügen.</div>
+    </div>
+  </div>
+  <button class="btn small" id="clearBtn" title="Alles löschen (Strg+Entf) – Strg+Z holt alles zurück">Alles löschen</button>
+  <button class="btn small" id="undoBtn" title="Rückgängig (Strg+Z)">Rückgängig</button>
+</header>
+
+<main>
+  <aside class="palette" id="palette"></aside>
+
+  <section class="stage">
+    <svg id="canvas"></svg>
+    <div class="stagehint" id="stageHint">
+      Bauteil aus der linken Leiste hierher ziehen.<br>
+      Ausgang anklicken, dann Eingang anklicken – das verbindet beides.
+    </div>
+    <div class="zoombar">
+      <button id="zIn" title="Vergrößern">+</button>
+      <button id="zOut" title="Verkleinern">−</button>
+      <button id="zFit" title="Alles einpassen">Einpassen</button>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="expr">Ausdruck</button>
+      <button role="tab" aria-selected="false" data-tab="tab">Tabellen</button>
+      <button role="tab" aria-selected="false" data-tab="task">Aufgaben</button>
+      <button role="tab" aria-selected="false" data-tab="insp">Bauteil</button>
+    </div>
+    <div class="tabbody" id="tabbody"></div>
+  </aside>
+</main>
+
+<footer>
+  <span id="statComp">0 Bauteile</span>
+  <span id="statWire">0 Leitungen</span>
+  <span id="statIn">0 Eingänge</span>
+  <span class="spacer"></span>
+  <span id="statWarn"></span>
+  <span>Rahmen ziehen wählt mehrere · Umschalt nimmt dazu · Leertaste oder Alt schiebt die Ansicht · Entf löscht · Strg+Z zurück</span>
+</footer>
+
+<dialog id="dlg">
+  <h3 id="dlgTitle">Daten</h3>
+  <p class="note" id="dlgNote"></p>
+  <textarea id="dlgText" spellcheck="false"></textarea>
+  <div class="row" style="justify-content:flex-end">
+    <button class="btn" id="dlgCopy">Kopieren</button>
+    <button class="btn primary" id="dlgOk">Schließen</button>
+  </div>
+</dialog>
+<input type="file" id="fileIn" accept=".json,application/json" hidden>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* =====================================================================
+   Logikwerkstatt – eine Datei, keine Abhängigkeiten.
+   Modell → Simulation → Darstellung → Tabellen → Export.
+   ===================================================================== */
+
+/* ---------- Bauteildefinitionen ---------- */
+const DEF = {
+  SWITCH:{cat:"Eingabe", name:"Schalter",  sub:"rastet ein",      ins:0, w:60,h:40},
+  BUTTON:{cat:"Eingabe", name:"Taster",    sub:"solange gedrückt",ins:0, w:60,h:40},
+  ONE:   {cat:"Eingabe", name:"Konstante 1",sub:"HIGH",           ins:0, w:40,h:40},
+  ZERO:  {cat:"Eingabe", name:"Konstante 0",sub:"LOW",            ins:0, w:40,h:40},
+  AND:   {cat:"Gatter",  name:"UND",  sym:"&",  ins:2, varIn:true, w:60},
+  OR:    {cat:"Gatter",  name:"ODER", sym:"≥1", ins:2, varIn:true, w:60},
+  NOT:   {cat:"Gatter",  name:"NICHT",sym:"1",  ins:1, inv:true,   w:60},
+  NAND:  {cat:"Gatter",  name:"NAND", sym:"&",  ins:2, varIn:true, inv:true, w:60},
+  NOR:   {cat:"Gatter",  name:"NOR",  sym:"≥1", ins:2, varIn:true, inv:true, w:60},
+  XOR:   {cat:"Gatter",  name:"XOR",  sym:"=1", ins:2, w:60},
+  XNOR:  {cat:"Gatter",  name:"XNOR", sym:"=1", ins:2, inv:true, w:60},
+  LED:   {cat:"Ausgabe", name:"LED",  sub:"leuchtet bei 1", ins:1, w:40,h:40},
+  PROBE: {cat:"Messen",  name:"Messpunkt", sub:"zeigt den Wert und leitet ihn weiter",
+          ins:1, durch:true, w:60,h:40},
+  NODE:  {cat:"Messen",  name:"Knoten", sub:"Verteilerpunkt, leitet weiter", ins:1, durch:true, w:20,h:20},
+  NOTE:  {cat:"Notiz",   name:"Kommentar", sub:"freier Text", ins:0, annot:true, w:220,h:60},
+  FRAME: {cat:"Notiz",   name:"Gruppenrahmen", sub:"Kasten mit Titel", ins:0, annot:true, w:280,h:200}
+};
+const GATE_TYPES = ["AND","OR","NOT","NAND","NOR","XOR","XNOR"];
+const IN_TYPES = ["SWITCH","BUTTON","ONE","ZERO"];
+const OUT_TYPES = ["LED","PROBE"];
+const isIn = t => IN_TYPES.includes(t);
+const isOut = t => OUT_TYPES.includes(t);
+const isAnnot = t => !!DEF[t].annot;            // Kommentar und Rahmen: rein grafisch, ohne Signal
+const hatAusgang = t => !isAnnot(t) && (!OUT_TYPES.includes(t) || !!DEF[t].durch);
+
+/* ---------- Zustand ---------- */
+const S = {
+  comps:{}, wires:{}, seq:1,
+  sel:[], selWire:null,
+  sym:"din", theme:"dark",
+  view:{x:60,y:40,k:1},
+  pending:null,            // angefangene Leitung
+  undo:[], task:null, done:{}, result:null, flash:null, step:null
+};
+
+const $ = s => document.querySelector(s);
+const esc2 = t => String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const svg = $("#canvas");
+const NS = "http://www.w3.org/2000/svg";
+const el = (n,a={}) => { const e=document.createElementNS(NS,n); for(const k in a) e.setAttribute(k,a[k]); return e; };
+
+/* ---------- Speicher (fällt auf Arbeitsspeicher zurück) ---------- */
+const mem = {};
+async function stGet(k){
+  try{ const r = await window.storage.get(k); return r ? JSON.parse(r.value) : (mem[k]??null); }
+  catch(e){ return mem[k] ?? null; }
+}
+async function stSet(k,v){
+  mem[k]=v;
+  try{ await window.storage.set(k, JSON.stringify(v)); }catch(e){}
+}
+
+/* ---------- Geometrie ---------- */
+function geom(c){
+  const d = DEF[c.type];
+  const n = d.varIn ? (c.n||d.ins) : d.ins;
+  const w = c.w || d.w;
+  const h = c.h || d.h || (n+1)*20;   // Anschlüsse liegen damit immer auf Vielfachen von 20
+  return {w,h,n,d};
+}
+function portPos(c, port){
+  const g = geom(c);
+  if(port === "out"){
+    const r = (S.sym==="us" && ["AND","NAND"].includes(c.type)) ? g.w*0.42+g.h/2 : g.w;
+    return {x:c.x + Math.max(r,g.w) + (g.d.inv?10:0) + 10, y:c.y + g.h/2};
+  }
+  return {x:c.x - 10, y:c.y + g.h*(port+1)/(g.n+1)};
+}
+const snap = v => Math.round(v/10)*10;
+
+/* ---------- Modell ---------- */
+function uid(p){ return p + (S.seq++); }
+function nextLabel(kind){
+  const used = new Set(Object.values(S.comps).filter(c=>kind==="in"?isIn(c.type):isOut(c.type)).map(c=>c.label));
+  if(kind==="in"){
+    for(const ch of "ABCDEFGH") if(!used.has(ch)) return ch;
+    return "E"+S.seq;
+  }
+  for(const ch of "YZQR") if(!used.has(ch)) return ch;
+  return "Y"+S.seq;
+}
+function nextGateLabel(){
+  const used=new Set(Object.values(S.comps).map(c=>c.label));
+  for(let i=1;i<999;i++) if(!used.has("G"+i)) return "G"+i;
+  return "G";
+}
+function addComp(type,x,y,opt={}){
+  const d = DEF[type];
+  const c = {id:uid("c"), type, x:snap(x), y:snap(y), n:d.ins, on:0, label:""};
+  if(isIn(type)) c.label = opt.label || (type==="ONE"?"1":type==="ZERO"?"0":nextLabel("in"));
+  else if(isOut(type)) c.label = opt.label || nextLabel("out");
+  else if(isAnnot(type)) c.label = opt.label || (type==="FRAME"?"Gruppe":"");
+  else c.label = opt.label || nextGateLabel();
+  if(opt.n) c.n = opt.n;
+  S.comps[c.id]=c; return c;
+}
+function wireInto(id,port){ return Object.values(S.wires).find(w=>w.to.id===id && w.to.port===port); }
+function addWire(fromId, toId, toPort){
+  if(fromId===toId) return null;
+  const ex = wireInto(toId,toPort);
+  if(ex) delete S.wires[ex.id];
+  const w = {id:uid("w"), from:{id:fromId,port:"out"}, to:{id:toId,port:toPort}};
+  S.wires[w.id]=w; return w;
+}
+function delComp(id){
+  delete S.comps[id];
+  for(const w of Object.values(S.wires)) if(w.from.id===id||w.to.id===id) delete S.wires[w.id];
+}
+function snapshot(){
+  S.undo.push(JSON.stringify({c:S.comps,w:S.wires,s:S.seq}));
+  if(S.undo.length>60) S.undo.shift();
+}
+// Ein Klick bewaffnet, der zweite führt aus. Nach vier Sekunden ohne Bestätigung zurück in den Normalzustand.
+function zweistufig(btn, frage, tun){
+  if(btn.dataset.armed){
+    delete btn.dataset.armed; btn.classList.remove("armed"); btn.textContent=btn.dataset.label;
+    tun(); return;
+  }
+  btn.dataset.label=btn.textContent;
+  btn.dataset.armed="1"; btn.classList.add("armed"); btn.textContent=frage;
+  setTimeout(()=>{
+    if(!btn.isConnected || !btn.dataset.armed) return;
+    delete btn.dataset.armed; btn.classList.remove("armed"); btn.textContent=btn.dataset.label;
+  },4000);
+}
+function clearBoard(){
+  snapshot(); clearAll(); S.step=null; S.result=null;
+  stSet("logik.circuit",{comps:{},wires:{},seq:S.seq});
+  render(); toast("Arbeitsfläche geleert – Strg+Z holt alles zurück");
+}
+function undo(){
+  const p = S.undo.pop(); if(!p) return toast("Nichts mehr zum Zurücknehmen");
+  const o = JSON.parse(p); S.comps=o.c; S.wires=o.w; S.seq=o.s;
+  S.sel=[]; S.selWire=null; render();
+}
+function clearAll(){ LAST={}; S.comps={}; S.wires={}; S.sel=[]; S.selWire=null; }
+
+/* ---------- Simulation (Fixpunkt, erlaubt Rückkopplung) ---------- */
+function evalGate(type, vals){
+  switch(type){
+    case "AND":  return vals.every(v=>v===1)?1:0;
+    case "NAND": return vals.every(v=>v===1)?0:1;
+    case "OR":   return vals.some(v=>v===1)?1:0;
+    case "NOR":  return vals.some(v=>v===1)?0:1;
+    case "NOT":  return vals[0]?0:1;
+    case "XOR":  return vals.reduce((a,b)=>a^b,0);
+    case "XNOR": return vals.reduce((a,b)=>a^b,0)?0:1;
+  }
+  return 0;
+}
+let LAST={};   // letzter stabiler Zustand – nötig, damit Flipflops sich etwas merken
+function simulate(overrides, fresh=true){
+  const V = {}, ids = Object.keys(S.comps);
+  const src = {};
+  for(const w of Object.values(S.wires)) src[w.to.id+":"+w.to.port] = w.from.id;
+  for(const id of ids) V[id] = (!fresh && LAST[id]!==undefined) ? LAST[id] : 0;
+  let stable=false, it=0;
+  for(; it<60 && !stable; it++){
+    stable=true;
+    for(const id of ids){
+      const c=S.comps[id], g=geom(c); let v;
+      if(c.type==="ONE") v=1;
+      else if(c.type==="ZERO") v=0;
+      else if(isIn(c.type)) v = (overrides && (c.label in overrides)) ? overrides[c.label] : (c.on?1:0);
+      else{
+        const inp=[];
+        for(let i=0;i<g.n;i++){ const s=src[id+":"+i]; inp.push(s?V[s]:0); }
+        v = (isOut(c.type)||c.type==="NODE") ? (inp[0]||0) : (isAnnot(c.type) ? 0 : evalGate(c.type, inp));
+      }
+      if(v!==V[id]){ V[id]=v; stable=false; }
+    }
+  }
+  return {V, stable};
+}
+
+/* ---------- Schaltbild zeichnen ---------- */
+let root, gAnnot, gWire, gComp, gOver, hint=$("#stageHint");
+function initSvg(){
+  svg.innerHTML="";
+  const defs = el("defs");
+  const pat = el("pattern",{id:"grid",width:20,height:20,patternUnits:"userSpaceOnUse"});
+  pat.appendChild(el("path",{d:"M20 0H0V20",fill:"none",stroke:"var(--grid)","stroke-width":1}));
+  defs.appendChild(pat); svg.appendChild(defs);
+  root = el("g",{id:"world"});
+  root.appendChild(el("rect",{x:-5000,y:-5000,width:10000,height:10000,fill:"url(#grid)",class:"bgrid"}));
+  gAnnot = el("g"); gWire = el("g"); gComp = el("g"); gOver = el("g");
+  root.append(gAnnot,gWire,gComp,gOver); svg.appendChild(root);
+  applyView();
+}
+function applyView(){ root.setAttribute("transform",`translate(${S.view.x},${S.view.y}) scale(${S.view.k})`); }
+
+function bodyRight(c){
+  const g=geom(c);
+  if(S.sym!=="us" || !GATE_TYPES.includes(c.type)) return g.w;
+  if(["AND","NAND"].includes(c.type)) return g.w*0.42+g.h/2;
+  if(c.type==="NOT") return g.w*0.82;
+  return g.w;
+}
+function bodyLeftInset(c){
+  return (S.sym==="us" && ["OR","NOR","XOR","XNOR"].includes(c.type)) ? geom(c).w*0.17 : 0;
+}
+function usPath(type,w,h){
+  if(["AND","NAND"].includes(type)) return `M0 0 H${w*0.42} A${h/2} ${h/2} 0 0 1 ${w*0.42} ${h} H0 Z`;
+  if(["OR","NOR","XOR","XNOR"].includes(type))
+    return `M0 0 C${w*0.34} 0 ${w*0.78} ${h*0.17} ${w} ${h/2} C${w*0.78} ${h*0.83} ${w*0.34} ${h} 0 ${h} C${w*0.26} ${h*0.72} ${w*0.26} ${h*0.28} 0 0`;
+  return `M0 0 L${w*0.82} ${h/2} L0 ${h} Z`;
+}
+
+function drawComp(c){
+  const g = geom(c), d = g.d;
+  const G = el("g",{class:"comp"+(isSel(c.id)?" selected":""), transform:`translate(${c.x},${c.y})`, "data-id":c.id});
+
+  if(c.type==="SWITCH"||c.type==="BUTTON"){
+    G.appendChild(el("rect",{class:"swbody",x:0,y:0,width:g.w,height:g.h,rx:c.type==="BUTTON"?16:7,"data-sw":"1"}));
+    const k = el("circle",{class:"swknob",cx:c.on?g.w-13:13,cy:g.h/2,r:8,"data-sw":"1"});
+    G.appendChild(k);
+    const t = el("text",{class:"lbl",x:g.w/2,y:-6}); t.textContent=c.label; G.appendChild(t);
+  } else if(c.type==="ONE"||c.type==="ZERO"){
+    G.appendChild(el("rect",{class:"gbody",x:0,y:0,width:g.w,height:g.h,rx:6}));
+    const t=el("text",{class:"sym",x:g.w/2,y:g.h/2+5}); t.textContent = c.type==="ONE"?"1":"0"; G.appendChild(t);
+  } else if(c.type==="NODE"){
+    G.appendChild(el("circle",{class:"knoten",cx:g.w/2,cy:g.h/2,r:7}));
+  } else if(c.type==="FRAME"){
+    G.appendChild(el("rect",{class:"frmbg",x:0,y:0,width:g.w,height:g.h,rx:12}));
+    G.appendChild(el("rect",{class:"frm",x:0,y:0,width:g.w,height:g.h,rx:12}));
+    G.appendChild(el("rect",{class:"frmkopf",x:0,y:0,width:g.w,height:26,rx:12}));
+    const t=el("text",{class:"frmtitel",x:12,y:18}); t.textContent=c.label||"Gruppe"; G.appendChild(t);
+    G.appendChild(el("path",{class:"griff","data-resize":"1",
+      d:`M${g.w-16} ${g.h-3} L${g.w-3} ${g.h-3} L${g.w-3} ${g.h-16} Z`}));
+  } else if(c.type==="NOTE"){
+    G.appendChild(el("rect",{class:"note",x:0,y:0,width:g.w,height:g.h,rx:9}));
+    const zeilen=String(c.text||"Doppelklick zum Bearbeiten").split("\n");
+    zeilen.slice(0,20).forEach((z,i)=>{
+      const t=el("text",{class:"notetxt",x:12,y:22+i*16}); t.textContent=z; G.appendChild(t);
+    });
+    G.appendChild(el("path",{class:"griff","data-resize":"1",
+      d:`M${g.w-16} ${g.h-3} L${g.w-3} ${g.h-3} L${g.w-3} ${g.h-16} Z`}));
+  } else if(c.type==="LED"){
+    G.appendChild(el("circle",{class:"ledg",cx:g.w/2,cy:g.h/2,r:g.w/2-3}));
+    const t=el("text",{class:"lbl",x:g.w/2,y:-6}); t.textContent=c.label; G.appendChild(t);
+  } else if(c.type==="PROBE"){
+    G.appendChild(el("rect",{class:"gbody probe",x:0,y:0,width:g.w,height:g.h,rx:9}));
+    const v=el("text",{class:"val",x:g.w/2,y:g.h/2+6}); v.textContent="0"; G.appendChild(v);
+    const t=el("text",{class:"lbl",x:g.w/2,y:-6}); t.textContent=c.label; G.appendChild(t);
+  } else {
+    if(S.sym==="din"){
+      G.appendChild(el("rect",{class:"gbody",x:0,y:0,width:g.w,height:g.h,rx:3}));
+      const s=el("text",{class:"sym",x:g.w/2,y:g.h/2+6}); s.textContent=d.sym; G.appendChild(s);
+    }else{
+      G.appendChild(el("path",{class:"gbody",d:usPath(c.type,g.w,g.h)}));
+      if(c.type==="XOR"||c.type==="XNOR")
+        G.appendChild(el("path",{class:"stub",d:`M-7 0 C${g.w*0.19} ${g.h*0.28} ${g.w*0.19} ${g.h*0.72} -7 ${g.h}`}));
+    }
+    const t=el("text",{class:"tag",x:g.w/2,y:g.h+12}); t.textContent=c.label; G.appendChild(t);
+  }
+
+  // Eingangsstummel + Ports
+  for(let i=0;i<g.n;i++){
+    const p=portPos(c,i);
+    G.appendChild(el("line",{class:"stub","data-stub":i,x1:p.x-c.x,y1:p.y-c.y,x2:bodyLeftInset(c),y2:p.y-c.y}));
+    G.appendChild(el("circle",{class:"port",cx:p.x-c.x,cy:p.y-c.y,r:5,"data-port":i}));
+  }
+  // Ausgang
+  if(hatAusgang(c.type)){
+    const p=portPos(c,"out"), bx=bodyRight(c);
+    if(d.inv){
+      G.appendChild(el("circle",{class:"bub",cx:bx+5,cy:g.h/2,r:5}));
+      G.appendChild(el("line",{class:"stub","data-ostub":"1",x1:bx+10,y1:g.h/2,x2:p.x-c.x,y2:g.h/2}));
+    }else{
+      G.appendChild(el("line",{class:"stub","data-ostub":"1",x1:bx,y1:g.h/2,x2:p.x-c.x,y2:g.h/2}));
+    }
+    G.appendChild(el("circle",{class:"port",cx:p.x-c.x,cy:p.y-c.y,r:5,"data-port":"out"}));
+  }
+  return G;
+}
+function wirePath(w){
+  const a=portPos(S.comps[w.from.id],"out"), b=portPos(S.comps[w.to.id],w.to.port);
+  const d=Math.max(26,Math.abs(b.x-a.x)*0.45);
+  return `M${a.x} ${a.y} C${a.x+d} ${a.y} ${b.x-d} ${b.y} ${b.x} ${b.y}`;
+}
+function render(){
+  hotEl=null;
+  gAnnot.innerHTML=""; gWire.innerHTML=""; gComp.innerHTML=""; gOver.innerHTML="";
+  for(const w of Object.values(S.wires)){
+    if(!S.comps[w.from.id]||!S.comps[w.to.id]){ delete S.wires[w.id]; continue; }
+    const d=wirePath(w);
+    gWire.appendChild(el("path",{class:"whit",d,"data-wire":w.id}));
+    gWire.appendChild(el("path",{class:"wire"+(S.selWire===w.id?" sel":""),d,"data-w":w.id}));
+  }
+  for(const c of Object.values(S.comps)) (isAnnot(c.type)?gAnnot:gComp).appendChild(drawComp(c));
+  paint(); updateStats(); autoCheck();
+  hint.style.display = Object.keys(S.comps).length ? "none":"block";
+  if(activeTab==="insp"||activeTab==="tab") renderTab();
+}
+const knoten = id => gComp.querySelector(`[data-id="${id}"]`) || gAnnot.querySelector(`[data-id="${id}"]`);
+function paint(){
+  const {V,stable} = simulate(null,false);
+  LAST = V;
+  for(const w of Object.values(S.wires)){
+    const p = gWire.querySelector(`[data-w="${w.id}"]`);
+    if(p) p.classList.toggle("on", V[w.from.id]===1);
+  }
+  for(const c of Object.values(S.comps)){
+    const G = knoten(c.id); if(!G) continue;
+    const g = geom(c);
+    if(c.type==="LED") G.querySelector(".ledg").classList.toggle("on", V[c.id]===1);
+    if(c.type==="NODE") G.querySelector(".knoten").classList.toggle("on", V[c.id]===1);
+    if(c.type==="PROBE"){ const t=G.querySelector(".val"); t.textContent=V[c.id]; t.classList.toggle("on",V[c.id]===1); }
+    if(c.type==="SWITCH"||c.type==="BUTTON"){
+      const k=G.querySelector(".swknob");
+      k.classList.toggle("on", V[c.id]===1);
+      k.setAttribute("cx", V[c.id]? g.w-13 : 13);
+    }
+    const os = G.querySelector('[data-ostub]'); if(os) os.classList.toggle("on", V[c.id]===1);
+    G.querySelectorAll("[data-stub]").forEach(s=>{
+      const i=+s.getAttribute("data-stub"); const wi=wireInto(c.id,i);
+      s.classList.toggle("on", !!wi && V[wi.from.id]===1);
+    });
+    G.querySelectorAll("[data-port]").forEach(p=>{
+      const pr=p.getAttribute("data-port");
+      const on = pr==="out" ? V[c.id]===1 : (()=>{const wi=wireInto(c.id,+pr); return !!wi && V[wi.from.id]===1;})();
+      p.classList.toggle("on", on);
+    });
+  }
+  $("#statWarn").textContent = stable ? "" : "Schaltung schwingt – Rückkopplung ohne stabilen Zustand";
+  $("#statWarn").className = stable ? "" : "warn";
+}
+function updateStats(){
+  const cs=Object.values(S.comps);
+  $("#statComp").textContent = cs.length+" Bauteile";
+  $("#statWire").textContent = Object.keys(S.wires).length+" Leitungen";
+  $("#statIn").textContent = inputVars().length+" Eingangsvariablen";
+}
+
+/* ---------- Koordinaten & Maus ---------- */
+function toWorld(ev){
+  const r=svg.getBoundingClientRect();
+  return {x:(ev.clientX-r.left-S.view.x)/S.view.k, y:(ev.clientY-r.top-S.view.y)/S.view.k};
+}
+let drag=null;
+function capture(ev){ try{ svg.setPointerCapture(ev.pointerId); }catch(e){} }
+
+// Anschluss wird über den Abstand gefunden, nicht über das getroffene Element.
+// Der Fangradius ist in Bildschirmpunkten konstant, also auch herausgezoomt gleich gut treffbar.
+function grabRadius(){ return Math.min(80, 22/S.view.k); }
+function trifft(c,w){
+  const g=geom(c);
+  if(!(w.x>=c.x && w.x<=c.x+g.w && w.y>=c.y && w.y<=c.y+g.h)) return false;
+  if(c.type!=="FRAME") return true;
+  // Beim Rahmen fassen nur Titelleiste, Rand und Anfasser – innen bleibt alles anklickbar
+  return w.y<=c.y+26 || w.x<=c.x+10 || w.x>=c.x+g.w-10 || w.y>=c.y+g.h-10;
+}
+function imGriff(c,w){
+  const g=geom(c);
+  return isAnnot(c.type) && w.x>=c.x+g.w-18 && w.x<=c.x+g.w && w.y>=c.y+g.h-18 && w.y<=c.y+g.h;
+}
+function compAt(w){
+  const alle=Object.values(S.comps);
+  for(const c of alle) if(!isAnnot(c.type) && trifft(c,w)) return c;   // Bauteile haben Vorrang
+  for(const c of alle) if(isAnnot(c.type) && trifft(c,w)) return c;
+  return null;
+}
+function inhaltVon(f){
+  const g=geom(f);
+  return Object.values(S.comps).filter(c=>c.id!==f.id && !isAnnot(c.type)).filter(c=>{
+    const q=geom(c);
+    return c.x>=f.x && c.y>=f.y && c.x+q.w<=f.x+g.w && c.y+q.h<=f.y+g.h;
+  }).map(c=>c.id);
+}
+function nearestPort(w, maxD){
+  let best=null, bd=maxD*maxD;
+  for(const c of Object.values(S.comps)){
+    const g=geom(c), ports=[];
+    for(let i=0;i<g.n;i++) ports.push(i);
+    if(hatAusgang(c.type)) ports.push("out");
+    for(const pr of ports){
+      const p=portPos(c,pr), dx=p.x-w.x, dy=p.y-w.y, d=dx*dx+dy*dy;
+      if(d<bd){ bd=d; best={id:c.id, port:pr}; }
+    }
+  }
+  return best;
+}
+function hitPort(ev){
+  const w=toWorld(ev);
+  if(compAt(w)) return null;              // im Bauteilkörper hat der Körper Vorrang
+  return nearestPort(w, grabRadius());
+}
+let hotEl=null;
+function updateHot(ev){
+  const p=hitPort(ev);
+  const e=p?knoten(p.id)?.querySelector(`.port[data-port="${p.port}"]`):null;
+  if(e===hotEl) return;
+  if(hotEl) hotEl.classList.remove("hot");
+  hotEl=e; if(e) e.classList.add("hot");
+  svg.style.cursor = e ? "crosshair" : "";
+}
+const samePort=(a,b)=>a&&b&&a.id===b.id&&a.port===b.port;
+let downPort=null;
+
+svg.addEventListener("pointerdown", ev=>{
+  const t=ev.target;
+  const wp=t.closest("[data-wire]");
+  const cg=t.closest(".comp");
+  const hitC = cg ? S.comps[cg.getAttribute("data-id")] : compAt(toWorld(ev));
+  const pt=hitPort(ev);
+  if(pt){ downPort=pt; portClick(pt.id, pt.port); drawPending(ev); ev.preventDefault(); return; }
+  if(hitC && S.pending){
+    // Leitung auf den Bauteilkörper fallen lassen: nimmt den nächsten freien Eingang
+    if(dropOnComp(hitC.id)) { ev.preventDefault(); return; }
+  }
+  if(hitC && imGriff(hitC, toWorld(ev))){
+    select(hitC.id);
+    drag={resize:hitC.id, moved:false};
+    capture(ev); ev.preventDefault(); return;
+  }
+  if(hitC){
+    const c=hitC;
+    if(ev.shiftKey) select(c.id, !isSel(c.id));
+    else if(!isSel(c.id)) select(c.id);
+    let ids = (isSel(c.id) && S.sel.length>1) ? S.sel.slice() : [c.id];
+    // Ein Gruppenrahmen nimmt beim Verschieben mit, was vollständig in ihm liegt
+    ids.filter(id=>S.comps[id] && S.comps[id].type==="FRAME")
+       .forEach(id=>{ ids=[...new Set([...ids, ...inhaltVon(S.comps[id])])]; });
+    const w0=toWorld(ev);
+    drag={ moved:false, id:c.id, sw:(c.type==="SWITCH"||c.type==="BUTTON") && ids.length===1,
+           off: ids.map(id=>({id, ox:w0.x-S.comps[id].x, oy:w0.y-S.comps[id].y})) };
+    if(c.type==="BUTTON" && ids.length===1){ snapshot(); c.on=1; paint(); }
+    capture(ev); return;
+  }
+  if(wp){ select([]); S.selWire=wp.getAttribute("data-wire"); render(); return; }
+  if(S.pending) cancelWire();
+  const schieben = ev.button===1 || ev.altKey || raumTaste;
+  if(schieben){
+    drag={pan:true, px:ev.clientX, py:ev.clientY, vx:S.view.x, vy:S.view.y};
+  }else{
+    if(!ev.shiftKey) select([]);
+    const w0=toWorld(ev);
+    drag={marq:true, x0:w0.x, y0:w0.y, dazu:ev.shiftKey};
+    S.selWire=null;
+  }
+  capture(ev); render();
+});
+svg.addEventListener("pointermove", ev=>{
+  if(S.pending) drawPending(ev);
+  if(!drag) updateHot(ev);
+  if(!drag) return;
+  if(drag.pan){ S.view.x=drag.vx+(ev.clientX-drag.px); S.view.y=drag.vy+(ev.clientY-drag.py); applyView(); return; }
+  if(drag.marq){ zeichneRahmen(toWorld(ev)); return; }
+  if(drag.resize){
+    const c=S.comps[drag.resize]; if(!c) return;
+    const w=toWorld(ev);
+    const nw=Math.max(80, snap(w.x-c.x)), nh=Math.max(40, snap(w.y-c.y));
+    if(nw!==c.w||nh!==c.h){ if(!drag.moved){ snapshot(); drag.moved=true; } c.w=nw; c.h=nh; render(); }
+    return;
+  }
+  if(!drag.off) return;
+  const w=toWorld(ev);
+  let bewegt=false;
+  for(const o of drag.off){
+    const c=S.comps[o.id]; if(!c) continue;
+    const nx=snap(w.x-o.ox), ny=snap(w.y-o.oy);
+    if(nx!==c.x||ny!==c.y){
+      if(!drag.moved){ snapshot(); drag.moved=true; }
+      c.x=nx; c.y=ny; bewegt=true;
+    }
+  }
+  if(bewegt) refreshGeom();
+});
+
+function zeichneRahmen(p){
+  gOver.innerHTML="";
+  const x=Math.min(drag.x0,p.x), y=Math.min(drag.y0,p.y);
+  const w=Math.abs(p.x-drag.x0), h=Math.abs(p.y-drag.y0);
+  drag.rect={x,y,w,h};
+  gOver.appendChild(el("rect",{class:"marquee",x,y,width:w,height:h,rx:3}));
+}
+function imRahmen(r){
+  return Object.values(S.comps).filter(c=>{
+    const g=geom(c);
+    return c.x <= r.x+r.w && c.x+g.w >= r.x && c.y <= r.y+r.h && c.y+g.h >= r.y;
+  }).map(c=>c.id);
+}
+svg.addEventListener("pointerup", ev=>{
+  if(drag && drag.marq){
+    const r=drag.rect; gOver.innerHTML="";
+    if(r && (r.w>3||r.h>3)) select(imRahmen(r), drag.dazu);
+    drag=null; return;
+  }
+  // Losgelassen über einem anderen Anschluss: Leitung fertigstellen
+  const up=hitPort(ev);
+  if(up && S.pending && !samePort(up,downPort)){ portClick(up.id, up.port); downPort=null; drag=null; return; }
+  if(up===null && S.pending && downPort){
+    const c2=compAt(toWorld(ev));
+    if(c2 && c2.id!==downPort.id && dropOnComp(c2.id)){ downPort=null; drag=null; return; }
+  }
+  downPort=null;
+  if(drag && !drag.pan){
+    const c=S.comps[drag.id];
+    if(c && drag.sw && !drag.moved){
+      if(c.type==="SWITCH"){ snapshot(); c.on=c.on?0:1; }
+      if(c.type==="BUTTON"){ c.on=0; }
+      paint();
+    } else if(c && c.type==="BUTTON"){ c.on=0; paint(); }
+  }
+  drag=null;
+});
+svg.addEventListener("dblclick", ev=>{
+  const c=compAt(toWorld(ev));
+  if(c && isAnnot(c.type)){
+    select(c.id);
+    activeTab="insp";
+    document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab==="insp")));
+    renderTab();
+    const f=$("#ipText")||$("#ipLabel"); if(f){ f.focus(); f.select && f.select(); }
+  }
+});
+svg.addEventListener("wheel", ev=>{
+  ev.preventDefault();
+  const r=svg.getBoundingClientRect(), mx=ev.clientX-r.left, my=ev.clientY-r.top;
+  const k2=Math.min(2.6,Math.max(0.3, S.view.k*(ev.deltaY<0?1.12:1/1.12)));
+  S.view.x = mx-(mx-S.view.x)*(k2/S.view.k);
+  S.view.y = my-(my-S.view.y)*(k2/S.view.k);
+  S.view.k=k2; applyView();
+},{passive:false});
+
+function firstFreeInput(id){
+  const c=S.comps[id]; if(!c||isIn(c.type)) return -1;
+  const g=geom(c);
+  for(let i=0;i<g.n;i++) if(!wireInto(id,i)) return i;
+  return g.n?0:-1;   // alles belegt: ersten Eingang überschreiben
+}
+function finish(outId, inId, inPort){
+  if(!outId||!inId||outId===inId) { cancelWire(); return; }
+  snapshot(); addWire(outId, inId, inPort); cancelWire(); render();
+}
+function cancelWire(){ S.pending=null; gOver.innerHTML=""; svg.classList.remove("wiring"); }
+function beginWire(p){ S.pending=p; svg.classList.add("wiring"); }
+
+// Ein Anschluss wurde angetippt – egal ob als Start oder als Ziel,
+// egal ob von Ausgang nach Eingang oder umgekehrt.
+function portClick(id, port){
+  const p=S.pending;
+  if(port==="out"){
+    if(p&&p.in) return finish(id, p.in.id, p.in.port);
+    beginWire({out:id}); return;
+  }
+  if(p&&p.out) return finish(p.out, id, port);
+  const w=wireInto(id,port);
+  if(w){ snapshot(); delete S.wires[w.id]; cancelWire(); render(); return; }  // Leitung abziehen
+  beginWire({in:{id,port}});
+}
+function dropOnComp(id){
+  const p=S.pending; if(!p) return false;
+  if(p.out){
+    const i=firstFreeInput(id);
+    if(i<0 || id===p.out) return false;
+    finish(p.out, id, i); return true;
+  }
+  const c=S.comps[id];
+  if(!c || !hatAusgang(c.type) || id===p.in.id) return false;
+  finish(id, p.in.id, p.in.port); return true;
+}
+function drawPending(ev){
+  const p=S.pending; if(!p) return;
+  gOver.innerHTML="";
+  const anchor = p.out ? portPos(S.comps[p.out],"out") : portPos(S.comps[p.in.id], p.in.port);
+  const b=toWorld(ev);
+  const a = p.out ? anchor : b, e = p.out ? b : anchor;
+  const d=Math.max(26,Math.abs(e.x-a.x)*0.45);
+  gOver.appendChild(el("path",{class:"wire ghost",d:`M${a.x} ${a.y} C${a.x+d} ${a.y} ${e.x-d} ${e.y} ${e.x} ${e.y}`}));
+}
+const isSel = id => S.sel.includes(id);
+function select(ids, dazu){
+  const liste = Array.isArray(ids) ? ids : (ids?[ids]:[]);
+  S.sel = dazu ? [...new Set([...S.sel, ...liste])] : liste;
+  S.selWire=null;
+  gComp.querySelectorAll(".comp").forEach(g=>g.classList.toggle("selected", isSel(g.getAttribute("data-id"))));
+  if(activeTab==="insp") renderTab();
+}
+function refreshGeom(){
+  for(const c of Object.values(S.comps)){
+    const G=knoten(c.id);
+    if(G) G.setAttribute("transform",`translate(${c.x},${c.y})`);
+  }
+  for(const wr of Object.values(S.wires)){
+    const d=wirePath(wr);
+    const a=gWire.querySelector(`[data-w="${wr.id}"]`), b=gWire.querySelector(`[data-wire="${wr.id}"]`);
+    if(a) a.setAttribute("d",d); if(b) b.setAttribute("d",d);
+  }
+}
+function dupliziere(ids){
+  snapshot();
+  const map={};
+  ids.forEach(id=>{ const c=S.comps[id]; if(!c) return;
+    const k=addComp(c.type, c.x+40, c.y+40, {n:c.n});   // Beschriftung wird neu vergeben, sonst gäbe es zwei G1
+    k.on=c.on; map[id]=k.id; });
+  Object.values(S.wires).forEach(w=>{
+    if(map[w.from.id] && map[w.to.id]) addWire(map[w.from.id], map[w.to.id], w.to.port);
+  });
+  render(); select(Object.values(map));
+}
+
+let raumTaste=false;
+document.addEventListener("keyup",ev=>{ if(ev.key===" "){ raumTaste=false; svg.style.cursor=""; } });
+document.addEventListener("keydown",ev=>{
+  if(/INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+  if(ev.key==="Delete"||ev.key==="Backspace"){
+    if(S.sel.length){ snapshot(); S.sel.forEach(delComp); S.sel=[]; render(); ev.preventDefault(); }
+    else if(S.selWire){ snapshot(); delete S.wires[S.selWire]; S.selWire=null; render(); ev.preventDefault(); }
+  }
+  if(ev.key==="Escape"){ cancelWire(); }
+  if((ev.ctrlKey||ev.metaKey)&&ev.key==="z"){ ev.preventDefault(); undo(); }
+  if((ev.ctrlKey||ev.metaKey)&&ev.key==="a"){ ev.preventDefault(); select(Object.keys(S.comps)); }
+  if((ev.ctrlKey||ev.metaKey)&&ev.key==="d"){ ev.preventDefault(); if(S.sel.length) dupliziere(S.sel); }
+  if(ev.key===" " && !raumTaste){ raumTaste=true; svg.style.cursor="grab"; }
+  if((ev.ctrlKey||ev.metaKey)&&ev.key==="Delete"){ ev.preventDefault(); if(Object.keys(S.comps).length) clearBoard(); }
+});
+
+/* ---------- Palette + Ablegen ---------- */
+function miniSymbol(type){
+  const g=DEF[type]; const w=34,h=22;
+  if(type==="LED") return `<svg width="34" height="22"><circle cx="17" cy="11" r="8" fill="none" stroke="var(--gate-line)" stroke-width="1.6"/></svg>`;
+  if(type==="SWITCH"||type==="BUTTON") return `<svg width="34" height="22"><rect x="3" y="4" width="28" height="15" rx="${type==="BUTTON"?7:4}" fill="none" stroke="var(--gate-line)" stroke-width="1.6"/><circle cx="11" cy="11.5" r="4" fill="var(--lo)"/></svg>`;
+  if(type==="PROBE") return `<svg width="34" height="22"><rect x="4" y="4" width="26" height="15" rx="4" fill="none" stroke="var(--gate-line)" stroke-width="1.6" stroke-dasharray="4 2"/><text x="17" y="16" font-size="11" text-anchor="middle" fill="var(--ink2)" font-family="monospace">0</text></svg>`;
+  if(type==="NODE") return `<svg width="34" height="22"><line x1="4" y1="11" x2="30" y2="11" stroke="var(--gate-line)" stroke-width="1.6"/><circle cx="17" cy="11" r="5" fill="var(--gate-line)"/></svg>`;
+  if(type==="NOTE") return `<svg width="34" height="22"><rect x="3" y="3" width="28" height="16" rx="3" fill="none" stroke="var(--gate-line)" stroke-width="1.6"/><line x1="7" y1="9" x2="24" y2="9" stroke="var(--muted)" stroke-width="1.4"/><line x1="7" y1="14" x2="19" y2="14" stroke="var(--muted)" stroke-width="1.4"/></svg>`;
+  if(type==="FRAME") return `<svg width="34" height="22"><rect x="3" y="3" width="28" height="16" rx="4" fill="none" stroke="var(--gate-line)" stroke-width="1.6" stroke-dasharray="4 3"/><line x1="3" y1="9" x2="31" y2="9" stroke="var(--gate-line)" stroke-width="1.4"/></svg>`;
+  if(type==="ONE"||type==="ZERO") return `<svg width="34" height="22"><rect x="6" y="3" width="22" height="17" rx="3" fill="none" stroke="var(--gate-line)" stroke-width="1.6"/><text x="17" y="16" font-size="12" text-anchor="middle" fill="var(--ink)" font-family="monospace">${type==="ONE"?1:0}</text></svg>`;
+  return `<svg width="34" height="22"><rect x="6" y="2" width="20" height="18" rx="2" fill="none" stroke="var(--gate-line)" stroke-width="1.6"/><text x="16" y="15" font-size="10" text-anchor="middle" fill="var(--ink)" font-family="monospace">${g.sym}</text>${g.inv?'<circle cx="29" cy="11" r="3" fill="none" stroke="var(--gate-line)" stroke-width="1.4"/>':""}</svg>`;
+}
+function buildPalette(){
+  const cats={};
+  for(const t in DEF){ (cats[DEF[t].cat] ||= []).push(t); }
+  const p=$("#palette"); p.innerHTML="";
+  for(const cat in cats){
+    const box=document.createElement("div"); box.className="pgroup";
+    box.innerHTML=`<h3>${cat}</h3>`;
+    for(const t of cats[cat]){
+      const d=DEF[t];
+      const it=document.createElement("div");
+      it.className="pitem"; it.draggable=true; it.dataset.type=t;
+      it.innerHTML=`${miniSymbol(t)}<div><span>${d.name}</span>${d.sub?`<small>${d.sub}</small>`:""}</div>`;
+      it.addEventListener("dragstart",e=>e.dataTransfer.setData("text/gate",t));
+      it.addEventListener("dblclick",()=>{ snapshot(); addComp(t, (-S.view.x+260)/S.view.k, (-S.view.y+160)/S.view.k); render(); });
+      box.appendChild(it);
+    }
+    p.appendChild(box);
+  }
+  // Fertige Gruppen
+  const bb=document.createElement("div"); bb.className="pgroup";
+  bb.innerHTML=`<h3>Bausteine</h3>`;
+  for(const k in BAUSTEINE){
+    const b=BAUSTEINE[k];
+    const it=document.createElement("div");
+    it.className="pitem"; it.draggable=true; it.dataset.baustein=k;
+    it.innerHTML=`<svg width="34" height="22"><rect x="3" y="4" width="28" height="14" rx="3" fill="none" stroke="var(--brand)" stroke-width="1.6"/><text x="17" y="15" font-size="9" text-anchor="middle" fill="var(--brand)">…</text></svg><div><span>${b.name}</span><small>${b.info.split(".")[0]}</small></div>`;
+    it.addEventListener("dragstart",e=>e.dataTransfer.setData("text/baustein",k));
+    it.addEventListener("dblclick",()=>setzeBaustein(k,(-S.view.x+200)/S.view.k,(-S.view.y+120)/S.view.k));
+    bb.appendChild(it);
+  }
+  p.appendChild(bb);
+}
+svg.addEventListener("dragover",e=>e.preventDefault());
+svg.addEventListener("drop",e=>{
+  e.preventDefault();
+  const bk=e.dataTransfer.getData("text/baustein");
+  if(bk){ const w=toWorld(e); setzeBaustein(bk,w.x-60,w.y-60); return; }
+  const t=e.dataTransfer.getData("text/gate"); if(!DEF[t]) return;
+  const w=toWorld(e); snapshot(); const c=addComp(t,w.x-25,w.y-20); render(); select(c.id);
+});
+
+/* ---------- Bausteine: fertige Gruppen zum Einsetzen ---------- */
+const BAUSTEINE = {
+  halb:{ name:"Halbaddierer", info:"Zwei Eingänge links, Summe und Übertrag rechts.",
+    b(x,y){
+      const pa=addComp("NODE",x,y+10), pb=addComp("NODE",x,y+130);
+      const xo=addComp("XOR",x+80,y), an=addComp("AND",x+80,y+100);
+      addWire(pa.id,xo.id,0); addWire(pb.id,xo.id,1);
+      addWire(pa.id,an.id,0); addWire(pb.id,an.id,1);
+    }},
+  voll:{ name:"Volladdierer", info:"A, B und Übertrag hinein; Summe und neuer Übertrag heraus.",
+    b(x,y){
+      const pa=addComp("NODE",x,y+10), pb=addComp("NODE",x,y+90), pc=addComp("NODE",x,y+230);
+      const x1=addComp("XOR",x+80,y), u1=addComp("AND",x+80,y+120);
+      const x2=addComp("XOR",x+240,y+40), u2=addComp("AND",x+240,y+180);
+      const o =addComp("OR", x+400,y+160);
+      addWire(pa.id,x1.id,0); addWire(pb.id,x1.id,1);
+      addWire(pa.id,u1.id,0); addWire(pb.id,u1.id,1);
+      addWire(x1.id,x2.id,0); addWire(pc.id,x2.id,1);
+      addWire(x1.id,u2.id,0); addWire(pc.id,u2.id,1);
+      addWire(u1.id,o.id,0);  addWire(u2.id,o.id,1);
+    }},
+  mux:{ name:"2:1-Multiplexer", info:"S wählt zwischen den beiden Dateneingängen.",
+    b(x,y){
+      const pa=addComp("NODE",x,y+10), pb=addComp("NODE",x,y+130), ps=addComp("NODE",x,y+250);
+      const n=addComp("NOT",x+80,y+230);
+      const u1=addComp("AND",x+220,y), u2=addComp("AND",x+220,y+120);
+      const o=addComp("OR",x+380,y+60);
+      addWire(ps.id,n.id,0);
+      addWire(pa.id,u1.id,0); addWire(n.id,u1.id,1);
+      addWire(pb.id,u2.id,0); addWire(ps.id,u2.id,1);
+      addWire(u1.id,o.id,0);  addWire(u2.id,o.id,1);
+    }},
+  rs:{ name:"RS-Flipflop", info:"Zwei rückgekoppelte NOR-Gatter, speichert ein Bit.",
+    b(x,y){
+      const pr=addComp("NODE",x,y+10), ps=addComp("NODE",x,y+190);
+      const q=addComp("NOR",x+80,y), pq=addComp("NOR",x+80,y+140);
+      addWire(pr.id,q.id,0); addWire(pq.id,q.id,1);
+      addWire(ps.id,pq.id,0); addWire(q.id,pq.id,1);
+    }}
+};
+function rahmenUm(ids, titel){
+  const cs=ids.map(i=>S.comps[i]).filter(Boolean); if(!cs.length) return null;
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  cs.forEach(c=>{ const g=geom(c); x0=Math.min(x0,c.x); y0=Math.min(y0,c.y); x1=Math.max(x1,c.x+g.w); y1=Math.max(y1,c.y+g.h); });
+  const f=addComp("FRAME", snap(x0-30), snap(y0-50), {label:titel||"Gruppe"});
+  f.w=snap(x1-x0+60); f.h=snap(y1-y0+80);
+  return f;
+}
+function setzeBaustein(key,x,y){
+  const b=BAUSTEINE[key]; if(!b) return;
+  snapshot();
+  const vorher=new Set(Object.keys(S.comps));
+  b.b(snap(x)+40, snap(y)+50);
+  const neu=Object.values(S.comps).filter(c=>!vorher.has(c.id));
+  rahmenUm(neu.map(c=>c.id), b.name);
+  render(); select(neu.map(c=>c.id));
+  toast(b.name+" eingesetzt: "+b.info);
+}
+
+/* ---------- Boolescher Ausdruck: Parser ---------- */
+function tokenize(src){
+  const T=[]; let i=0;
+  const map={"∧":"AND","·":"AND","*":"AND","&":"AND","∨":"OR","+":"OR","|":"OR","⊕":"XOR","^":"XOR","¬":"NOT","!":"NOT","~":"NOT"};
+  while(i<src.length){
+    const ch=src[i];
+    if(/\s/.test(ch)){i++;continue;}
+    if(map[ch]){T.push({t:map[ch],p:i});i++;continue;}
+    if(ch==="("||ch===")"){T.push({t:ch,p:i});i++;continue;}
+    if(ch==="'"||ch==="¯"){T.push({t:"POST",p:i});i++;continue;}
+    if(/[0-9]/.test(ch)){T.push({t:"CONST",v:+ch?1:0,p:i});i++;continue;}
+    if(/[A-Za-zÄÖÜäöü_]/.test(ch)){
+      let j=i; while(j<src.length && /[A-Za-z0-9ÄÖÜäöü_]/.test(src[j])) j++;
+      const w=src.slice(i,j), u=w.toUpperCase();
+      if(["AND","UND","OR","ODER","XOR","NOT","NICHT","NAND","NOR","XNOR"].includes(u)){
+        const kw={UND:"AND",ODER:"OR",NICHT:"NOT"}[u]||u;
+        T.push({t:kw,p:i});
+      } else if(/^[A-Za-zÄÖÜäöü]+$/.test(w) && w.length>1){
+        // reine Buchstabenfolge: Kurzschreibweise AB = A ∧ B
+        for(let q=0;q<w.length;q++) T.push({t:"VAR",v:w[q],p:i+q});
+      } else T.push({t:"VAR",v:w,p:i});
+      i=j;continue;
+    }
+    throw {msg:`Unbekanntes Zeichen „${ch}“`, p:i};
+  }
+  return T;
+}
+function parse(src){
+  const T=tokenize(src); let k=0;
+  const peek=()=>T[k], eat=t=>{ if(T[k]&&T[k].t===t){return T[k++];} return null; };
+  function primary(){
+    if(eat("NOT")) return {op:"NOT",a:[unary()]};
+    if(eat("(")){ const e=orExpr(); if(!eat(")")) throw {msg:"Schließende Klammer fehlt", p:(peek()||{p:src.length}).p}; return post(e); }
+    const c=eat("CONST"); if(c) return post({op:"CONST",v:c.v});
+    const v=eat("VAR"); if(v) return post({op:"VAR",v:v.v});
+    throw {msg:"Hier wird eine Variable oder Klammer erwartet", p:(peek()||{p:src.length}).p};
+  }
+  function post(e){ while(eat("POST")) e={op:"NOT",a:[e]}; return e; }
+  function unary(){ if(eat("NOT")) return {op:"NOT",a:[unary()]}; return primary(); }
+  function andExpr(){
+    let l=unary();
+    for(;;){
+      if(eat("AND")){ l={op:"AND",a:[l,unary()]}; continue; }
+      if(eat("NAND")){ l={op:"NOT",a:[{op:"AND",a:[l,unary()]}]}; continue; }
+      const n=peek();
+      if(n && (n.t==="VAR"||n.t==="("||n.t==="NOT"||n.t==="CONST")){ l={op:"AND",a:[l,unary()]}; continue; }
+      return l;
+    }
+  }
+  function xorExpr(){
+    let l=andExpr();
+    while(peek()&&(peek().t==="XOR"||peek().t==="XNOR")){
+      const t=T[k++].t, r=andExpr();
+      l = t==="XOR" ? {op:"XOR",a:[l,r]} : {op:"NOT",a:[{op:"XOR",a:[l,r]}]};
+    }
+    return l;
+  }
+  function orExpr(){
+    let l=xorExpr();
+    while(peek()&&(peek().t==="OR"||peek().t==="NOR")){
+      const t=T[k++].t, r=xorExpr();
+      l = t==="OR" ? {op:"OR",a:[l,r]} : {op:"NOT",a:[{op:"OR",a:[l,r]}]};
+    }
+    return l;
+  }
+  const e=orExpr();
+  if(k<T.length) throw {msg:"Da steht noch etwas Überflüssiges", p:T[k].p};
+  return e;
+}
+function astVars(n,set=new Set()){ if(n.op==="VAR") set.add(n.v); (n.a||[]).forEach(c=>astVars(c,set)); return set; }
+function astEval(n,env){
+  switch(n.op){
+    case "VAR": return env[n.v]?1:0;
+    case "CONST": return n.v;
+    case "NOT": return astEval(n.a[0],env)?0:1;
+    case "AND": return n.a.every(c=>astEval(c,env))?1:0;
+    case "OR": return n.a.some(c=>astEval(c,env))?1:0;
+    case "XOR": return n.a.reduce((s,c)=>s^astEval(c,env),0);
+  }
+  return 0;
+}
+const PREC={OR:1,XOR:2,AND:3,NOT:4,VAR:5,CONST:5};
+function astText(n,style="din"){
+  const S1={din:{AND:" ∧ ",OR:" ∨ ",XOR:" ⊕ ",NOT:"¬"},
+            py:{AND:" and ",OR:" or ",XOR:" != ",NOT:"not "},
+            txt:{AND:" · ",OR:" + ",XOR:" ⊕ ",NOT:"¬"}}[style];
+  const full = style==="py";   // Python: lieber klammern als raten
+  function go(n){
+    if(n.op==="VAR") return {s:n.v,p:5};
+    if(n.op==="CONST") return {s:style==="py"?(n.v?"True":"False"):String(n.v),p:5};
+    if(n.op==="NOT"){ const c=go(n.a[0]); return {s:S1.NOT+((full||c.p<4)&&c.p<5?`(${c.s})`:c.s), p:4}; }
+    const p=PREC[n.op];
+    const parts=n.a.map(c=>{ const r=go(c); return (full?r.p<5:r.p<p)?`(${r.s})`:r.s; });
+    return {s:parts.join(S1[n.op]),p};
+  }
+  return go(n).s;
+}
+const clone = o => JSON.parse(JSON.stringify(o));
+function flatten(n){
+  if(!n.a) return n;
+  n.a=n.a.map(flatten);
+  if(n.op==="AND"||n.op==="OR"){   // nur diese Gatter haben variable Eingangszahl
+    const f=[];
+    for(const c of n.a){ if(c.op===n.op && f.length+c.a.length<=4) f.push(...c.a); else f.push(c); }
+    n.a=f;
+  }
+  return n;
+}
+
+/* ---------- Ausdruck → Schaltung ---------- */
+function buildFromAst(ast){
+  ast=flatten(clone(ast));
+  snapshot(); clearAll();
+  const vars=[...astVars(ast)].sort();
+  const sw={};
+  vars.forEach((v,i)=>{ sw[v]=addComp("SWITCH",20,70+i*62,{label:v}); });
+  function depth(n){ return (!n.a)?0:1+Math.max(...n.a.map(depth)); }
+  const D=depth(ast);
+  let yCur=70;
+  function build(n){
+    if(n.op==="VAR") return {id:sw[n.v].id, y:sw[n.v].y+18, d:0};
+    if(n.op==="CONST"){ const c=addComp(n.v?"ONE":"ZERO",20,yCur); yCur+=62; return {id:c.id,y:c.y+15,d:0}; }
+    const kids=n.a.map(build);
+    const d=1+Math.max(...kids.map(k=>k.d));
+    const y=kids.reduce((s,k)=>s+k.y,0)/kids.length;
+    const c=addComp(n.op, 46+d*132, y-Math.max(46,kids.length*22+16)/2, {n:kids.length});
+    c.n=kids.length; c.y=snap(c.y);
+    kids.forEach((k,i)=>addWire(k.id,c.id,i));
+    return {id:c.id,y:c.y+geom(c).h/2,d};
+  }
+  const r=build(ast);
+  const led=addComp("LED",46+(D+1)*132, r.y-23, {label:"Y"});
+  addWire(r.id,led.id,0);
+  render(); fit();
+}
+
+/* ---------- Schaltung → Ausdruck ---------- */
+function exprOfComp(id, seen=new Set()){
+  const c=S.comps[id]; if(!c) return {s:"?",p:5};
+  if(seen.has(id)) return {s:"…",p:5};
+  seen=new Set(seen); seen.add(id);
+  if(isIn(c.type)) return {s:c.type==="ONE"?"1":c.type==="ZERO"?"0":c.label,p:5};
+  const g=geom(c), ops=[];
+  for(let i=0;i<g.n;i++){ const w=wireInto(c.id,i); ops.push(w?exprOfComp(w.from.id,seen):{s:"0",p:5}); }
+  if(isOut(c.type)||c.type==="NODE") return ops[0]||{s:"0",p:5};
+  const join=(sym,p)=>({s:ops.map(o=>o.p<p?`(${o.s})`:o.s).join(sym),p});
+  switch(c.type){
+    case "AND": return join(" ∧ ",3);
+    case "OR":  return join(" ∨ ",1);
+    case "XOR": return join(" ⊕ ",2);
+    case "NOT": return {s:"¬"+(ops[0].p<4?`(${ops[0].s})`:ops[0].s),p:4};
+    case "NAND":return {s:"¬("+join(" ∧ ",1).s+")",p:5};
+    case "NOR": return {s:"¬("+join(" ∨ ",1).s+")",p:5};
+    case "XNOR":return {s:"¬("+join(" ⊕ ",1).s+")",p:5};
+  }
+  return {s:"?",p:5};
+}
+
+/* ---------- Wahrheitstabellen ---------- */
+function inputVars(){
+  const L=[...new Set(Object.values(S.comps).filter(c=>c.type==="SWITCH"||c.type==="BUTTON").map(c=>c.label))];
+  return L.sort();
+}
+function ledComps(){ return Object.values(S.comps).filter(c=>c.type==="LED").sort((a,b)=>a.label.localeCompare(b.label)); }
+function outputComps(){ return Object.values(S.comps).filter(c=>isOut(c.type)).sort((a,b)=>a.label.localeCompare(b.label)); }
+function gateComps(){ return Object.values(S.comps).filter(c=>GATE_TYPES.includes(c.type)).sort((a,b)=>a.x-b.x||a.y-b.y); }
+
+// Wie viele Gatter liegen zwischen einem Bauteil und den Eingängen?
+function depthOf(id, memo){
+  const c=S.comps[id]; if(!c) return 0;
+  if(memo[id]!==undefined) return memo[id];
+  memo[id]=0;                       // schützt vor Rückkopplungen
+  if(isIn(c.type)) return memo[id]=0;
+  const g=geom(c); let d=0;
+  for(let i=0;i<g.n;i++){ const w=wireInto(id,i); if(w) d=Math.max(d, depthOf(w.from.id,memo)); }
+  return memo[id]=d+1;
+}
+
+// Wahrheitstabelle, in der jede Spalte ein Teilausdruck ist – von innen nach außen sortiert.
+function stagedTable(){
+  const tt=truthTable(); if(!tt||tt.tooBig||!tt.gates.length) return null;
+  const memo={};
+  const ord=tt.gates.map((g,gi)=>({gi,g,d:depthOf(g.id,memo)}))
+                    .sort((a,b)=>a.d-b.d || a.g.x-b.g.x || a.g.y-b.g.y);
+  const treibt={};
+  tt.outs.forEach(o=>{ const w=wireInto(o.id,0); if(w) (treibt[w.from.id]=treibt[w.from.id]||[]).push(o.label); });
+  const head=tt.vars.map(v=>({t:v, s:"Eingang", stufe:0}));
+  ord.forEach(({g,d})=>head.push({
+    t:exprOfComp(g.id).s,
+    s:(treibt[g.id]?treibt[g.id].join(", ")+" = "+g.label:g.label)+" · Stufe "+d,
+    stufe:d, out:!!treibt[g.id]
+  }));
+  const rows=tt.rows.map(r=>[...r.in, ...ord.map(o=>r.gate[o.gi])]);
+  return {head, rows, nVars:tt.vars.length, nGates:ord.length};
+}
+
+function truthTable(){
+  const vars=inputVars(), gates=gateComps(), outs=outputComps();
+  if(!vars.length) return null;
+  if(vars.length>8) return {tooBig:true,vars};
+  const rows=[];
+  for(let m=0;m<(1<<vars.length);m++){
+    const env={}; vars.forEach((v,i)=>env[v]=(m>>(vars.length-1-i))&1);
+    const {V}=simulate(env);
+    rows.push({in:vars.map(v=>env[v]), gate:gates.map(g=>V[g.id]), out:outs.map(o=>V[o.id]), env});
+  }
+  return {vars,gates,outs,rows};
+}
+function dnf(tt,oi){
+  const t=tt.rows.filter(r=>r.out[oi]===1);
+  if(!t.length) return "0";
+  if(t.length===tt.rows.length) return "1";
+  return t.map(r=>tt.vars.map((v,i)=>r.in[i]?v:"¬"+v).join(" ∧ ")).map(s=>tt.vars.length>1?`(${s})`:s).join(" ∨ ");
+}
+function knf(tt,oi){
+  const f=tt.rows.filter(r=>r.out[oi]===0);
+  if(!f.length) return "1";
+  if(f.length===tt.rows.length) return "0";
+  return f.map(r=>tt.vars.map((v,i)=>r.in[i]?"¬"+v:v).join(" ∨ ")).map(s=>tt.vars.length>1?`(${s})`:s).join(" ∧ ");
+}
+
+/* ---------- Bedienfeld ---------- */
+let activeTab="expr";
+document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{
+  activeTab=b.dataset.tab;
+  document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",String(x===b)));
+  renderTab();
+}));
+function renderTab(){
+  hideTip(true);
+  const b=$("#tabbody");
+  if(activeTab==="expr") b.innerHTML=exprHtml(), bindExpr();
+  else if(activeTab==="tab") b.innerHTML=tableHtml(), bindTables();
+  else if(activeTab==="task") b.innerHTML=taskHtml(), bindTasks();
+  else b.innerHTML=inspHtml(), bindInsp();
+}
+
+/* --- Kurzerklärung zu den Zeichen --- */
+function miniTT(sym,f,one){
+  const rows = one ? [[0],[1]] : [[0,0],[0,1],[1,0],[1,1]];
+  const head = one ? "<th>A</th>" : "<th>A</th><th>B</th>";
+  let h=`<table class="tt"><thead><tr>${head}<th class="grp">${sym}</th></tr></thead><tbody>`;
+  for(const r of rows){
+    const v=f(...r);
+    h+="<tr>"+r.map(x=>`<td class="v${x}">${x}</td>`).join("")+`<td class="v${v}">${v}</td></tr>`;
+  }
+  return h+"</tbody></table>";
+}
+const TOKHELP = {
+  "∧":{t:"UND · Konjunktion", p:"Das Ergebnis ist 1, wenn beide Eingänge 1 sind. In jedem anderen Fall 0.",
+       tt:()=>miniTT("A ∧ B",(a,b)=>a&&b?1:0),
+       alt:"Schreibt sich auch A·B, A*B, AB oder A UND B. Gatterzeichen nach DIN: &"},
+  "∨":{t:"ODER · Disjunktion", p:"Das Ergebnis ist 1, sobald mindestens ein Eingang 1 ist. Bei beiden ebenfalls 1 – es ist kein ausschließendes Oder.",
+       tt:()=>miniTT("A ∨ B",(a,b)=>a||b?1:0),
+       alt:"Schreibt sich auch A+B, A|B oder A ODER B. Gatterzeichen nach DIN: ≥1"},
+  "¬":{t:"NICHT · Negation", p:"Dreht den Wert um: aus 0 wird 1, aus 1 wird 0. Bindet stärker als alle anderen Verknüpfungen.",
+       tt:()=>miniTT("¬A",a=>a?0:1,true),
+       alt:"Schreibt sich auch !A, ~A oder A'. Am Gatter ein kleiner Kreis am Ausgang."},
+  "⊕":{t:"XOR · Antivalenz", p:"Das Ergebnis ist 1, wenn genau einer der beiden Eingänge 1 ist. Sind beide 1, wird es wieder 0.",
+       tt:()=>miniTT("A ⊕ B",(a,b)=>a^b),
+       alt:"Schreibt sich auch A^B. Gatterzeichen nach DIN: =1. Das ist die Summe im Halbaddierer."},
+  "(":{t:"Klammer auf", p:"Klammern legen fest, was zuerst ausgewertet wird. Ohne sie gilt die Reihenfolge ¬ vor ∧ vor ⊕ vor ∨.",
+       alt:"A ∧ (B ∨ C) ist etwas anderes als A ∧ B ∨ C – probiere beides aus, die Tabelle zeigt den Unterschied."},
+  ")":{t:"Klammer zu", p:"Schließt eine geöffnete Klammer. Fehlt sie, meldet das Eingabefeld die Stelle.",
+       alt:"Reihenfolge ohne Klammern: ¬ vor ∧ vor ⊕ vor ∨."},
+  "0":{t:"Konstante 0", p:"Ein fester Wert, unabhängig von allen Schaltern. Wird beim Bauen zu einem Baustein, der dauerhaft LOW liefert.",
+       alt:"Nützlich zum Abschalten eines Zweigs: A ∧ 0 ist immer 0."},
+  "1":{t:"Konstante 1", p:"Ein fester Wert, unabhängig von allen Schaltern. Wird beim Bauen zu einem Baustein, der dauerhaft HIGH liefert.",
+       alt:"A ∨ 1 ist immer 1. A ⊕ 1 kehrt A um – ein XOR kann als schaltbarer Umkehrer dienen."}
+};
+function tokHelp(k){
+  if(TOKHELP[k]) return TOKHELP[k];
+  return {t:"Eingangsvariable "+k,
+          p:"Steht für einen Eingang der Schaltung, also für einen Schalter. Sie kann nur 0 oder 1 sein.",
+          alt:"Beim Bauen entsteht daraus ein Schalter mit der Beschriftung "+k+". Gleicher Buchstabe heißt überall dasselbe Signal."};
+}
+let tipEl=null, tipHide=null;
+function showTip(k, anchor){
+  clearTimeout(tipHide);
+  if(!tipEl){ tipEl=document.createElement("div"); tipEl.className="tip"; document.body.appendChild(tipEl); }
+  const h=tokHelp(k);
+  tipEl.innerHTML=`<b>${h.t}</b><p>${h.p}</p>${h.tt?h.tt():""}${h.alt?`<span class="alt">${h.alt}</span>`:""}`;
+  tipEl.style.left="-9999px"; tipEl.style.top="0px"; tipEl.classList.add("show");
+  const r=anchor.getBoundingClientRect(), b=tipEl.getBoundingClientRect();
+  let left=Math.round(r.left+r.width/2-b.width/2);
+  left=Math.max(8, Math.min(left, window.innerWidth-b.width-8));
+  let top=Math.round(r.top-b.height-9);
+  if(top<8) top=Math.round(r.bottom+9);
+  tipEl.style.left=left+"px"; tipEl.style.top=top+"px";
+}
+function hideTip(now){
+  if(!tipEl) return;
+  clearTimeout(tipHide);
+  if(now){ tipEl.classList.remove("show"); return; }
+  tipHide=setTimeout(()=>tipEl.classList.remove("show"),110);
+}
+
+/* --- Ausdruck --- */
+let lastExpr="A ∧ ¬B ∨ C";
+function exprHtml(){
+  return `
+  <h4>Ausdruck eingeben</h4>
+  <p class="note">Zum Erklären über ein Zeichen fahren, zum Einfügen anklicken – oder ins Feld ziehen. Erlaubt sind ∧ ∨ ¬ ⊕ ebenso wie <span class="mono">* + ! ^</span>, die Wörter UND/ODER/NICHT und die Kurzschreibweise <span class="mono">AB</span> für A ∧ B.</p>
+  <input class="field mono" id="exprIn" value="${lastExpr.replace(/"/g,"&quot;")}" spellcheck="false">
+  <div class="tokens" id="tokens"></div>
+  <div class="row">
+    <button class="btn primary" id="btnBuild">Schaltung bauen</button>
+    <button class="btn" id="btnRead">Ausdruck aus Schaltung ablesen</button>
+  </div>
+  <div id="exprStatus"></div>
+  <div id="exprOut"></div>`;
+}
+function bindExpr(){
+  const toks=["A","B","C","D","∧","∨","¬","⊕","(",")","0","1"];
+  const box=$("#tokens");
+  toks.forEach(t=>{
+    const s=document.createElement("span");
+    s.className="tok"+(/[A-D]/.test(t)?" var":""); s.textContent=t; s.draggable=true;
+    s.tabIndex=0; s.setAttribute("aria-label",tokHelp(t).t);
+    s.addEventListener("mouseenter",()=>showTip(t,s));
+    s.addEventListener("mouseleave",()=>hideTip());
+    s.addEventListener("focus",()=>showTip(t,s));
+    s.addEventListener("blur",()=>hideTip(true));
+    s.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); s.click(); } });
+    s.addEventListener("dragstart",e=>{ hideTip(true); e.dataTransfer.setData("text/plain",t); });
+    s.addEventListener("click",()=>{
+      const inp=$("#exprIn"), p=inp.selectionStart??inp.value.length;
+      inp.value=inp.value.slice(0,p)+t+inp.value.slice(inp.selectionEnd??p);
+      inp.focus(); inp.selectionStart=inp.selectionEnd=p+t.length; check();
+    });
+    box.appendChild(s);
+  });
+  const inp=$("#exprIn");
+  inp.addEventListener("input",check);
+  inp.addEventListener("drop",()=>setTimeout(check,0));
+  $("#btnBuild").addEventListener("click",()=>{ const a=check(); if(a){ buildFromAst(a); toast("Schaltung erzeugt"); } });
+  $("#btnRead").addEventListener("click",readBack);
+  check();
+
+  function check(){
+    lastExpr=inp.value;
+    const st=$("#exprStatus"), out=$("#exprOut");
+    if(!inp.value.trim()){ st.innerHTML=""; out.innerHTML=""; return null; }
+    try{
+      const a=parse(inp.value);
+      const vs=[...astVars(a)].sort();
+      st.className="status ok"; st.textContent=`Gültig · ${vs.length} Variable${vs.length===1?"":"n"}: ${vs.join(", ")||"keine"}`;
+      let rows="";
+      if(vs.length && vs.length<=6){
+        rows=`<table class="tt"><thead><tr>${vs.map(v=>`<th>${v}</th>`).join("")}<th class="grp">Y</th></tr></thead><tbody>`;
+        for(let m=0;m<(1<<vs.length);m++){
+          const env={}; vs.forEach((v,i)=>env[v]=(m>>(vs.length-1-i))&1);
+          const y=astEval(a,env);
+          rows+=`<tr>${vs.map(v=>`<td class="v${env[v]}">${env[v]}</td>`).join("")}<td class="v${y}">${y}</td></tr>`;
+        }
+        rows+="</tbody></table>";
+      }
+      out.innerHTML=`
+        <div class="out mono"><b>Normalschreibweise</b>${astText(a,"din")}</div>
+        <div class="out mono"><b>Schreibweise mit · und +</b>${astText(a,"txt")}</div>
+        <div class="out mono"><b>Als Python-Bedingung</b>${astText(a,"py")}</div>
+        <div class="scroll">${rows}</div>`;
+      return a;
+    }catch(e){
+      st.className="status bad"; st.textContent=(e.msg||"Fehler")+(e.p!=null?` (Stelle ${e.p+1})`:"");
+      out.innerHTML=""; return null;
+    }
+  }
+  function readBack(){
+    const outs=outputComps();
+    if(!outs.length) return toast("Kein Ausgang in der Schaltung");
+    const html=outs.map(o=>`<div class="out mono"><b>${o.label}</b>${exprOfComp(o.id).s}</div>`).join("");
+    $("#exprOut").innerHTML=html;
+    $("#exprStatus").className="status ok";
+    $("#exprStatus").textContent="Aus der Schaltung abgelesen. „…“ steht für eine Rückkopplung.";
+    const first=exprOfComp(outs[0].id).s;
+    if(!first.includes("…")) $("#exprIn").value=first;
+  }
+}
+
+/* --- Tabellen --- */
+function tableHtml(){
+  const tt=truthTable();
+  if(!tt) return `<h4>Wahrheitstabellen</h4><p class="note">Noch keine Eingänge. Setze Schalter in die Schaltung – ihre Beschriftungen werden zu den Variablen.</p>`;
+  if(tt.tooBig) return `<h4>Wahrheitstabellen</h4><p class="note">${tt.vars.length} Eingänge ergeben ${2**tt.vars.length} Zeilen. Bis 8 Eingänge wird gerechnet.</p>`;
+  const {vars,gates,outs,rows}=tt;
+  const cur=(()=>{ const {V}=simulate(); return vars.map(v=>{ const c=Object.values(S.comps).find(c=>c.label===v&&isIn(c.type)); return c?V[c.id]:0; }).join(""); })();
+
+  let h=`<h4>Gesamttabelle</h4><p class="note">Zeile anklicken übernimmt die Belegung in die Schaltung.</p><div class="tblbox"><header><span class="t">Eingänge → Ausgänge</span><span class="x">${rows.length} Zeilen</span>
+    <span class="spacer" style="flex:1"></span><button class="btn small" data-csv="main">CSV</button><button class="btn small" data-md="main">Markdown</button></header><div class="scroll">
+    <table class="tt" id="ttMain"><thead><tr>${vars.map(v=>`<th>${v}</th>`).join("")}${outs.map(o=>`<th class="grp">${o.label}</th>`).join("")}</tr></thead><tbody>`;
+  rows.forEach((r,i)=>{
+    h+=`<tr data-row="${i}" class="${r.in.join("")===cur?"cur":""}">${r.in.map(v=>`<td class="v${v}">${v}</td>`).join("")}${r.out.map(v=>`<td class="v${v}">${v}</td>`).join("")}</tr>`;
+  });
+  h+=`</tbody></table></div></div>`;
+
+  const stg=stagedTable();
+  if(stg){
+    const g=stg.nGates, step=(S.step===null)?g:Math.max(0,Math.min(g,S.step));
+    h+=`<h4 class="sub">Schrittweise Auflösung</h4>
+      <p class="note">Jede Spalte ist ein Teilausdruck, von innen nach außen. Mit den Pfeilen deckst du eine Spalte nach der anderen auf – so, wie man die Tabelle an der Tafel entwickelt.</p>
+      <div class="row">
+        <button class="btn small" data-step="0">Anfang</button>
+        <button class="btn small" data-step="-1">◀ zurück</button>
+        <span class="mono" style="align-self:center;color:var(--ink2)">${step} / ${g}</span>
+        <button class="btn small" data-step="+1">weiter ▶</button>
+        <button class="btn small" data-step="all">alle</button>
+      </div>
+      <div class="scroll"><table class="tt staged"><thead><tr>`;
+    stg.head.forEach((hd,i)=>{
+      const verdeckt = i>=stg.nVars+step;
+      h+=`<th class="${hd.out?"grp ":""}${verdeckt?"off":""}"><span class="ex">${hd.t}</span><small>${hd.s}</small></th>`;
+    });
+    h+=`</tr></thead><tbody>`;
+    stg.rows.forEach(r=>{
+      h+="<tr>"+r.map((v,i)=> i>=stg.nVars+step
+            ? `<td class="off">·</td>` : `<td class="v${v}">${v}</td>`).join("")+"</tr>";
+    });
+    h+=`</tbody></table></div>
+      <div class="row">
+        <button class="btn small" data-stg="csv">CSV</button>
+        <button class="btn small" data-stg="md">Markdown</button>
+        <button class="btn small" data-stg="svg">SVG</button>
+        <button class="btn small" data-stg="blank">SVG leer zum Ausfüllen</button>
+      </div>`;
+  }
+
+  if(outs.length){
+    h+=`<h4 class="sub">Normalformen</h4>`;
+    outs.forEach((o,i)=>{
+      h+=`<div class="out mono"><b>${o.label} als disjunktive Normalform</b>${dnf(tt,i)}</div>
+          <div class="out mono"><b>${o.label} als konjunktive Normalform</b>${knf(tt,i)}</div>`;
+    });
+  }
+
+  if(gates.length){
+    h+=`<h4 class="sub">Zwischenwerte aller Gatter</h4><div class="tblbox"><header><span class="t">Jedes Gatter als eigene Spalte</span>
+      <span class="spacer" style="flex:1"></span><button class="btn small" data-csv="mid">CSV</button></header><div class="scroll">
+      <table class="tt" id="ttMid"><thead><tr>${vars.map(v=>`<th>${v}</th>`).join("")}${gates.map(g=>`<th class="grp" title="${DEF[g.type].name}">${g.label}</th>`).join("")}</tr></thead><tbody>`;
+    rows.forEach(r=>{ h+=`<tr>${r.in.map(v=>`<td class="v${v}">${v}</td>`).join("")}${r.gate.map(v=>`<td class="v${v}">${v}</td>`).join("")}</tr>`; });
+    h+=`</tbody></table></div></div>`;
+
+    h+=`<h4 class="sub">Aufschlüsselung nach Gattern</h4><p class="note">Jedes Gatter einzeln: seine Eingangssignale und sein Ergebnis, nur die tatsächlich auftretenden Kombinationen.</p>`;
+    gates.forEach((g,gi)=>{
+      const gg=geom(g);
+      const srcLabels=[];
+      for(let i=0;i<gg.n;i++){ const w=wireInto(g.id,i); srcLabels.push(w? (S.comps[w.from.id].label||"?") : "–"); }
+      const seen=new Map();
+      rows.forEach(r=>{
+        const vals=[];
+        for(let i=0;i<gg.n;i++){ const w=wireInto(g.id,i);
+          vals.push(w? (isIn(S.comps[w.from.id].type)? r.in[vars.indexOf(S.comps[w.from.id].label)] : r.gate[gates.indexOf(S.comps[w.from.id])]) : 0); }
+        seen.set(vals.join("")+"|"+r.gate[gi], {vals, out:r.gate[gi]});
+      });
+      const list=[...seen.values()].sort((a,b)=>a.vals.join("").localeCompare(b.vals.join("")));
+      h+=`<div class="tblbox"><header><span class="t">${g.label} · ${DEF[g.type].name}</span><span class="x mono">${exprOfComp(g.id).s}</span>
+        <span class="spacer" style="flex:1"></span><button class="btn small" data-csv="g${gi}">CSV</button></header>
+        <table class="tt" data-gt="${gi}"><thead><tr>${srcLabels.map(s=>`<th>${s}</th>`).join("")}<th class="grp">${g.label}</th></tr></thead><tbody>`;
+      list.forEach(r=>{ h+=`<tr>${r.vals.map(v=>`<td class="v${v}">${v}</td>`).join("")}<td class="v${r.out}">${r.out}</td></tr>`; });
+      h+=`</tbody></table></div>`;
+    });
+  }
+  h+=`<div class="row"><button class="btn" data-csv="all">Alle Tabellen als CSV</button><button class="btn" id="ttSvg">Gesamttabelle als SVG</button></div>`;
+  return h;
+}
+function bindTables(){
+  document.querySelectorAll("#tabbody tr[data-row]").forEach(tr=>tr.addEventListener("click",()=>{
+    const tt=truthTable(); const r=tt.rows[+tr.dataset.row];
+    snapshot();
+    Object.values(S.comps).filter(c=>isIn(c.type)).forEach(c=>{
+      const i=tt.vars.indexOf(c.label); if(i>=0) c.on=r.in[i];
+    });
+    render();
+  }));
+  document.querySelectorAll("[data-step]").forEach(b=>b.addEventListener("click",()=>{
+    const stg=stagedTable(); if(!stg) return;
+    const g=stg.nGates, cur=(S.step===null)?g:S.step, a=b.dataset.step;
+    S.step = a==="all" ? null : a==="0" ? 0 : Math.max(0,Math.min(g, cur+(a==="+1"?1:-1)));
+    renderTab();
+  }));
+  document.querySelectorAll("[data-stg]").forEach(b=>b.addEventListener("click",()=>{
+    const t=stagedAsTable(); if(!t) return toast("Keine Teilausdrücke vorhanden");
+    const a=b.dataset.stg;
+    if(a==="csv") saveFile("Stufentabelle.csv","\uFEFF"+t.head.join(";")+"\n"+t.rows.map(r=>r.join(";")).join("\n"),"text/csv");
+    if(a==="md"){
+      const md=`| ${t.head.join(" | ")} |\n|${t.head.map(()=>"---").join("|")}|\n`+t.rows.map(r=>`| ${r.join(" | ")} |`).join("\n");
+      navigator.clipboard?.writeText(md).then(()=>toast("Markdown kopiert"),()=>showText("Markdown",md));
+    }
+    if(a==="svg") saveFile("Stufentabelle.svg",tableSvg(stagedTable()),"image/svg+xml");
+    if(a==="blank") saveFile("Stufentabelle_leer.svg",tableSvg(stagedTable(),{blank:true}),"image/svg+xml");
+  }));
+  document.querySelectorAll("[data-csv]").forEach(b=>b.addEventListener("click",()=>exportCsv(b.dataset.csv)));
+  document.querySelectorAll("[data-md]").forEach(b=>b.addEventListener("click",()=>copyMarkdown()));
+  const s=$("#ttSvg"); if(s) s.addEventListener("click",exportTableSvg);
+}
+function tablesAsArrays(){
+  const tt=truthTable(); if(!tt||tt.tooBig) return [];
+  const out=[];
+  out.push({name:"Gesamttabelle", head:[...tt.vars,...tt.outs.map(o=>o.label)], rows:tt.rows.map(r=>[...r.in,...r.out])});
+  const st=stagedAsTable(); if(st) out.push(st);
+  if(tt.gates.length)
+    out.push({name:"Zwischenwerte", head:[...tt.vars,...tt.gates.map(g=>g.label)], rows:tt.rows.map(r=>[...r.in,...r.gate])});
+  tt.gates.forEach((g,gi)=>{
+    const gg=geom(g), head=[];
+    for(let i=0;i<gg.n;i++){ const w=wireInto(g.id,i); head.push(w?S.comps[w.from.id].label:"–"); }
+    head.push(g.label);
+    const seen=new Map();
+    tt.rows.forEach(r=>{
+      const vals=[];
+      for(let i=0;i<gg.n;i++){ const w=wireInto(g.id,i);
+        vals.push(w?(isIn(S.comps[w.from.id].type)?r.in[tt.vars.indexOf(S.comps[w.from.id].label)]:r.gate[tt.gates.indexOf(S.comps[w.from.id])]):0); }
+      seen.set(vals.join(""),[...vals,r.gate[gi]]);
+    });
+    out.push({name:g.label+" ("+DEF[g.type].name+")", head, rows:[...seen.values()]});
+  });
+  return out;
+}
+function stagedAsTable(){
+  const stg=stagedTable(); if(!stg) return null;
+  return {name:"Stufentabelle (Teilausdrücke)", head:stg.head.map(h=>h.t), rows:stg.rows};
+}
+function exportCsv(which){
+  const T=tablesAsArrays(); if(!T.length) return toast("Keine Tabelle vorhanden");
+  let sel=T;
+  if(which==="main") sel=[T[0]];
+  else if(which==="mid") sel=T.filter(t=>t.name==="Zwischenwerte");
+  else if(/^g\d+$/.test(which)) sel=[T[2+ +which.slice(1)]].filter(Boolean);
+  const txt="\uFEFF"+sel.map(t=>t.name+"\n"+t.head.join(";")+"\n"+t.rows.map(r=>r.join(";")).join("\n")).join("\n\n");
+  saveFile("Wahrheitstabellen.csv",txt,"text/csv");
+}
+function copyMarkdown(){
+  const T=tablesAsArrays(); if(!T.length) return;
+  const t=T[0];
+  const md=`| ${t.head.join(" | ")} |\n|${t.head.map(()=>"---").join("|")}|\n`+t.rows.map(r=>`| ${r.join(" | ")} |`).join("\n");
+  navigator.clipboard?.writeText(md).then(()=>toast("Markdown kopiert"),()=>showText("Markdown",md));
+}
+
+/* --- Bauteil --- */
+function inspHtml(){
+  if(!S.sel.length) return `<h4>Bauteil</h4><p class="note">Klicke ein Bauteil an, um Beschriftung und Eingangszahl zu ändern. Auf freier Fläche ziehst du mit der Maus einen Rahmen und wählst mehrere aus; mit Umschalt nimmst du einzelne dazu.</p>`;
+  if(S.sel.length>1){
+    const arten={}; S.sel.forEach(id=>{ const c=S.comps[id]; if(c) arten[DEF[c.type].name]=(arten[DEF[c.type].name]||0)+1; });
+    return `<h4>${S.sel.length} Bauteile ausgewählt</h4>
+      <p class="note">${Object.entries(arten).map(([k,v])=>v+"× "+k).join(" · ")}</p>
+      <div class="row"><button class="btn" id="ipRahmen">Rahmen darum ziehen</button><button class="btn" id="ipDupM">Duplizieren</button><button class="btn" id="ipDelM">Löschen</button></div>
+      <p class="note">Ziehen verschiebt alle gemeinsam. Entf löscht die Auswahl, Strg+D dupliziert sie samt der Leitungen dazwischen.</p>`;
+  }
+  const c=S.comps[S.sel[0]], d=DEF[c.type];
+  if(c.type==="NOTE") return `<h4>Kommentar</h4>
+    <textarea class="field" id="ipText" rows="6" style="resize:vertical">${esc2(c.text||"")}</textarea>
+    <div class="row"><button class="btn" id="ipDup">Duplizieren</button><button class="btn" id="ipDel">Löschen</button></div>
+    <p class="note">Zeilenumbrüche werden übernommen. Die Größe änderst du am Anfasser unten rechts.</p>`;
+  if(c.type==="FRAME") return `<h4>Gruppenrahmen</h4>
+    <div class="insp"><label for="ipLabel">Titel</label><input class="field" id="ipLabel" value="${esc2(c.label||"")}"></div>
+    <div class="row"><button class="btn" id="ipDel">Löschen</button></div>
+    <p class="note">Ziehen an der Titelleiste verschiebt den Rahmen samt allem, was vollständig darin liegt. Der Anfasser unten rechts ändert die Größe. Gelöscht wird nur der Rahmen, nicht sein Inhalt.</p>`;
+  return `<h4>${d.name}</h4>
+  <div class="insp">
+    <label for="ipLabel">Beschriftung</label><input class="field" id="ipLabel" value="${(c.label||"").replace(/"/g,"&quot;")}">
+    ${d.varIn?`<label for="ipN">Eingänge</label><select class="field" id="ipN">${[2,3,4].map(n=>`<option value="${n}" ${c.n===n?"selected":""}>${n}</option>`).join("")}</select>`:""}
+    <label>Position</label><span class="mono">${c.x} / ${c.y}</span>
+  </div>
+  <div class="row"><button class="btn" id="ipDup">Duplizieren</button><button class="btn" id="ipDel">Löschen</button></div>
+  <p class="note">Bei Eingängen wird die Beschriftung zur Variablen in der Wahrheitstabelle. Gleiche Beschriftung heißt: gleiches Signal.</p>`;
+}
+function bindInsp(){
+  if(!S.sel.length) return;
+  if(S.sel.length>1){
+    $("#ipRahmen").addEventListener("click",()=>{
+      snapshot(); const f=rahmenUm(S.sel,"Gruppe"); render(); if(f) select(f.id);
+    });
+    $("#ipDupM").addEventListener("click",()=>dupliziere(S.sel));
+    $("#ipDelM").addEventListener("click",()=>{ snapshot(); S.sel.forEach(delComp); S.sel=[]; render(); });
+    return;
+  }
+  const c=S.comps[S.sel[0]];
+  const tx=$("#ipText");
+  if(tx){
+    tx.addEventListener("change",()=>{ snapshot(); c.text=tx.value; render(); });
+    $("#ipDup").addEventListener("click",()=>dupliziere([c.id]));
+    $("#ipDel").addEventListener("click",()=>{ snapshot(); delComp(c.id); S.sel=[]; render(); });
+    return;
+  }
+  const l=$("#ipLabel");
+  const loeschen=()=>{ snapshot(); delComp(c.id); S.sel=[]; render(); };
+  if(!l){ $("#ipDel").addEventListener("click",loeschen); return; }
+  l.addEventListener("change",()=>{ snapshot(); c.label=l.value.trim()||c.label; render(); });
+  if(c.type==="FRAME"){ $("#ipDel").addEventListener("click",loeschen); return; }
+  const n=$("#ipN");
+  if(n) n.addEventListener("change",()=>{ snapshot(); c.n=+n.value;
+    Object.values(S.wires).forEach(w=>{ if(w.to.id===c.id && w.to.port>=c.n) delete S.wires[w.id]; }); render(); });
+  $("#ipDup").addEventListener("click",()=>dupliziere([c.id]));
+  $("#ipDel").addEventListener("click",()=>{ snapshot(); delComp(c.id); S.sel=[]; render(); });
+}
+
+/* ---------- Aufgaben ---------- */
+const TASKS=[
+ {id:"not",t:"Umkehrer",ins:["A"],outs:{Y:a=>a?0:1},par:1,
+  d:"Y soll genau dann leuchten, wenn A aus ist."},
+ {id:"aundnb",t:"A an, B aus",ins:["A","B"],outs:{Y:(a,b)=>a&&!b?1:0},par:2,
+  d:"Y leuchtet nur, wenn A eingeschaltet und B ausgeschaltet ist."},
+ {id:"xor",t:"XOR aus Grundgattern",ins:["A","B"],outs:{Y:(a,b)=>a^b},par:5,allow:["AND","OR","NOT"],
+  d:"Y leuchtet, wenn genau einer der beiden Schalter an ist. Erlaubt sind nur UND, ODER und NICHT."},
+ {id:"nand",t:"UND nur aus NAND",ins:["A","B"],outs:{Y:(a,b)=>a&&b?1:0},par:2,allow:["NAND"],
+  d:"Baue ein UND ausschließlich aus NAND-Gattern. Das ist der Grund, warum NAND „universell“ heißt."},
+ {id:"halb",t:"Halbaddierer",ins:["A","B"],outs:{S:(a,b)=>a^b, C:(a,b)=>a&&b?1:0},par:2,
+  d:"Zwei Bits addieren: S ist die Summe, C der Übertrag. Zwei Ausgänge, beide müssen stimmen."},
+ {id:"mux",t:"2:1-Multiplexer",ins:["A","B","S"],outs:{Y:(a,b,s)=>s?b:a},par:4,
+  d:"S wählt aus: bei S=0 wird A durchgeschaltet, bei S=1 wird B durchgeschaltet."},
+ {id:"maj",t:"Mehrheitsentscheider",ins:["A","B","C"],outs:{Y:(a,b,c)=>(a+b+c)>=2?1:0},par:4,
+  d:"Y leuchtet, wenn mindestens zwei der drei Schalter an sind. Klassiker für die DNF."},
+ {id:"par",t:"Paritätsprüfer",ins:["A","B","C"],outs:{Y:(a,b,c)=>a^b^c},par:2,
+  d:"Y leuchtet bei einer ungeraden Anzahl von Einsen. Kürzer als du denkst."},
+ {id:"voll",t:"Volladdierer",ins:["A","B","C"],outs:{S:(a,b,c)=>a^b^c, U:(a,b,c)=>((a&&b)||(b&&c)||(a&&c))?1:0},par:5,
+  d:"A und B plus Übertrag C. S ist die Summe, U der neue Übertrag. Zwei Halbaddierer und ein ODER genügen."},
+ {id:"komp",t:"Gleichheitsprüfer",ins:["A","B","C","D"],outs:{Y:(a,b,c,d)=>(a===c&&b===d)?1:0},par:3,
+  d:"Zwei 2-Bit-Zahlen AB und CD vergleichen: Y leuchtet bei Gleichheit."}
+];
+function taskHtml(){
+  const done=Object.keys(S.done).length, pct=Math.round(done/TASKS.length*100);
+  const sterne=Object.values(S.done).reduce((a,b)=>a+b,0);
+  let h=`<h4>Aufgaben</h4><p class="note">${done} von ${TASKS.length} gelöst${done?` · ${sterne} von ${TASKS.length*3} Sternen`:""}. Die Lösung wird automatisch erkannt, sobald die Schaltung stimmt. Ein Wechsel auf eine andere Aufgabe leert die Arbeitsfläche – Strg+Z holt sie zurück.</p>
+   <div class="progress"><i style="width:${pct}%"></i></div>`;
+  if(done===TASKS.length) h+=`<div class="status ok">Alle Aufgaben gelöst.</div>`;
+  if(done) h+=`<div class="row"><button class="btn small" id="btnReset">Fortschritt zurücksetzen</button></div>`;
+  TASKS.forEach((t,i)=>{
+    const st=S.done[t.id]||0;
+    const cls=["task", S.task===t.id?"active":"", st?"done":"", S.flash===t.id?"flash":""].filter(Boolean).join(" ");
+    h+=`<div class="${cls}" data-task="${t.id}">
+      <div class="h"><span class="n">${st?"✓":i+1}</span><span class="t">${t.t}</span><span class="s">${st?"★".repeat(st)+"☆".repeat(3-st):""}</span></div>
+      <p>${t.d}${t.allow?` <b>Erlaubt:</b> ${t.allow.join(", ")}.`:""}</p></div>`;
+  });
+  if(S.task){
+    const t=TASKS.find(x=>x.id===S.task);
+    const r=S.result && S.result.id===S.task ? S.result : null;
+    h+=`<h4 class="sub">Ziel für „${t.t}“</h4><div class="scroll">${targetTable(t)}</div>
+    <p class="note">Sobald die Schaltung stimmt, meldet sich das Programm von selbst. Der Knopf sagt dir, an welcher Belegung es noch scheitert.</p>
+    <div class="row"><button class="btn" id="btnCheck">Woran hakt es?</button><button class="btn" id="btnSetup">Bauteile neu stellen</button></div>
+    <div id="checkOut" class="${r?"status "+(r.ok?"ok":"bad"):""}">${r?r.msg:""}</div>`;
+  }
+  return h;
+}
+function targetTable(t){
+  const on=Object.keys(t.outs);
+  let h=`<table class="tt"><thead><tr>${t.ins.map(v=>`<th>${v}</th>`).join("")}${on.map(o=>`<th class="grp">${o}</th>`).join("")}</tr></thead><tbody>`;
+  for(let m=0;m<(1<<t.ins.length);m++){
+    const bits=t.ins.map((_,i)=>(m>>(t.ins.length-1-i))&1);
+    h+=`<tr>${bits.map(b=>`<td class="v${b}">${b}</td>`).join("")}${on.map(o=>{const v=t.outs[o](...bits);return `<td class="v${v}">${v}</td>`;}).join("")}</tr>`;
+  }
+  return h+"</tbody></table>";
+}
+function bindTasks(){
+  document.querySelectorAll("[data-task]").forEach(d=>d.addEventListener("click",()=>selectTask(d.dataset.task)));
+  const c=$("#btnCheck"); if(c) c.addEventListener("click",checkTask);
+  const b=$("#btnSetup");
+  if(b) b.addEventListener("click",()=>{
+    const tun=()=>{ setupTask(TASKS.find(t=>t.id===S.task)); S.result=null; renderTab(); };
+    if(!gateComps().length) return tun();
+    zweistufig(b,"Schaltung wirklich verwerfen?",tun);
+  });
+  const r=$("#btnReset");
+  if(r) r.addEventListener("click",e=>zweistufig(e.currentTarget,"Alle Sterne wirklich löschen?",()=>{
+    S.done={}; S.result=null; stSet("logik.done",{}); renderTab(); toast("Fortschritt zurückgesetzt");
+  }));
+}
+function selectTask(id){
+  const t=TASKS.find(x=>x.id===id);
+  S.result=null;
+  if(S.task===id){
+    // dieselbe Aufgabe noch einmal angeklickt: Gebautes bleibt stehen,
+    // nur versehentlich gelöschte Schalter oder LEDs kommen zurück
+    ensureTaskParts(t); renderTab(); return;
+  }
+  S.task=id; setupTask(t); renderTab();   // andere Aufgabe: sauberer Start, Strg+Z holt alles zurück
+}
+// Ergänzt nur, was fehlt. Eine vorhandene Schaltung bleibt unangetastet.
+function ensureTaskParts(t){
+  const hIn=new Set(Object.values(S.comps).filter(c=>isIn(c.type)).map(c=>c.label));
+  const hOut=new Set(outputComps().map(c=>c.label));
+  const fehlt=t.ins.filter(v=>!hIn.has(v)).length + Object.keys(t.outs).filter(o=>!hOut.has(o)).length;
+  if(!fehlt) return;
+  snapshot();
+  t.ins.forEach((v,i)=>{ if(!hIn.has(v)) addComp("SWITCH",20,70+i*64,{label:v}); });
+  Object.keys(t.outs).forEach((o,i)=>{ if(!hOut.has(o)) addComp("LED",640,80+i*80,{label:o}); });
+  render(); fit();
+}
+function setupTask(t){
+  snapshot(); clearAll();
+  t.ins.forEach((v,i)=>addComp("SWITCH",20,70+i*64,{label:v}));
+  Object.keys(t.outs).forEach((o,i)=>addComp("LED",640,80+i*80,{label:o}));
+  render(); fit();
+}
+function setResult(ok,msg){ S.result={id:S.task, ok, msg}; renderTab(); }
+
+// Bewertet die aktuelle Schaltung gegen eine Aufgabe, ohne etwas zu verändern.
+function evaluateTask(t){
+  const have=inputVars();
+  const miss=t.ins.filter(v=>!have.includes(v));
+  if(miss.length) return {ok:false,msg:"Es fehlen Schalter mit der Beschriftung: "+miss.join(", ")};
+  const leds=ledComps();
+  for(const o in t.outs) if(!leds.find(l=>l.label===o)) return {ok:false,msg:"Es fehlt eine LED mit der Beschriftung „"+o+"“."};
+  if(t.allow){
+    const bad=gateComps().filter(g=>!t.allow.includes(g.type));
+    if(bad.length) return {ok:false,msg:"Nicht erlaubte Gatter: "+[...new Set(bad.map(g=>DEF[g.type].name))].join(", ")};
+  }
+  let wrong=null;
+  for(let m=0;m<(1<<t.ins.length) && !wrong;m++){
+    const bits=t.ins.map((_,i)=>(m>>(t.ins.length-1-i))&1);
+    const env={}; t.ins.forEach((v,i)=>env[v]=bits[i]);
+    const {V,stable}=simulate(env);
+    if(!stable){ wrong={bits,msg:"Die Schaltung kommt nicht zur Ruhe (Rückkopplung)."}; break; }
+    for(const o in t.outs){
+      const led=leds.find(l=>l.label===o);
+      const soll=t.outs[o](...bits), ist=V[led.id];
+      if(soll!==ist){ wrong={bits,msg:`Bei ${t.ins.map((v,i)=>v+"="+bits[i]).join(", ")} liefert ${o} den Wert ${ist}, erwartet ist ${soll}.`}; break; }
+    }
+  }
+  if(wrong) return {ok:false,msg:wrong.msg};
+  const n=gateComps().length;
+  return {ok:true, gates:n, stars: n<=t.par?3 : n<=t.par+2?2 : 1};
+}
+
+function resultText(t,r,vorher,auto){
+  const kuerzer = r.stars>vorher && vorher>0 ? " Das ist kürzer als dein bisher bester Versuch." : "";
+  return (auto?"Gelöst – automatisch erkannt. ":"Gelöst. ")
+    +`Stimmt für alle ${1<<t.ins.length} Belegungen. ${r.gates} Gatter verwendet, Richtwert ${t.par}. `
+    +`<span class="stars">${"★".repeat(r.stars)}${"☆".repeat(3-r.stars)}</span>`
+    +(r.stars<3?` Mit ${t.par} ${t.par===1?"Gatter":"Gattern"} gäbe es drei Sterne.`:"")+kuerzer;
+}
+function award(t,r,auto){
+  const vorher=S.done[t.id]||0;
+  S.done[t.id]=Math.max(vorher,r.stars);
+  stSet("logik.done",S.done);
+  S.flash=t.id;
+  setResult(true,resultText(t,r,vorher,auto));
+  const st="★".repeat(r.stars)+"☆".repeat(3-r.stars);
+  toast((auto?"Gelöst: "+t.t+" · ":"Gelöst · ")+st+(r.stars===3?" – so kurz wie es geht":""));
+  setTimeout(()=>{ S.flash=null; }, 1600);
+}
+function checkTask(){
+  const t=TASKS.find(x=>x.id===S.task); if(!t) return;
+  const r=evaluateTask(t);
+  autoState = r.ok ? t.id+":"+r.stars : null;
+  if(!r.ok) return setResult(false,r.msg);
+  award(t,r,false);
+}
+
+// Läuft nach jeder Änderung an der Schaltung. Meldet nur Erfolg –
+// beim Bauen ist eine unfertige Schaltung der Normalfall, keine Fehlermeldung wert.
+let autoTimer=null, autoState=null;
+function autoCheck(){
+  if(!S.task) return;
+  clearTimeout(autoTimer);
+  autoTimer=setTimeout(()=>{
+    const t=TASKS.find(x=>x.id===S.task); if(!t) return;
+    let r; try{ r=evaluateTask(t); }catch(e){ return; }
+    if(!r.ok){
+      autoState=null;
+      // Erfolgsmeldung zurücknehmen, wenn die Schaltung nicht mehr stimmt.
+      // Die verdienten Sterne bleiben, die Meldung darf nicht lügen.
+      if(S.result && S.result.id===S.task && S.result.ok){ S.result=null; renderTab(); }
+      return;
+    }
+    const key=t.id+":"+r.stars;
+    if(key===autoState) return;
+    autoState=key;
+    const vorher=S.done[t.id]||0;
+    if(r.stars>vorher) award(t,r,true);
+    else setResult(true,resultText(t,r,vorher,true));   // schon gelöst: still bestätigen
+  }, 150);
+}
+
+/* ---------- Export ---------- */
+function bbox(){
+  let a=1e9,b=1e9,c=-1e9,d=-1e9;
+  for(const k of Object.values(S.comps)){ const g=geom(k);
+    a=Math.min(a,k.x-26); b=Math.min(b,k.y-22); c=Math.max(c,k.x+g.w+26); d=Math.max(d,k.y+g.h+20); }
+  if(a>c) return {x:0,y:0,w:400,h:200};
+  return {x:a,y:b,w:c-a,h:d-b};
+}
+const SVG_STYLE=(mode)=>{
+  const P = mode==="print"
+    ? {gate:"#ffffff",line:"#111111",ink:"#111111",ink2:"#333333",muted:"#666666",hi:"#000000",lo:"#111111",panel:"#ffffff",hiw:"3.0"}
+    : {gate:"#1A2E33",line:"#78A0A6",ink:"#DFEAEB",ink2:"#9FB6B9",muted:"#6F8A8F",hi:"#FFC24B",lo:"#4A6469",panel:"#0E1A1C",hiw:"2.8"};
+  return `
+  .wire{fill:none;stroke:${P.lo};stroke-width:${mode==="print"?"1.8":"2.2"};stroke-linecap:round}
+  .wire.on{stroke:${P.hi};stroke-width:${P.hiw}}
+  .whit{display:none}.ghost{display:none}.port{display:none}
+  .gbody{fill:${P.gate};stroke:${P.line};stroke-width:1.7}
+  .stub{stroke:${P.line};stroke-width:1.7;fill:none}
+  .stub.on{stroke:${P.hi};stroke-width:${P.hiw}}
+  .bub{fill:${P.gate};stroke:${P.line};stroke-width:1.7}
+  .sym{fill:${P.ink};font-size:15px;text-anchor:middle;font-family:monospace}
+  .lbl{fill:${P.ink2};font-size:11px;text-anchor:middle;font-family:sans-serif}
+  .tag{fill:${P.muted};font-size:9.5px;text-anchor:middle;font-family:sans-serif}
+  .port{fill:${P.panel};stroke:${P.line};stroke-width:1.4}
+  .port.on{fill:${P.hi};stroke:${P.hi}}
+  .ledg{fill:${P.gate};stroke:${P.line};stroke-width:1.7}
+  .ledg.on{fill:${P.hi};stroke:${P.line}}
+  .swbody{fill:${P.gate};stroke:${P.line};stroke-width:1.7}
+  .swknob{fill:${mode==="print"?"#cfcfcf":P.lo}} .swknob.on{fill:${P.hi};stroke:${P.line}}
+  .val{font-size:16px;font-weight:700;text-anchor:middle;font-family:monospace;fill:${P.muted}}
+  .probe{stroke-dasharray:5 3}
+  .knoten{fill:${P.line};stroke:none} .knoten.on{fill:${P.hi}}
+  .frmbg{fill:none;stroke:none}
+  .frm{fill:none;stroke:${P.muted};stroke-width:1.4;stroke-dasharray:7 5}
+  .frmkopf{fill:${mode==="print"?"#f0f0f0":"rgba(47,179,160,.12)"};stroke:none}
+  .frmtitel{fill:${P.ink2};font-size:12px;font-weight:600;font-family:sans-serif}
+  .note{fill:${mode==="print"?"#ffffff":P.gate};stroke:${P.muted};stroke-width:1.2}
+  .notetxt{fill:${P.ink2};font-size:12.5px;font-family:sans-serif}
+  .griff{display:none}
+  .val.on{fill:${P.hi};font-weight:700}`;
+};
+function circuitSvg(mode){
+  const b=bbox();
+  const a=gAnnot.cloneNode(true), w=gWire.cloneNode(true), c=gComp.cloneNode(true);
+  const body=`<g transform="translate(${-b.x},${-b.y})">${a.innerHTML}${w.innerHTML}${c.innerHTML}</g>`;
+  const bgc = mode==="print" ? "#ffffff" : "#0E1A1C";
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(b.w)}" height="${Math.round(b.h)}" viewBox="0 0 ${Math.round(b.w)} ${Math.round(b.h)}">
+<style>${SVG_STYLE(mode)}</style>
+<rect width="100%" height="100%" fill="${bgc}"/>
+${body}
+</svg>`;
+}
+// Zeichnet eine Tabelle als SVG. head-Einträge dürfen {t,s} oder einfache Zeichenketten sein.
+function tableSvg(t, opt){
+  opt=opt||{};
+  const head=t.head.map(h=>typeof h==="string"?{t:h,s:""}:h);
+  const breit=(txt,px)=>Math.ceil(String(txt).length*px);
+  const cw=head.map(h=>Math.max(48, breit(h.t,7.6)+16, breit(h.s,5.4)+14));
+  const hh=head.some(h=>h.s)?38:26, rh=23;
+  const W=cw.reduce((a,b)=>a+b,0), H=hh+t.rows.length*rh;
+  let x=0, svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${W+2}" height="${H+2}" viewBox="0 0 ${W+2} ${H+2}">
+<style>
+ text{font-family:'Segoe UI',Arial,sans-serif;fill:#111}
+ .h{font-size:12.5px;font-weight:600;text-anchor:middle}
+ .s{font-size:9px;fill:#6b7b7d;text-anchor:middle}
+ .v{font-family:monospace;font-size:12.5px;text-anchor:middle}
+ rect.c{fill:none;stroke:#111;stroke-width:.9}
+ rect.hd{fill:#eef1f1;stroke:#111;stroke-width:.9}
+ rect.out{fill:#e6efe0;stroke:#111;stroke-width:.9}
+</style>
+<rect x="1" y="1" width="${W}" height="${H}" fill="#fff"/>`;
+  head.forEach((h,i)=>{
+    svg+=`<rect class="${h.out?"out":"hd"}" x="${1+x}" y="1" width="${cw[i]}" height="${hh}"/>`
+       + `<text class="h" x="${1+x+cw[i]/2}" y="${h.s?16:18}">${esc(h.t)}</text>`
+       + (h.s?`<text class="s" x="${1+x+cw[i]/2}" y="${29}">${esc(h.s)}</text>`:"");
+    x+=cw[i];
+  });
+  t.rows.forEach((r,ri)=>{
+    let cx=0;
+    r.forEach((v,i)=>{
+      const leer = opt.blank && (t.nVars!==undefined) && i>=t.nVars;
+      svg+=`<rect class="c" x="${1+cx}" y="${1+hh+ri*rh}" width="${cw[i]}" height="${rh}"/>`
+         + (leer?"":`<text class="v" x="${1+cx+cw[i]/2}" y="${1+hh+ri*rh+15.5}">${v}</text>`);
+      cx+=cw[i];
+    });
+  });
+  return svg+"</svg>";
+}
+const esc = t => String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function exportTableSvg(){
+  const T=tablesAsArrays(); if(!T.length) return toast("Keine Tabelle vorhanden");
+  saveFile("Wahrheitstabelle.svg",tableSvg(T[0]),"image/svg+xml");
+}
+function exportPng(){
+  const s=circuitSvg("screen"), b=bbox();
+  const img=new Image();
+  img.onload=()=>{
+    const cv=document.createElement("canvas");
+    cv.width=Math.round(b.w*2); cv.height=Math.round(b.h*2);
+    const x=cv.getContext("2d"); x.scale(2,2); x.drawImage(img,0,0);
+    cv.toBlob(bl=>{ const u=URL.createObjectURL(bl); dl("Schaltung.png",u); });
+  };
+  img.onerror=()=>toast("PNG-Export nicht möglich – nutze den SVG-Export");
+  img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s);
+}
+function saveFile(name,text,mime){
+  try{
+    const u=URL.createObjectURL(new Blob([text],{type:mime+";charset=utf-8"}));
+    dl(name,u); toast(name+" gespeichert");
+  }catch(e){ showText(name,text); }
+}
+function dl(name,url){
+  const a=document.createElement("a"); a.href=url; a.download=name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),4000);
+}
+function serialize(){ return JSON.stringify({v:1,comps:S.comps,wires:S.wires,seq:S.seq,sym:S.sym},null,1); }
+function load(json){
+  try{
+    const o=JSON.parse(json);
+    if(!o.comps) throw 0;
+    snapshot(); LAST={}; S.comps=o.comps; S.wires=o.wires||{}; S.seq=o.seq||1000;
+    if(o.sym) setSym(o.sym);
+    S.sel=[]; render(); fit(); toast("Schaltung geladen");
+  }catch(e){ toast("Datei nicht lesbar"); }
+}
+$("#fileIn").addEventListener("change",e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>load(r.result); r.readAsText(f); e.target.value="";
+});
+
+/* ---------- Dialog & Toast ---------- */
+function showText(title,text,note){
+  $("#dlgTitle").textContent=title; $("#dlgNote").textContent=note||"Download war nicht möglich – Inhalt hier kopieren.";
+  $("#dlgText").value=text; $("#dlg").showModal();
+}
+$("#dlgOk").addEventListener("click",()=>$("#dlg").close());
+$("#dlgCopy").addEventListener("click",()=>{ $("#dlgText").select(); navigator.clipboard?.writeText($("#dlgText").value); toast("Kopiert"); });
+let tTimer;
+function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(tTimer); tTimer=setTimeout(()=>t.classList.remove("show"), m.length>60?6000:2400); }
+
+/* ---------- Menüs ---------- */
+document.querySelectorAll(".menu").forEach(m=>{
+  m.querySelector("[data-toggle]").addEventListener("click",e=>{
+    e.stopPropagation();
+    document.querySelectorAll(".menu").forEach(x=>{ if(x!==m) x.classList.remove("open"); });
+    m.classList.toggle("open");
+  });
+});
+document.addEventListener("click",()=>document.querySelectorAll(".menu").forEach(m=>m.classList.remove("open")));
+$("#mExport").addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]"); if(!b) return;
+  const a=b.dataset.act;
+  if(a==="svg-dark") saveFile("Schaltung.svg",circuitSvg("screen"),"image/svg+xml");
+  if(a==="svg-print") saveFile("Schaltung_sw.svg",circuitSvg("print"),"image/svg+xml");
+  if(a==="png") exportPng();
+  if(a==="json") saveFile("Schaltung.json",serialize(),"application/json");
+  if(a==="open") $("#fileIn").click();
+  if(a==="paste"){
+    if(navigator.clipboard?.readText) navigator.clipboard.readText().then(load,()=>askJson());
+    else askJson();
+  }
+  if(a==="csv-all") exportCsv("all");
+  if(a==="svg-table") exportTableSvg();
+  if(a==="svg-staged"){ const t=stagedTable(); t?saveFile("Stufentabelle.svg",tableSvg(t),"image/svg+xml"):toast("Keine Teilausdrücke vorhanden"); }
+  if(a==="svg-blank"){ const t=stagedTable(); t?saveFile("Stufentabelle_leer.svg",tableSvg(t,{blank:true}),"image/svg+xml"):toast("Keine Teilausdrücke vorhanden"); }
+});
+function askJson(){
+  showText("Schaltung einfügen","", "JSON hier einfügen und auf Schließen tippen.");
+  $("#dlgOk").onclick=()=>{ const v=$("#dlgText").value.trim(); $("#dlg").close(); if(v) load(v); $("#dlgOk").onclick=()=>$("#dlg").close(); };
+}
+$("#mExamples").addEventListener("click",e=>{
+  const b=e.target.closest("[data-ex]"); if(!b) return;
+  example(b.dataset.ex);
+});
+
+/* ---------- Beispiele ---------- */
+const exSw =(x,y,l)=>addComp("SWITCH",x,y,{label:l});
+const exLed=(x,y,l)=>addComp("LED",x,y,{label:l});
+const exG  =(t,x,y,n)=>addComp(t,x,y,n?{n}:{});
+const exW  =(a,b,p)=>addWire(a.id,b.id,p);
+
+const EX=[
+{id:"xor", g:"Grundlagen", n:"XOR aus Grundgattern",
+ i:"Genau einer der beiden Schalter muss an sein. Gebaut allein aus UND, ODER und NICHT.",
+ b(){
+  const a=exSw(20,80,"A"), b=exSw(20,180,"B");
+  const n1=exG("NOT",150,70), n2=exG("NOT",150,190);
+  const u1=exG("AND",290,60), u2=exG("AND",290,170);
+  const o=exG("OR",440,115), y=exLed(590,120,"Y");
+  exW(a,n1,0); exW(b,n2,0);
+  exW(a,u1,0); exW(n2,u1,1);
+  exW(n1,u2,0); exW(b,u2,1);
+  exW(u1,o,0); exW(u2,o,1); exW(o,y,0);
+}},
+{id:"demorgan", g:"Grundlagen", n:"De Morgan zum Nachmessen",
+ i:"Y1 und Y2 leuchten immer gleich: ¬(A ∧ B) ist dasselbe wie ¬A ∨ ¬B. Die Tabelle zeigt es Zeile für Zeile.",
+ b(){
+  const a=exSw(20,90,"A"), b=exSw(20,220,"B");
+  const nd=exG("NAND",230,80), l1=exLed(420,95,"Y1");
+  exW(a,nd,0); exW(b,nd,1); exW(nd,l1,0);
+  const n1=exG("NOT",190,260), n2=exG("NOT",190,360), o=exG("OR",350,300), l2=exLed(520,315,"Y2");
+  exW(a,n1,0); exW(b,n2,0); exW(n1,o,0); exW(n2,o,1); exW(o,l2,0);
+}},
+{id:"nandall", g:"Grundlagen", n:"NAND kann alles",
+ i:"Drei Schaltungen, nur NAND-Gatter: N ist ¬A, U ist A ∧ B, O ist A ∨ B. Deshalb heißt NAND universell.",
+ b(){
+  const a=exSw(20,60,"A"), b=exSw(20,160,"B");
+  const g1=exG("NAND",220,30); exW(a,g1,0); exW(a,g1,1);
+  exW(g1,exLed(390,45,"N"),0);
+  const g2=exG("NAND",220,170); exW(a,g2,0); exW(b,g2,1);
+  const g3=exG("NAND",370,170); exW(g2,g3,0); exW(g2,g3,1);
+  exW(g3,exLed(530,185,"U"),0);
+  const g4=exG("NAND",220,310); exW(a,g4,0); exW(a,g4,1);
+  const g5=exG("NAND",220,410); exW(b,g5,0); exW(b,g5,1);
+  const g6=exG("NAND",380,350); exW(g4,g6,0); exW(g5,g6,1);
+  exW(g6,exLed(540,365,"O"),0);
+}},
+
+{id:"halb", g:"Rechenwerk", n:"Halbaddierer",
+ i:"Zwei Bits addieren: S ist die Summe, C der Übertrag. 1+1 ergibt 10 – also S=0 und C=1.",
+ b(){
+  const a=exSw(20,80,"A"), b=exSw(20,180,"B");
+  const x=exG("XOR",210,70), u=exG("AND",210,180);
+  exW(a,x,0); exW(b,x,1); exW(a,u,0); exW(b,u,1);
+  exW(x,exLed(380,75,"S"),0); exW(u,exLed(380,185,"C"),0);
+}},
+{id:"voll", g:"Rechenwerk", n:"Volladdierer",
+ i:"A plus B plus Übertrag C. Zwei Halbaddierer und ein ODER – der Baustein, aus dem jedes Rechenwerk besteht.",
+ b(){
+  const a=exSw(20,60,"A"), b=exSw(20,150,"B"), c=exSw(20,300,"C");
+  const x1=exG("XOR",180,60), u1=exG("AND",180,160);
+  const x2=exG("XOR",350,120), u2=exG("AND",350,250);
+  const o=exG("OR",510,210);
+  exW(a,x1,0); exW(b,x1,1); exW(a,u1,0); exW(b,u1,1);
+  exW(x1,x2,0); exW(c,x2,1); exW(x1,u2,0); exW(c,u2,1);
+  exW(u1,o,0); exW(u2,o,1);
+  exW(x2,exLed(660,125,"S"),0); exW(o,exLed(660,215,"U"),0);
+}},
+{id:"add2", g:"Rechenwerk", n:"2-Bit-Addierer",
+ i:"Rechnet A1A0 + B1B0. Ein Halbaddierer für das niedrige Bit, ein Volladdierer für das hohe. 3+3 ergibt Ü=1, S1=1, S0=0.",
+ b(){
+  // oben das niedrige Bit, darunter das hohe – der Übertrag fließt nach unten
+  const a0=exSw(20,40,"A0"), b0=exSw(20,120,"B0"), a1=exSw(20,270,"A1"), b1=exSw(20,350,"B1");
+  const x0=exG("XOR",220,50), u0=exG("AND",220,160);
+  exW(a0,x0,0); exW(b0,x0,1); exW(a0,u0,0); exW(b0,u0,1);
+  exW(x0,exLed(760,60,"S0"),0);
+  const x1=exG("XOR",220,290), u1=exG("AND",220,410);
+  exW(a1,x1,0); exW(b1,x1,1); exW(a1,u1,0); exW(b1,u1,1);
+  const x2=exG("XOR",430,300); exW(x1,x2,0); exW(u0,x2,1);
+  exW(x2,exLed(760,310,"S1"),0);
+  const u2=exG("AND",430,420); exW(x1,u2,0); exW(u0,u2,1);
+  const o=exG("OR",610,450); exW(u1,o,0); exW(u2,o,1);
+  exW(o,exLed(760,470,"Ü"),0);
+}},
+{id:"add3", g:"Rechenwerk", n:"3-Bit-Addierer",
+ i:"Rechnet A2A1A0 + B2B1B0. Oben ein Halbaddierer für das niedrigste Bit, darunter zwei Volladdierer; der Übertrag wandert von Stufe zu Stufe nach unten. 5+7 ergibt Ü=1 und S=100, also 12.",
+ b(){
+  // Bit 0 — Halbaddierer, es gibt noch keinen Übertrag von unten
+  const a0=exSw(20,40,"A0"), b0=exSw(20,120,"B0");
+  const x0=exG("XOR",220,40), u0=exG("AND",220,140);
+  exW(a0,x0,0); exW(b0,x0,1); exW(a0,u0,0); exW(b0,u0,1);
+  exW(x0,exLed(1160,60,"S0"),0);
+  // Bit 1 — Volladdierer mit dem Übertrag aus Bit 0
+  const a1=exSw(20,300,"A1"), b1=exSw(20,380,"B1");
+  const x1=exG("XOR",220,300), u1=exG("AND",220,420);
+  exW(a1,x1,0); exW(b1,x1,1); exW(a1,u1,0); exW(b1,u1,1);
+  const x2=exG("XOR",420,300); exW(x1,x2,0); exW(u0,x2,1);
+  exW(x2,exLed(1160,320,"S1"),0);
+  const u2=exG("AND",420,440); exW(x1,u2,0); exW(u0,u2,1);
+  const o1=exG("OR",620,460); exW(u1,o1,0); exW(u2,o1,1);
+  // Bit 2 — Volladdierer mit dem Übertrag aus Bit 1
+  const a2=exSw(20,660,"A2"), b2=exSw(20,740,"B2");
+  const x3=exG("XOR",220,660), u3=exG("AND",220,780);
+  exW(a2,x3,0); exW(b2,x3,1); exW(a2,u3,0); exW(b2,u3,1);
+  const x4=exG("XOR",820,660); exW(x3,x4,0); exW(o1,x4,1);
+  exW(x4,exLed(1160,680,"S2"),0);
+  const u4=exG("AND",820,800); exW(x3,u4,0); exW(o1,u4,1);
+  const o2=exG("OR",1000,820); exW(u3,o2,0); exW(u4,o2,1);
+  exW(o2,exLed(1160,840,"Ü"),0);
+}},
+{id:"komp2", g:"Rechenwerk", n:"2-Bit-Vergleicher",
+ i:"G leuchtet, wenn die Zahlen A1A0 und B1B0 gleich sind. XNOR prüft jede Stelle, das UND fordert Übereinstimmung überall.",
+ b(){
+  const a1=exSw(20,40,"A1"), a0=exSw(20,130,"A0"), b1=exSw(20,220,"B1"), b0=exSw(20,310,"B0");
+  const e1=exG("XNOR",210,60), e0=exG("XNOR",210,240);
+  exW(a1,e1,0); exW(b1,e1,1); exW(a0,e0,0); exW(b0,e0,1);
+  const u=exG("AND",390,150); exW(e1,u,0); exW(e0,u,1);
+  exW(u,exLed(550,165,"G"),0);
+}},
+{id:"parity4", g:"Rechenwerk", n:"Paritätsgenerator (4 Bit)",
+ i:"P leuchtet bei einer ungeraden Anzahl von Einsen. Genau so wird ein Prüfbit erzeugt, das Übertragungsfehler auffallen lässt.",
+ b(){
+  const a=exSw(20,40,"A"), b=exSw(20,130,"B"), c=exSw(20,220,"C"), d=exSw(20,310,"D");
+  const x1=exG("XOR",190,70); exW(a,x1,0); exW(b,x1,1);
+  const x2=exG("XOR",350,140); exW(x1,x2,0); exW(c,x2,1);
+  const x3=exG("XOR",510,210); exW(x2,x3,0); exW(d,x3,1);
+  exW(x3,exLed(670,225,"P"),0);
+}},
+
+{id:"mux", g:"Auswahl und Steuerung", n:"2:1-Multiplexer",
+ i:"S wählt aus: bei S=0 kommt A durch, bei S=1 kommt B durch. Der Grundbaustein jeder Datenweiche.",
+ b(){
+  const a=exSw(20,60,"A"), b=exSw(20,150,"B"), s=exSw(20,280,"S");
+  const n=exG("NOT",170,270), u1=exG("AND",320,60), u2=exG("AND",320,190), o=exG("OR",480,125);
+  exW(s,n,0); exW(a,u1,0); exW(n,u1,1); exW(b,u2,0); exW(s,u2,1);
+  exW(u1,o,0); exW(u2,o,1); exW(o,exLed(630,130,"Y"),0);
+}},
+{id:"mux41", g:"Auswahl und Steuerung", n:"4:1-Multiplexer",
+ i:"S1 und S0 bilden eine Adresse von 0 bis 3 und wählen damit einen der vier Dateneingänge D0 bis D3 aus.",
+ b(){
+  const d0=exSw(20,20,"D0"), d1=exSw(20,110,"D1"), d2=exSw(20,200,"D2"), d3=exSw(20,290,"D3");
+  const s1=exSw(20,400,"S1"), s0=exSw(20,480,"S0");
+  const n1=exG("NOT",160,395), n0=exG("NOT",160,475);
+  exW(s1,n1,0); exW(s0,n0,0);
+  const u0=exG("AND",340,0,3);   exW(d0,u0,0); exW(n1,u0,1); exW(n0,u0,2);
+  const u1=exG("AND",340,120,3); exW(d1,u1,0); exW(n1,u1,1); exW(s0,u1,2);
+  const u2=exG("AND",340,240,3); exW(d2,u2,0); exW(s1,u2,1); exW(n0,u2,2);
+  const u3=exG("AND",340,360,3); exW(d3,u3,0); exW(s1,u3,1); exW(s0,u3,2);
+  const o=exG("OR",540,150,4);
+  exW(u0,o,0); exW(u1,o,1); exW(u2,o,2); exW(u3,o,3);
+  exW(o,exLed(710,190,"Y"),0);
+}},
+{id:"dec24", g:"Auswahl und Steuerung", n:"2-zu-4-Dekoder",
+ i:"Aus zwei Bits wird eine von vier Leitungen. Immer genau eine LED leuchtet – sie zeigt die eingestellte Zahl an.",
+ b(){
+  const a1=exSw(20,90,"A1"), a0=exSw(20,200,"A0");
+  const n1=exG("NOT",160,85), n0=exG("NOT",160,195);
+  exW(a1,n1,0); exW(a0,n0,0);
+  const u0=exG("AND",320,0), u1=exG("AND",320,110), u2=exG("AND",320,220), u3=exG("AND",320,330);
+  exW(n1,u0,0); exW(n0,u0,1);
+  exW(n1,u1,0); exW(a0,u1,1);
+  exW(a1,u2,0); exW(n0,u2,1);
+  exW(a1,u3,0); exW(a0,u3,1);
+  exW(u0,exLed(490,15,"Y0"),0); exW(u1,exLed(490,125,"Y1"),0);
+  exW(u2,exLed(490,235,"Y2"),0); exW(u3,exLed(490,345,"Y3"),0);
+}},
+{id:"maj", g:"Auswahl und Steuerung", n:"Mehrheitsentscheider",
+ i:"Y leuchtet, sobald mindestens zwei der drei Schalter an sind. So sichern Flugzeuge ihre Sensoren ab.",
+ b(){
+  const a=exSw(20,50,"A"), b=exSw(20,150,"B"), c=exSw(20,250,"C");
+  const u1=exG("AND",190,50), u2=exG("AND",190,150), u3=exG("AND",190,250), o=exG("OR",370,140,3);
+  exW(a,u1,0); exW(b,u1,1); exW(b,u2,0); exW(c,u2,1); exW(a,u3,0); exW(c,u3,1);
+  exW(u1,o,0); exW(u2,o,1); exW(u3,o,2); exW(o,exLed(530,155,"Y"),0);
+}},
+
+{id:"treppe", g:"Aus dem Alltag", n:"Kreuzschaltung im Treppenhaus",
+ i:"Drei Schalter, eine Lampe: Jeder Schalter kehrt den Zustand um, egal wie die anderen stehen. Genau das leistet eine XOR-Kette.",
+ b(){
+  const s1=exSw(20,60,"S1"), s2=exSw(20,160,"S2"), s3=exSw(20,280,"S3");
+  const x1=exG("XOR",200,90), x2=exG("XOR",380,170);
+  exW(s1,x1,0); exW(s2,x1,1); exW(x1,x2,0); exW(s3,x2,1);
+  exW(x2,exLed(540,185,"L"),0);
+}},
+{id:"code", g:"Aus dem Alltag", n:"Codeschloss",
+ i:"Genau eine der 16 Einstellungen öffnet das Schloss. Probiere, oder lies sie aus der Wahrheitstabelle ab.",
+ b(){
+  const a=exSw(20,40,"A"), b=exSw(20,130,"B"), c=exSw(20,220,"C"), d=exSw(20,310,"D");
+  const n=exG("NOT",170,125); exW(b,n,0);
+  const u=exG("AND",340,120,4);
+  exW(a,u,0); exW(n,u,1); exW(c,u,2); exW(d,u,3);
+  exW(u,exLed(510,160,"AUF"),0);
+}},
+{id:"alarm", g:"Aus dem Alltag", n:"Alarmanlage",
+ i:"Alarm nur, wenn die Anlage scharf ist (S), Tür oder Fenster offen sind (T, F) und der Schlüssel nicht steckt (K).",
+ b(){
+  const s=exSw(20,40,"S"), t=exSw(20,140,"T"), f=exSw(20,230,"F"), k=exSw(20,350,"K");
+  const o=exG("OR",190,160), n=exG("NOT",190,345);
+  exW(t,o,0); exW(f,o,1); exW(k,n,0);
+  const u=exG("AND",370,120,3);
+  exW(s,u,0); exW(o,u,1); exW(n,u,2);
+  exW(u,exLed(540,160,"AL"),0);
+}},
+
+{id:"rs", g:"Speicher", n:"RS-Flipflop",
+ i:"S setzt Q, R löscht Q. Nach dem Loslassen bleibt der Zustand erhalten – aus Gattern wird ein Speicher.",
+ b(){
+  const r=addComp("BUTTON",20,60,{label:"R"}), s=addComp("BUTTON",20,300,{label:"S"});
+  const q=exG("NOR",230,70), pq=exG("NOR",230,250);
+  exW(r,q,0); exW(pq,q,1);     // Q = NOR(R, P)
+  exW(s,pq,0); exW(q,pq,1);    // P = NOR(S, Q)
+  exW(q,exLed(420,75,"Q"),0); exW(pq,exLed(420,255,"P"),0);
+}},
+{id:"dlatch", g:"Speicher", n:"D-Latch mit Freigabe",
+ i:"Solange E an ist, folgt Q dem Eingang D. Wird E abgeschaltet, friert der Wert ein – ein Bit Speicher.",
+ b(){
+  const dd=exSw(20,60,"D"), e=exSw(20,200,"E");
+  const g1=exG("NAND",190,40), g2=exG("NAND",190,190);
+  exW(dd,g1,0); exW(e,g1,1); exW(g1,g2,0); exW(e,g2,1);
+  const q=exG("NAND",380,40), pq=exG("NAND",380,220);
+  exW(g1,q,0); exW(pq,q,1); exW(g2,pq,0); exW(q,pq,1);
+  exW(q,exLed(560,55,"Q"),0); exW(pq,exLed(560,235,"P"),0);
+}}
+];
+
+function buildExMenu(){
+  const pop=$("#exPop"); let g=null, h="";
+  for(const e of EX){
+    if(e.g!==g){ g=e.g; h+=`<div class="grp">${g}</div>`; }
+    h+=`<button data-ex="${e.id}" title="${e.i.replace(/"/g,"&quot;")}">${e.n}</button>`;
+  }
+  h+=`<hr><button data-ex="leer">Arbeitsfläche leeren</button>`;
+  pop.innerHTML=h;
+}
+
+function example(k){
+  snapshot(); clearAll();
+  if(k==="leer"){ S.step=null; S.result=null; stSet("logik.circuit",{comps:{},wires:{},seq:S.seq});
+                  render(); toast("Arbeitsfläche geleert – Strg+Z holt alles zurück"); return; }
+  const e=EX.find(x=>x.id===k); if(!e){ render(); return; }
+  e.b();
+  render(); fit(); toast(e.n+": "+e.i);
+}
+
+/* ---------- Ansicht ---------- */
+function fit(){
+  const b=bbox(), r=svg.getBoundingClientRect();
+  const k=Math.min(1.5,(r.width-60)/b.w,(r.height-60)/b.h);
+  S.view.k=Math.max(.3,k);
+  S.view.x=(r.width-b.w*S.view.k)/2-b.x*S.view.k;
+  S.view.y=(r.height-b.h*S.view.k)/2-b.y*S.view.k;
+  applyView();
+}
+$("#zIn").addEventListener("click",()=>{S.view.k=Math.min(2.6,S.view.k*1.2);applyView();});
+$("#zOut").addEventListener("click",()=>{S.view.k=Math.max(.3,S.view.k/1.2);applyView();});
+$("#zFit").addEventListener("click",fit);
+$("#undoBtn").addEventListener("click",undo);
+$("#clearBtn").addEventListener("click",e=>{
+  if(!Object.keys(S.comps).length) return toast("Die Arbeitsfläche ist schon leer");
+  zweistufig(e.currentTarget,"Wirklich alles löschen?",clearBoard);
+});
+
+function setSym(s){
+  S.sym=s;
+  $("#symDin").setAttribute("aria-pressed",String(s==="din"));
+  $("#symUs").setAttribute("aria-pressed",String(s==="us"));
+  render(); stSet("logik.sym",s);
+}
+$("#symDin").addEventListener("click",()=>setSym("din"));
+$("#symUs").addEventListener("click",()=>setSym("us"));
+$("#themeBtn").addEventListener("click",()=>{
+  S.theme = S.theme==="dark"?"light":"dark";
+  document.body.dataset.theme=S.theme;
+  $("#themeBtn").textContent = S.theme==="dark"?"Hell":"Dunkel";
+  stSet("logik.theme",S.theme);
+});
+
+/* ---------- Start ---------- */
+(async function init(){
+  initSvg(); buildPalette(); buildExMenu(); renderTab();
+  const d=await stGet("logik.done"); if(d) S.done=d;
+  const sy=await stGet("logik.sym"); if(sy) S.sym=sy;
+  const th=await stGet("logik.theme");
+  if(th){ S.theme=th; document.body.dataset.theme=th; $("#themeBtn").textContent=th==="dark"?"Hell":"Dunkel"; }
+  const saved=await stGet("logik.circuit");
+  if(saved && saved.comps && Object.keys(saved.comps).length){ S.comps=saved.comps; S.wires=saved.wires; S.seq=saved.seq; render(); fit(); }
+  else example("halb");
+  let lastSave="";
+  setInterval(()=>{
+    const now=JSON.stringify({comps:S.comps,wires:S.wires,seq:S.seq});
+    if(now!==lastSave){ lastSave=now; stSet("logik.circuit",JSON.parse(now)); }
+  }, 20000);
+  window.addEventListener("resize",()=>{});
+})();
+</script>
+</body>
+</html>
