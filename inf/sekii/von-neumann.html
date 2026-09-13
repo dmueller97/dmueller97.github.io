@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Der Von-Neumann-Rechner — Selbstlernkurs</title>
+<style>
+:root{
+  --bg:#0E1A1C; --panel:#142528; --panel2:#0F1F22; --line:#23393E; --line2:#2E4A50;
+  --ink:#DFEAEB; --ink2:#9FB6B9; --muted:#6F8A8F;
+  --brand:#2FB3A0; --hi:#FFC24B; --ok:#58C08C; --bad:#E4573D;
+  --gate:#1A2E33; --gate-line:#78A0A6; --r:12px;
+}
+[data-theme="light"]{
+  --bg:#F2F4F3; --panel:#FFFFFF; --panel2:#F7F9F8; --line:#D8E0DF; --line2:#C2CFCE;
+  --ink:#14242A; --ink2:#4A6066; --muted:#7B8F94;
+  --brand:#17897A; --hi:#C97A00; --gate:#FFFFFF; --gate-line:#2C4249;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;font-size:15.5px;line-height:1.6}
+a{color:var(--brand)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.mono{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}
+
+header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--line)}
+header b{font-size:17px;letter-spacing:-.2px}
+header span.sub{color:var(--muted);font-size:12.5px}
+.spacer{flex:1}
+.btn{background:var(--panel2);border:1px solid var(--line2);border-radius:9px;padding:6px 12px;transition:border-color .12s}
+.btn:hover{border-color:var(--brand)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#06211E;font-weight:600}
+.btn.small{padding:4px 9px;font-size:13px}
+.btn[disabled]{opacity:.45;cursor:default}
+
+.wrap{display:flex;gap:34px;max-width:1180px;margin:0 auto;padding:26px 20px 80px}
+nav.toc{position:sticky;top:64px;align-self:flex-start;width:225px;flex:0 0 auto;font-size:13.5px}
+nav.toc ol{list-style:none;margin:0;padding:0;counter-reset:s}
+nav.toc a{display:block;padding:5px 10px;border-left:2px solid var(--line);color:var(--ink2);text-decoration:none;counter-increment:s}
+nav.toc a::before{content:counter(s) ". ";color:var(--muted)}
+nav.toc a:hover{color:var(--ink);border-left-color:var(--line2)}
+nav.toc a.aktiv{color:var(--ink);border-left-color:var(--brand);font-weight:600}
+main{flex:1;min-width:0;max-width:780px}
+
+h1{font-size:29px;margin:0 0 6px;letter-spacing:-.5px}
+h2{font-size:21px;margin:44px 0 12px;letter-spacing:-.3px;scroll-margin-top:70px}
+h3{font-size:16px;margin:26px 0 8px}
+p{margin:0 0 14px}
+p.lead{color:var(--ink2);font-size:17px;margin-bottom:26px}
+ul,ol.liste{margin:0 0 14px;padding-left:22px}
+li{margin-bottom:5px}
+.merk{border-left:3px solid var(--brand);background:var(--panel);border-radius:0 var(--r) var(--r) 0;padding:12px 16px;margin:18px 0}
+.merk b{color:var(--brand)}
+.karte{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin:18px 0}
+.aufgabe{border:1px solid var(--line2);border-radius:var(--r);padding:15px 18px;margin:20px 0;background:var(--panel2)}
+.aufgabe .kopf{font-weight:650;color:var(--hi);font-size:13px;letter-spacing:.3px;margin-bottom:6px}
+details.loesung{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+details.loesung summary{cursor:pointer;color:var(--brand);font-size:13.5px;font-weight:600;list-style:none}
+details.loesung summary::-webkit-details-marker{display:none}
+details.loesung summary::before{content:"▸ ";display:inline-block;transition:transform .15s}
+details.loesung[open] summary::before{content:"▾ "}
+details.loesung .inhalt{margin-top:10px;font-size:14.5px;color:var(--ink2)}
+details.loesung .inhalt b{color:var(--ink)}
+
+table{border-collapse:collapse;width:100%;font-size:14px;margin:14px 0}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--panel2);font-weight:650;color:var(--ink2)}
+td.mid,th.mid{text-align:center}
+.scroll{overflow-x:auto}
+
+/* Schaubild */
+.schaubild{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:16px 0}
+.schaubild svg{width:100%;height:auto;display:block}
+.vnbox{fill:var(--gate);stroke:var(--gate-line);stroke-width:1.6;cursor:pointer;transition:fill .12s}
+.vnbox:hover{fill:var(--panel2);stroke:var(--brand)}
+.vnbox.aktiv{fill:rgba(47,179,160,.16);stroke:var(--brand);stroke-width:2.4}
+.vnhuelle{fill:none;stroke:var(--line2);stroke-width:1.4;stroke-dasharray:6 4}
+.vnt{fill:var(--ink);font-size:13px;text-anchor:middle;pointer-events:none;font-family:inherit}
+.vnk{fill:var(--muted);font-size:10.5px;text-anchor:middle;pointer-events:none}
+.vnbus{fill:var(--panel2);stroke:var(--gate-line);stroke-width:1.6}
+.vnbus.an{fill:rgba(255,194,75,.2);stroke:var(--hi)}
+.vnpfeil{stroke:var(--gate-line);stroke-width:1.6;fill:none;marker-end:url(#sp)}
+.infobox{margin-top:12px;border-top:1px solid var(--line);padding-top:11px;font-size:14.5px;min-height:74px}
+.infobox h4{margin:0 0 5px;font-size:15px}
+
+/* Zuordnung */
+.pool{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.zkarte{background:var(--panel2);border:1px solid var(--line2);border-radius:9px;padding:7px 11px;font-size:13.5px;cursor:pointer;transition:border-color .12s}
+.zkarte:hover{border-color:var(--brand)}
+.zkarte.gewaehlt{border-color:var(--brand);background:rgba(47,179,160,.14)}
+.zkarte.richtig{border-color:var(--ok)}
+.zkarte.falsch{border-color:var(--bad)}
+.zonen{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0}
+.zone{background:var(--panel);border:1.6px dashed var(--line2);border-radius:var(--r);padding:10px;min-height:96px;cursor:pointer}
+.zone:hover{border-color:var(--brand)}
+.zone h4{margin:0 0 7px;font-size:13.5px;color:var(--ink2)}
+.zone .inhalt{display:flex;flex-direction:column;gap:6px}
+
+/* Befehlszyklus */
+.sim{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:18px 0}
+.simgrid{display:grid;grid-template-columns:minmax(230px,1fr) minmax(230px,1.1fr);gap:16px}
+@media(max-width:720px){.simgrid{grid-template-columns:1fr}}
+.speicher{font-size:13px;width:100%}
+.speicher td,.speicher th{padding:2px 7px}
+.speicher tr.pc td{background:rgba(255,194,75,.18)}
+.speicher tr.ziel td{background:rgba(47,179,160,.15)}
+.speicher td.adr{color:var(--muted);width:34px;text-align:right}
+.speicher td.inh{font-family:ui-monospace,monospace}
+.speicher td.kom{color:var(--muted);font-size:11.5px}
+.reg{display:flex;flex-direction:column;gap:8px}
+.regz{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:7px 11px}
+.regz .n{color:var(--ink2);font-size:12.5px;flex:1}
+.regz .v{font-family:ui-monospace,monospace;font-size:16px;font-weight:700;color:var(--hi)}
+.phasen{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 10px}
+.ph{border:1px solid var(--line2);border-radius:7px;padding:3px 10px;font-size:12.5px;color:var(--muted)}
+.ph.an{border-color:var(--brand);background:rgba(47,179,160,.16);color:var(--ink);font-weight:600}
+.erkl{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:11px 13px;font-size:14px;min-height:74px}
+.erkl b{color:var(--brand)}
+.busleiste{display:flex;gap:7px;margin:10px 0 0}
+.bus{flex:1;text-align:center;border:1px solid var(--line2);border-radius:7px;padding:3px;font-size:11.5px;color:var(--muted)}
+.bus.an{border-color:var(--hi);color:var(--hi);background:rgba(255,194,75,.12)}
+
+/* Selbsttest */
+.frage{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
+.frage p.q{font-weight:600;margin:0 0 9px}
+.opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line2);
+  border-radius:9px;padding:8px 12px;margin-bottom:6px;font-size:14px}
+.opt:hover{border-color:var(--brand)}
+.opt.richtig{border-color:var(--ok);background:rgba(88,192,140,.13)}
+.opt.falsch{border-color:var(--bad);background:rgba(228,87,61,.12)}
+.rueck{font-size:13.5px;color:var(--ink2);margin-top:7px}
+.punkte{font-size:14px;color:var(--ink2);margin-top:10px}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;padding:16px 20px;text-align:center}
+@media(max-width:900px){nav.toc{display:none}.wrap{padding:18px 16px 60px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body data-theme="dark">
+
+<header>
+  <b>Der Von-Neumann-Rechner</b>
+  <span class="sub">Informatik Klasse 11 · LB 1 Technische Informatik · 1.4 Rechnerarchitektur</span>
+  <div class="spacer"></div>
+  <button class="btn small" id="theme">Hell</button>
+</header>
+
+<div class="wrap">
+<nav class="toc">
+  <ol id="toc"></ol>
+</nav>
+
+<main>
+<h1>Wie ein Rechner Befehle ausführt</h1>
+<p class="lead">Fast jeder Computer, den du benutzt, folgt einem Bauplan von 1945. Dieser Kurs zeigt dir, aus
+welchen Teilen er besteht, wie ein Befehl durch die Maschine läuft und was davon in einem heutigen PC noch übrig ist.
+Arbeite die Abschnitte der Reihe nach durch; die Lösungen kannst du jeweils erst nach eigenem Versuch aufklappen.</p>
+
+<!-- ============================================================ -->
+<h2 id="s1">Das gespeicherte Programm</h2>
+<p>Die ersten Rechenmaschinen wurden für jede neue Aufgabe <em>umgebaut</em>: Kabel umstecken, Schalter neu setzen.
+Ein Programm war Hardware. John von Neumann beschrieb 1945 eine Maschine, bei der das anders ist.</p>
+
+<div class="merk">
+  <b>Kerngedanke.</b> Programm und Daten liegen im <em>selben</em> Speicher und werden auf dieselbe Weise
+  dargestellt: als Bitmuster. Was ein Bitmuster bedeutet, entscheidet sich erst daran, wie es benutzt wird —
+  ob das Steuerwerk es als Befehl liest oder das Rechenwerk es als Zahl verarbeitet.
+</div>
+
+<p>Daraus folgt fast alles Weitere. Ein Programm lässt sich laden, kopieren, austauschen und sogar von einem
+anderen Programm erzeugen. Der Rechner wird universell: dieselbe Maschine schreibt Texte, rechnet Tabellen
+und spielt Musik ab. Die Kehrseite lernst du in LB 4 kennen — wenn Daten als Befehle ausgeführt werden können,
+entstehen Sicherheitslücken.</p>
+
+<p>Ein Von-Neumann-Rechner arbeitet außerdem <b>sequenziell</b>: Befehle werden nacheinander abgearbeitet,
+in der Reihenfolge, in der sie im Speicher stehen — solange kein Sprungbefehl die Reihenfolge ändert.</p>
+
+<!-- ============================================================ -->
+<h2 id="s2">Die vier Werke und der Bus</h2>
+<p>Klicke im Schaubild auf eine Komponente, um ihre Aufgaben zu lesen.</p>
+
+<div class="schaubild">
+  <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aufbau des Von-Neumann-Rechners">
+    <defs><marker id="sp" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0 1 L8 4.5 L0 8 z" fill="var(--gate-line)"/></marker></defs>
+
+    <rect class="vnhuelle" x="8" y="8" width="420" height="196" rx="10"/>
+    <text class="vnk" x="46" y="26">CPU</text>
+
+    <g data-k="steuerwerk"><rect class="vnbox" x="26" y="38" width="170" height="62" rx="8"/>
+      <text class="vnt" x="111" y="66">Steuerwerk</text><text class="vnk" x="111" y="84">Control Unit</text></g>
+
+    <g data-k="register"><rect class="vnbox" x="26" y="122" width="170" height="62" rx="8"/>
+      <text class="vnt" x="111" y="150">Register</text><text class="vnk" x="111" y="168">Befehlszähler, Statusregister</text></g>
+
+    <g data-k="rechenwerk"><rect class="vnbox" x="236" y="38" width="176" height="146" rx="8"/>
+      <text class="vnt" x="324" y="98">Rechenwerk</text><text class="vnk" x="324" y="116">ALU mit Akkumulator</text></g>
+
+    <g data-k="speicherwerk"><rect class="vnbox" x="452" y="38" width="126" height="146" rx="8"/>
+      <text class="vnt" x="515" y="100">Speicherwerk</text><text class="vnk" x="515" y="118">Programme und Daten</text></g>
+
+    <g data-k="eingabe"><rect class="vnbox" x="596" y="38" width="112" height="146" rx="8"/>
+      <text class="vnt" x="652" y="100">Ein- und</text><text class="vnt" x="652" y="118">Ausgabewerk</text></g>
+
+    <g data-k="bus"><rect class="vnbus" id="busrect" x="8" y="246" width="700" height="42" rx="9"/>
+      <text class="vnt" x="358" y="272">Daten-, Adress- und Steuerbus</text></g>
+
+    <path class="vnpfeil" d="M218 69 L228 69"/><path class="vnpfeil" d="M228 61 L218 61"/>
+    <path class="vnpfeil" d="M111 106 L111 116"/><path class="vnpfeil" d="M111 116 L111 106"/>
+    <path class="vnpfeil" d="M218 153 L228 153"/><path class="vnpfeil" d="M228 145 L218 145"/>
+    <path class="vnpfeil" d="M218 218 L218 240"/><path class="vnpfeil" d="M515 218 L515 240"/>
+    <path class="vnpfeil" d="M652 218 L652 240"/>
+    <path class="vnpfeil" d="M218 240 L218 218"/><path class="vnpfeil" d="M515 240 L515 218"/>
+    <path class="vnpfeil" d="M652 240 L652 218"/>
+  </svg>
+  <div class="infobox" id="vninfo"><h4>Aufbau</h4>
+    <p style="margin:0">Steuerwerk, Rechenwerk und Register bilden zusammen den Prozessor. Speicherwerk und
+    Ein-/Ausgabewerk liegen außerhalb und sind über den Bus angebunden.</p></div>
+</div>
+
+<div class="merk"><b>Warum der Bus der Engpass ist.</b> Programme und Daten teilen sich denselben Weg zum
+Prozessor. Pro Takt passt nur eines davon hindurch. Dieser Flaschenhals heißt <em>Von-Neumann-Flaschenhals</em>
+und ist der Grund für Caches, mehrere Kerne und getrennte Befehls- und Datenpfade in heutigen Prozessoren.</div>
+
+<!-- ============================================================ -->
+<h2 id="s3">Übung: Aufgaben zuordnen</h2>
+<p>Wähle eine Karte aus und klicke dann auf die Komponente, zu der sie gehört. Eine Karte passt zu keiner
+Komponente — finde heraus, welche.</p>
+
+<div class="karte">
+  <div class="pool" id="pool"></div>
+  <div class="zonen" id="zonen"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn primary" id="zPruef">Prüfen</button>
+    <button class="btn" id="zReset">Zurücksetzen</button>
+    <span id="zErgebnis" style="align-self:center;font-size:14px;color:var(--ink2)"></span>
+  </div>
+  <details class="loesung"><summary>Lösung und Begründung</summary>
+    <div class="inhalt" id="zLoesung"></div>
+  </details>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s4">Der Befehlszyklus</h2>
+<p>Ein Rechner tut im Grunde nur eines, immer wieder: Befehl holen, Befehl deuten, Befehl ausführen,
+zum nächsten Befehl weitergehen. Dieser Kreislauf heißt <b>Befehlszyklus</b> und läuft milliardenfach pro Sekunde.</p>
+
+<div class="sim">
+  <div class="phasen" id="phasen"></div>
+  <div class="simgrid">
+    <div>
+      <div class="scroll"><table class="speicher" id="speicher"></table></div>
+    </div>
+    <div>
+      <div class="reg" id="register"></div>
+      <div class="busleiste" id="busse">
+        <div class="bus" data-b="adr">Adressbus</div>
+        <div class="bus" data-b="dat">Datenbus</div>
+        <div class="bus" data-b="ste">Steuerbus</div>
+      </div>
+      <div class="erkl" id="erkl" style="margin-top:10px"></div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+    <button class="btn primary" id="bPhase">Nächste Phase</button>
+    <button class="btn" id="bBefehl">Ganzer Befehl</button>
+    <button class="btn" id="bAuto">Automatisch</button>
+    <button class="btn" id="bReset">Zurücksetzen</button>
+  </div>
+</div>
+
+<p>Das Programm im Speicher zählt von 3 abwärts und summiert dabei auf: 3 + 2 + 1. Beobachte den
+Befehlszähler in Zelle für Zelle und achte darauf, wann er <em>nicht</em> einfach um eins weiterrückt.</p>
+
+<div class="aufgabe">
+  <div class="kopf">Beobachtungsauftrag</div>
+  <ol class="liste">
+    <li>In welcher Phase wird der Speicher gelesen, in welcher geschrieben?</li>
+    <li>Warum muss der Befehlszähler erhöht werden, <em>bevor</em> der nächste Befehl geholt wird?</li>
+    <li>Was passiert beim Befehl <span class="mono">JMP 0</span> anders als bei <span class="mono">ADD 11</span>?</li>
+  </ol>
+  <details class="loesung"><summary>Lösung anzeigen</summary><div class="inhalt">
+    <p><b>1.</b> Gelesen wird in der Phase <em>Fetch</em> (der Befehl selbst) und in <em>Execute</em>
+    bei LOAD, ADD und SUB (der Operand). Geschrieben wird nur in <em>Execute</em> beim Befehl STORE.</p>
+    <p><b>2.</b> Weil das Holen des nächsten Befehls immer über den Befehlszähler läuft. Stünde er noch auf der
+    alten Adresse, würde derselbe Befehl endlos wiederholt. Bei Sprungbefehlen wird er nicht erhöht, sondern
+    auf einen neuen Wert gesetzt — das ist der einzige Unterschied.</p>
+    <p><b>3.</b> <span class="mono">ADD 11</span> durchläuft Execute und erhöht danach den Befehlszähler um eins.
+    <span class="mono">JMP 0</span> überspringt Execute: nach dem Decodieren erkennt das Steuerwerk eine
+    Verzweigung und berechnet den Befehlszähler neu. Es wird also nichts gerechnet, nur der Ablauf umgelenkt.</p>
+  </div></details>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s5">Der Befehlssatz</h2>
+<p>Die Menge aller Maschinenbefehle, die ein Prozessor ausführen kann, heißt <b>Befehlssatz</b>, englisch
+<em>Instruction Set Architecture</em> (ISA). Der Befehlssatz ist die Schnittstelle zwischen Hardware und Software:
+Zwei Prozessoren mit demselben Befehlssatz — etwa x86 oder ARM — führen dieselben Programme aus, auch wenn sie
+innen völlig verschieden gebaut sind.</p>
+
+<div class="scroll"><table>
+<thead><tr><th style="width:120px">Gruppe</th><th style="width:80px">Befehl</th><th>Bedeutung</th></tr></thead>
+<tbody>
+<tr><td rowspan="4">Arithmetische Operationen</td><td class="mono">ADD</td><td>Addition von Operanden</td></tr>
+<tr><td class="mono">SUB</td><td>Subtraktion von Operanden</td></tr>
+<tr><td class="mono">MUL</td><td>Multiplikation von Operanden</td></tr>
+<tr><td class="mono">AND</td><td>Logische Und-Verknüpfung</td></tr>
+<tr><td rowspan="4">Vergleichsoperationen</td><td class="mono">EQ</td><td>Prüft zwei Operanden auf Gleichheit</td></tr>
+<tr><td class="mono">GT</td><td>Ermittelt den größeren Operanden</td></tr>
+<tr><td class="mono">LT</td><td>Ermittelt den kleineren Operanden</td></tr>
+<tr><td class="mono">GEQ</td><td>Prüft, ob ein Operand größer oder gleich ist</td></tr>
+<tr><td rowspan="2">Steuerungsoperationen</td><td class="mono">JMP</td><td>Setzt den Befehlszähler auf die angegebene Adresse</td></tr>
+<tr><td class="mono">BLT</td><td>Setzt den Befehlszähler auf den ersten Operanden, wenn der zweite kleiner ist als der dritte</td></tr>
+</tbody></table></div>
+
+<p>Jeder Maschinenbefehl besteht aus einem <b>Operationsteil</b> (welche Operation) und einem oder mehreren
+<b>Adressteilen</b> (womit). Im Speicher steht beides als ein einziges Bitmuster — deshalb kann das Steuerwerk
+einen Befehl nur dann richtig deuten, wenn der Befehlszähler auch tatsächlich auf einen Befehl zeigt.</p>
+
+<div class="merk"><b>Hochsprache und Maschinensprache.</b> Eine Zeile Python wird zu vielen Maschinenbefehlen.
+Die Übersetzung erledigt ein Compiler oder Interpreter — also Software, nicht der Prozessor. Das ist der Grund,
+warum „Übersetzung von Programmen" in der Übung oben zu keiner Komponente gehört.</div>
+
+<!-- ============================================================ -->
+<h2 id="s6">Von Neumann im heutigen PC</h2>
+<p>Der Bauplan von 1945 steckt noch in jedem PC, aber er ist mehrfach eingepackt. Von außen nach innen:</p>
+<ul>
+  <li><b>Cluster</b> — mehrere Computer, über ein Netzwerk verbunden</li>
+  <li><b>Computer</b> — Hauptspeicher, CPU, Bus, Ein- und Ausgabeperipherie: das ist die Von-Neumann-Ebene</li>
+  <li><b>CPU</b> — mehrere Kerne, gemeinsamer Cache, oft ein GPU-Kern daneben</li>
+  <li><b>CPU-Kern</b> — hier findest du Steuerwerk, ein oder mehrere Rechenwerke und die Register wieder</li>
+</ul>
+<p>Ein einzelner Kern ist also bis heute ein Von-Neumann-Rechner. Neu sind die Vervielfachung (mehrere Kerne
+arbeiten echt gleichzeitig) und der Cache, ein kleiner schneller Zwischenspeicher direkt im Prozessor, der den
+Flaschenhals zum Hauptspeicher entschärft.</p>
+
+<div class="aufgabe">
+  <div class="kopf">Aufgabe 1.4.2</div>
+  <p style="margin:0 0 6px"><b>a)</b> Beschreibe den Zusammenhang der Von-Neumann-Architektur mit aktuellen PCs anhand der Abbildung.</p>
+  <p style="margin:0"><b>b)</b> Möchte man die Leistung verschiedener PCs vergleichen, spielt auch die Taktfrequenz eine Rolle.
+  Beschreibe, was darunter zu verstehen ist, und gib aktuell typische Taktfrequenzen an.</p>
+  <details class="loesung"><summary>Lösung anzeigen</summary><div class="inhalt">
+    <p><b>a)</b> Die vier Werke sind nicht verschwunden, sondern verschachtelt. Auf der Ebene <em>Computer</em>
+    erkennt man das klassische Bild: Hauptspeicher, CPU, Bus, Ein-/Ausgabe. Innerhalb der CPU sitzen heute
+    mehrere gleichartige Kerne, die sich einen Cache teilen. Erst auf der Ebene <em>CPU-Kern</em> tauchen
+    Steuerwerk, Rechenwerk und Register wieder einzeln auf. Jeder Kern arbeitet für sich nach dem
+    Von-Neumann-Prinzip; die Gleichzeitigkeit entsteht dadurch, dass es mehrere davon gibt. Zusätzlich
+    ergänzt der GPU-Kern die Struktur um einen Rechentyp, der viele gleichartige Operationen parallel ausführt
+    und damit gerade nicht sequenziell arbeitet.</p>
+    <p><b>b)</b> Die Taktfrequenz gibt an, wie viele Taktschritte der Prozessor pro Sekunde ausführt, gemessen in
+    Hertz. Der Takt ist der gemeinsame Rhythmus, in dem alle Teile des Prozessors ihre Schritte machen;
+    ein Befehl braucht je nach Art mehrere Takte. 1 GHz sind eine Milliarde Takte pro Sekunde.</p>
+    <p><b>Typische Werte (Stand 2026):</b> Desktop-Prozessoren haben einen Basistakt von etwa
+    3 bis 4,5 GHz und erreichen im Turbo-Modus 5 bis 6 GHz. Notebook-Prozessoren liegen niedriger,
+    etwa 2 bis 3 GHz Basistakt, weil Abwärme und Akkulaufzeit begrenzen. Smartphones bewegen sich
+    ungefähr im selben Bereich.</p>
+    <p><b>Wichtig für den Vergleich:</b> Die Taktfrequenz allein sagt wenig aus. Zwei Prozessoren mit gleichem
+    Takt können unterschiedlich viele Befehle pro Takt schaffen, und die Zahl der Kerne, die Cache-Größe und
+    die Speicheranbindung wirken oft stärker als ein paar hundert Megahertz. Deshalb ist der Takt nur
+    innerhalb derselben Prozessorfamilie eine sinnvolle Vergleichsgröße.</p>
+  </div></details>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s7">Speichermedien im Vergleich</h2>
+<p>Das Speicherwerk des Modells zerfällt in der Praxis in mehrere Stufen, die sich in Geschwindigkeit,
+Kapazität und Preis stark unterscheiden. Grob nach Funktionsprinzip:</p>
+
+<div class="aufgabe">
+  <div class="kopf">Aufgabe 1.4.3</div>
+  <p style="margin:0">Vergleiche optische, elektromagnetische und elektronische Speichermedien anhand der Kriterien
+  Funktionsweise, Kapazität, Geschwindigkeit, Lebensdauer und Anwendungen.</p>
+  <details class="loesung"><summary>Lösung anzeigen</summary><div class="inhalt">
+  <div class="scroll"><table>
+  <thead><tr><th style="width:105px">Kriterium</th><th>Optisch (CD, DVD, Blu-ray)</th><th>Elektromagnetisch (HDD, Band)</th><th>Elektronisch (SSD, USB, RAM)</th></tr></thead>
+  <tbody>
+  <tr><td>Funktionsweise</td><td>Ein Laser brennt Vertiefungen in eine Schicht; beim Lesen wird das unterschiedlich zurückgeworfene Licht ausgewertet.</td><td>Winzige Bereiche einer Magnetschicht werden unterschiedlich magnetisiert; ein Schreib-Lese-Kopf schwebt über der rotierenden Scheibe.</td><td>Ladungen werden in Speicherzellen aus Transistoren festgehalten. Keine beweglichen Teile.</td></tr>
+  <tr><td>Kapazität</td><td>CD 0,7 GB · DVD 4,7–8,5 GB · Blu-ray 25–100 GB</td><td>Festplatten 1–24 TB, Magnetbänder im Rechenzentrum deutlich mehr</td><td>SSD 250 GB bis mehrere TB, USB-Sticks 8 GB bis 1 TB, Arbeitsspeicher 8–64 GB</td></tr>
+  <tr><td>Geschwindigkeit</td><td>langsam, etwa 5–50 MB/s, lange Zugriffszeiten</td><td>mittel, etwa 100–250 MB/s; die Zugriffszeit ist durch die Mechanik begrenzt (Millisekunden)</td><td>schnell: SATA-SSD rund 550 MB/s, NVMe-SSD mehrere GB/s bis etwa 14 GB/s; Arbeitsspeicher noch einmal deutlich schneller. Zugriffszeit im Bereich von Mikro- bis Nanosekunden.</td></tr>
+  <tr><td>Lebensdauer</td><td>je nach Qualität 10–50 Jahre, empfindlich gegen Kratzer, Hitze und Licht</td><td>etwa 3–10 Jahre im Dauerbetrieb, empfindlich gegen Stöße und Magnetfelder</td><td>begrenzte Anzahl an Schreibvorgängen je Zelle; typisch 5–10 Jahre. Arbeitsspeicher verliert seinen Inhalt beim Ausschalten (flüchtig).</td></tr>
+  <tr><td>Anwendungen</td><td>Verteilen von Filmen und Software, Langzeitarchiv</td><td>große Datenmengen zu geringen Kosten: Server, Überwachungsvideos, Datensicherung</td><td>Betriebssystem und Programme, mobile Geräte, Arbeitsspeicher — überall dort, wo es auf Tempo ankommt</td></tr>
+  </tbody></table></div>
+  <p><b>Die Faustregel dahinter:</b> Je näher ein Speicher am Prozessor sitzt, desto schneller, teurer und
+  kleiner ist er. Register, Cache, Arbeitsspeicher, SSD, Festplatte, Archivmedium — das ist die
+  <em>Speicherhierarchie</em>. Kein Medium ist in allen Kriterien das beste; deshalb kombiniert man sie.</p>
+  </div></details>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s8">Nutzungsdauer und Elektroschrott</h2>
+<p>Zur technischen Betrachtung gehört die Frage, was mit der Hardware danach passiert.</p>
+
+<div class="aufgabe">
+  <div class="kopf">Aufgabe 1.4.4</div>
+  <p style="margin:0 0 6px"><b>a)</b> Trage Gründe für die kurze Nutzungsdauer von Smartphones und anderer Hardware zusammen.</p>
+  <p style="margin:0"><b>b)</b> Trage Auswirkungen der wachsenden Menge an Elektroschrott zusammen.</p>
+  <details class="loesung"><summary>Lösung anzeigen</summary><div class="inhalt">
+    <p><b>a) Technische Gründe:</b> Akkus verlieren mit jedem Ladezyklus Kapazität und sind oft fest verklebt.
+    Ersatzteile und Reparaturanleitungen fehlen. Sicherheitsupdates und Betriebssystemversionen werden nach
+    wenigen Jahren eingestellt, wodurch Geräte unsicher oder mit neuen Apps unbrauchbar werden.
+    Neue Software setzt mehr Rechenleistung und Speicher voraus als beim Kauf üblich war.</p>
+    <p><b>Wirtschaftliche und gesellschaftliche Gründe:</b> Jährliche Modellwechsel und Werbung erzeugen den
+    Eindruck, ein Gerät sei veraltet. Reparaturen kosten oft fast so viel wie ein Neugerät.
+    Mobilfunkverträge mit Gerät verbilligen den Neukauf. Geplante Produktzyklen orientieren sich am Absatz,
+    nicht an der technischen Lebensdauer.</p>
+    <p><b>b) Umwelt:</b> Elektroschrott enthält Blei, Quecksilber, Cadmium und bromierte Flammschutzmittel.
+    Bei unsachgemäßer Entsorgung gelangen sie in Boden, Grundwasser und Luft, besonders beim offenen Verbrennen,
+    um an Kupfer zu kommen. Gleichzeitig gehen Gold, Kobalt und Seltene Erden verloren, deren Abbau selbst
+    erhebliche Umweltschäden verursacht.</p>
+    <p><b>Gesundheit und Gerechtigkeit:</b> Ein großer Teil des Schrotts landet in Ländern mit niedrigen
+    Umweltstandards, wo er von Hand zerlegt wird, häufig von Kindern und ohne Schutzausrüstung.
+    Die gesundheitlichen Folgen tragen also andere als die Nutzer.</p>
+    <p><b>Ressourcen:</b> Der größte Teil der Energie und des CO₂ eines Smartphones entsteht bei der
+    Herstellung, nicht im Betrieb. Ein Gerät ein Jahr länger zu nutzen, spart deshalb mehr als jede
+    Stromsparmaßnahme am Gerät selbst. Das ist der Bezug zur nachhaltigen Hardwarenutzung im Lehrplan.</p>
+  </div></details>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s9">Selbsttest</h2>
+<p>Neun Fragen zur Kontrolle. Jede Antwort wird sofort ausgewertet.</p>
+<div id="test"></div>
+<div class="punkte" id="testStand"></div>
+<button class="btn small" id="testReset" style="margin-top:10px">Test zurücksetzen</button>
+
+</main>
+</div>
+
+<footer id="foot"></footer>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+/* ---------- Inhaltsverzeichnis und Hell/Dunkel ---------- */
+(function(){
+  const ol=$("#toc");
+  $$("h2[id]").forEach(h=>{
+    const li=document.createElement("li");
+    li.innerHTML=`<a href="#${h.id}" data-z="${h.id}">${h.textContent}</a>`;
+    ol.appendChild(li);
+  });
+  // Markierung des aktuellen Abschnitts – nur wenn der Browser es unterstützt,
+  // sonst liefe der Rest der Seite nicht mehr.
+  if("IntersectionObserver" in window){
+    const beob=new IntersectionObserver(es=>{
+      es.forEach(e=>{ if(e.isIntersecting){
+        $$("#toc a").forEach(a=>a.classList.toggle("aktiv", a.dataset.z===e.target.id));
+      }});
+    },{rootMargin:"-70px 0px -70% 0px"});
+    $$("h2[id]").forEach(h=>beob.observe(h));
+  }
+  $("#foot").textContent="Selbstlernkurs · Informatik Klasse 11 · LB 1 Technische Informatik";
+  $("#theme").addEventListener("click",()=>{
+    const d=document.body.dataset.theme==="dark"?"light":"dark";
+    document.body.dataset.theme=d; $("#theme").textContent=d==="dark"?"Hell":"Dunkel";
+    try{ localStorage.setItem("vn.theme",d); }catch(e){}
+  });
+  try{ const t=localStorage.getItem("vn.theme");
+    if(t){ document.body.dataset.theme=t; $("#theme").textContent=t==="dark"?"Hell":"Dunkel"; } }catch(e){}
+})();
+
+/* ---------- Schaubild ---------- */
+const KOMP = {
+  steuerwerk:{t:"Steuerwerk (Control Unit)", p:"Liest den Befehl aus dem Speicher, deutet sein Bitmuster und steuert alle anderen Teile über den Steuerbus. Es entscheidet, welcher Befehl als Nächstes an der Reihe ist, und legt dazu den Befehlszähler fest. Selbst rechnet es nicht."},
+  register:{t:"Register", p:"Sehr schnelle Speicherplätze direkt im Prozessor. Der Befehlszähler hält die Adresse des nächsten Befehls, das Befehlsregister den gerade bearbeiteten Befehl, das Statusregister Merkmale des letzten Rechenergebnisses (etwa Null, negativ, Überlauf). Der Stapelzeiger verwaltet Unterprogrammaufrufe."},
+  rechenwerk:{t:"Rechenwerk (ALU) mit Akkumulator", p:"Führt arithmetische und logische Verknüpfungen aus: addieren, subtrahieren, UND, ODER, Vergleiche, auch Adressberechnungen. Der Akkumulator ist das Register, in dem ein Operand steht und in dem das Ergebnis landet. Nebenbei setzt das Rechenwerk die Statusbits."},
+  speicherwerk:{t:"Speicherwerk (Memory)", p:"Enthält Programme und Daten in durchnummerierten Zellen. Über die Adresse wird eine Zelle ausgewählt, über den Datenbus wird ihr Inhalt gelesen oder geschrieben. Dazu zählen der flüchtige Arbeitsspeicher und der Festwertspeicher mit dem BIOS."},
+  eingabe:{t:"Ein- und Ausgabewerk", p:"Verbindet den Rechner mit der Außenwelt: Tastatur, Bildschirm, Netzwerk, Festplatte. Es übernimmt den Datenaustausch mit Peripheriegeräten und schafft Daten in den Arbeitsspeicher, damit der Prozessor sie bearbeiten kann."},
+  bus:{t:"Bus", p:"Das gemeinsame Leitungsbündel. Über den Adressbus sagt der Prozessor, welche Speicherzelle gemeint ist. Über den Datenbus fließt der Inhalt in beide Richtungen. Über den Steuerbus geht das Kommando, ob gelesen oder geschrieben wird. Weil sich alles denselben Weg teilt, entsteht der Von-Neumann-Flaschenhals."}
+};
+$$("[data-k]").forEach(g=>g.addEventListener("click",()=>{
+  const k=g.dataset.k, d=KOMP[k];
+  $$("[data-k] .vnbox, [data-k] .vnbus").forEach(r=>r.classList.remove("aktiv"));
+  g.querySelector(".vnbox,.vnbus").classList.add("aktiv");
+  $("#vninfo").innerHTML=`<h4>${d.t}</h4><p style="margin:0">${d.p}</p>`;
+}));
+
+/* ---------- Zuordnungsübung ---------- */
+const ZONEN=[
+  {id:"steuerwerk",  n:"Steuerwerk"},
+  {id:"rechenwerk",  n:"Rechenwerk und Akkumulator"},
+  {id:"speicherwerk",n:"Speicherwerk"},
+  {id:"eingabe",     n:"Ein- und Ausgabewerk"},
+  {id:"keine",       n:"Keine Komponente"}
+];
+const KARTEN=[
+  {t:"Speicherung des Programms", z:"speicherwerk"},
+  {t:"Datenaustausch mit Peripheriegeräten", z:"eingabe"},
+  {t:"Adressberechnung", z:"rechenwerk"},
+  {t:"Befehlsinterpretation", z:"steuerwerk"},
+  {t:"Statusverwaltung", z:"rechenwerk"},
+  {t:"Übersetzung von Programmen", z:"keine"},
+  {t:"Transfer in den Arbeitsspeicher", z:"eingabe"},
+  {t:"Festwertspeicher für das BIOS", z:"speicherwerk"},
+  {t:"Arithmetische und logische Verknüpfungen", z:"rechenwerk"},
+  {t:"Koordination der Befehlsausführung", z:"steuerwerk"}
+];
+let gelegt={}, gewaehlt=null;
+function zeichneZ(){
+  const pool=$("#pool"); pool.innerHTML="";
+  KARTEN.forEach((k,i)=>{
+    if(gelegt[i]) return;
+    const e=document.createElement("button");
+    e.className="zkarte"+(gewaehlt===i?" gewaehlt":""); e.textContent=k.t;
+    e.addEventListener("click",()=>{ gewaehlt = gewaehlt===i?null:i; zeichneZ(); });
+    pool.appendChild(e);
+  });
+  if(!pool.children.length) pool.innerHTML='<span style="color:var(--muted);font-size:13.5px">Alle Karten verteilt.</span>';
+  const zo=$("#zonen"); zo.innerHTML="";
+  ZONEN.forEach(z=>{
+    const d=document.createElement("div"); d.className="zone";
+    d.innerHTML=`<h4>${z.n}</h4><div class="inhalt"></div>`;
+    d.addEventListener("click",()=>{ if(gewaehlt!==null){ gelegt[gewaehlt]=z.id; gewaehlt=null; zeichneZ(); } });
+    const inh=d.querySelector(".inhalt");
+    Object.keys(gelegt).forEach(i=>{
+      if(gelegt[i]!==z.id) return;
+      const e=document.createElement("button");
+      e.className="zkarte"; e.textContent=KARTEN[i].t;
+      e.addEventListener("click",ev=>{ ev.stopPropagation(); delete gelegt[i]; zeichneZ(); });
+      inh.appendChild(e);
+    });
+    zo.appendChild(d);
+  });
+  $("#zErgebnis").textContent="";
+}
+$("#zPruef").addEventListener("click",()=>{
+  const n=Object.keys(gelegt).length;
+  if(!n){ $("#zErgebnis").textContent="Lege zuerst Karten ab."; return; }
+  let ok=0;
+  $$("#zonen .zone").forEach((d,zi)=>{
+    d.querySelectorAll(".zkarte").forEach(e=>{
+      const i=KARTEN.findIndex(k=>k.t===e.textContent);
+      const richtig=KARTEN[i].z===ZONEN[zi].id;
+      e.classList.toggle("richtig",richtig); e.classList.toggle("falsch",!richtig);
+      if(richtig) ok++;
+    });
+  });
+  $("#zErgebnis").textContent=`${ok} von ${KARTEN.length} richtig zugeordnet`+(n<KARTEN.length?` (${KARTEN.length-n} noch offen)`:"");
+});
+$("#zReset").addEventListener("click",()=>{ gelegt={}; gewaehlt=null; zeichneZ(); });
+$("#zLoesung").innerHTML = ZONEN.map(z=>
+  `<p><b>${z.n}:</b> ${KARTEN.filter(k=>k.z===z.id).map(k=>k.t).join(" · ")}</p>`).join("")
+  + `<p style="margin-top:10px"><b>Zu den strittigen Karten.</b> <em>Adressberechnung</em> ordnen wir dem Rechenwerk zu,
+     weil dort gerechnet wird; manche Darstellungen zählen sie zum Steuerwerk, das die Berechnung anstößt.
+     <em>Statusverwaltung</em> gehört zum Rechenwerk, weil es die Statusbits setzt — abgelegt werden sie im Statusregister.
+     <em>Transfer in den Arbeitsspeicher</em> ist Aufgabe des Ein- und Ausgabewerks, das die Daten von außen holt;
+     der Speicher selbst nimmt sie nur auf. <em>Übersetzung von Programmen</em> erledigt ein Compiler, also Software —
+     dafür gibt es keine Komponente im Rechner.</p>`;
+zeichneZ();
+
+/* ---------- Befehlszyklus ---------- */
+const PROGRAMM=[
+  {op:"LOAD", adr:12, kom:"Summe holen"},
+  {op:"ADD",  adr:11, kom:"Zähler addieren"},
+  {op:"STORE",adr:12, kom:"Summe sichern"},
+  {op:"LOAD", adr:11, kom:"Zähler holen"},
+  {op:"SUB",  adr:13, kom:"eins abziehen"},
+  {op:"STORE",adr:11, kom:"Zähler sichern"},
+  {op:"JZ",   adr:8,  kom:"fertig? dann zu 8"},
+  {op:"JMP",  adr:0,  kom:"sonst von vorn"},
+  {op:"HALT", adr:0,  kom:"Ende"},
+  null, null,
+  {wert:3, kom:"Zähler"},
+  {wert:0, kom:"Summe"},
+  {wert:1, kom:"Konstante 1"}
+];
+const SPRUNG=["JMP","JZ"];
+let M, PC, IR, ACC, phase, laeuft=null, ziel=null, busAktiv=[];
+function reset(){
+  M=PROGRAMM.map(z=>z?{...z}:null);
+  PC=0; IR=null; ACC=0; phase="reset"; ziel=null; busAktiv=[];
+  stopAuto(); zeichneSim("Der Befehlszähler wurde auf 0 gesetzt. Der Rechner ist bereit. Klicke auf <b>Nächste Phase</b>.");
+}
+function zelle(i){
+  const z=M[i];
+  if(!z) return {txt:"—", kom:""};
+  if(z.op) return {txt:z.op+(z.op==="HALT"?"":" "+z.adr), kom:z.kom};
+  return {txt:String(z.wert), kom:z.kom};
+}
+const PHASEN=[["reset","Reset"],["fetch","Fetch"],["decode","Decode"],["branch","Verzweigung?"],
+              ["recompute","Neuberechnung"],["execute","Execute"],["increment","Inkrementieren"],["halt","Ende"]];
+function zeichneSim(text){
+  $("#phasen").innerHTML=PHASEN.map(([k,n])=>`<span class="ph${phase===k?" an":""}">${n}</span>`).join("");
+  let t="<thead><tr><th class='mid'>Adr</th><th>Inhalt</th><th>Bedeutung</th></tr></thead><tbody>";
+  M.forEach((z,i)=>{
+    const c=zelle(i);
+    const kl=(i===PC?"pc":(i===ziel?"ziel":""));
+    t+=`<tr class="${kl}"><td class="adr">${i}</td><td class="inh">${c.txt}</td><td class="kom">${c.kom}</td></tr>`;
+  });
+  $("#speicher").innerHTML=t+"</tbody>";
+  $("#register").innerHTML=`
+    <div class="regz"><span class="n">Befehlszähler</span><span class="v">${PC}</span></div>
+    <div class="regz"><span class="n">Befehlsregister</span><span class="v">${IR?IR.op+(IR.op==="HALT"?"":" "+IR.adr):"—"}</span></div>
+    <div class="regz"><span class="n">Akkumulator</span><span class="v">${ACC}</span></div>`;
+  $$("#busse .bus").forEach(b=>b.classList.toggle("an", busAktiv.includes(b.dataset.b)));
+  $("#erkl").innerHTML=text;
+  $("#bPhase").disabled = phase==="halt";
+  $("#bBefehl").disabled = phase==="halt";
+}
+function naechstePhase(){
+  if(phase==="halt") return;
+  if(phase==="reset"||phase==="increment"||phase==="recompute"){
+    IR = M[PC] && M[PC].op ? {...M[PC]} : {op:"HALT",adr:0};
+    ziel=null; busAktiv=["adr","dat","ste"]; phase="fetch";
+    return zeichneSim(`<b>Fetch.</b> Der Befehlszähler steht auf ${PC}. Diese Adresse legt das Steuerwerk auf den
+      Adressbus. Das Speicherwerk liefert den Inhalt der Zelle über den Datenbus zurück; er landet im Befehlsregister.`);
+  }
+  if(phase==="fetch"){
+    busAktiv=[]; phase="decode";
+    const s=SPRUNG.includes(IR.op);
+    return zeichneSim(`<b>Decode.</b> Das Steuerwerk zerlegt das Bitmuster: Operationsteil <span class="mono">${IR.op}</span>`
+      + (IR.op==="HALT"?"":`, Adressteil <span class="mono">${IR.adr}</span>`) + `. `
+      + (s ? "Das ist ein Sprungbefehl — es folgt die Prüfung, ob verzweigt wird."
+           : "Kein Sprungbefehl, also wird der Befehl jetzt ausgeführt."));
+  }
+  if(phase==="decode"){
+    if(SPRUNG.includes(IR.op)){ phase="branch"; ziel=IR.adr; busAktiv=["ste"];
+      const nimmt = IR.op==="JMP" || (IR.op==="JZ" && ACC===0);
+      return zeichneSim(`<b>Verzweigung?</b> ` + (IR.op==="JMP"
+        ? `<span class="mono">JMP</span> springt immer. <b>Ja</b> — der Befehlszähler wird neu berechnet.`
+        : `<span class="mono">JZ</span> springt nur, wenn der Akkumulator 0 ist. Er steht auf ${ACC}, also <b>${nimmt?"Ja":"Nein"}</b>.`));
+    }
+    phase="execute"; return fuehreAus();
+  }
+  if(phase==="branch"){
+    const nimmt = IR.op==="JMP" || (IR.op==="JZ" && ACC===0);
+    if(nimmt){ PC=IR.adr; phase="recompute"; ziel=null; busAktiv=[];
+      return zeichneSim(`<b>Neuberechnung des Befehlszählers.</b> Der Befehlszähler wird auf ${PC} gesetzt.
+        Der Ablauf springt an diese Stelle, ohne dass gerechnet wurde.`);
+    }
+    PC=PC+1; phase="increment"; ziel=null; busAktiv=[];
+    return zeichneSim(`<b>Inkrementieren.</b> Es wird nicht gesprungen. Der Befehlszähler rückt auf ${PC} vor.`);
+  }
+  if(phase==="execute"){
+    if(IR.op==="HALT"){ phase="halt"; busAktiv=[];
+      return zeichneSim(`<b>Ende.</b> Der Rechner hält an. In Zelle 12 steht das Ergebnis: ${M[12].wert}. Das ist 3 + 2 + 1.`);
+    }
+    PC=PC+1; phase="increment"; ziel=null; busAktiv=[];
+    return zeichneSim(`<b>Inkrementieren.</b> Der Befehlszähler rückt um eins auf ${PC} vor. Der nächste Befehl wird geholt.`);
+  }
+}
+function fuehreAus(){
+  const a=IR.adr; ziel=a; busAktiv=["adr","dat","ste"];
+  let t="";
+  switch(IR.op){
+    case "LOAD":  ACC=M[a].wert; t=`<b>Execute.</b> Der Inhalt von Zelle ${a} (${ACC}) wird über den Datenbus in den Akkumulator geladen.`; break;
+    case "STORE": M[a].wert=ACC; t=`<b>Execute.</b> Der Akkumulator (${ACC}) wird in Zelle ${a} geschrieben. Nur hier wird der Speicher verändert.`; break;
+    case "ADD":   { const v=M[a].wert; ACC=ACC+v; t=`<b>Execute.</b> Das Rechenwerk addiert den Inhalt von Zelle ${a} (${v}) zum Akkumulator. Ergebnis: ${ACC}.`; } break;
+    case "SUB":   { const v=M[a].wert; ACC=ACC-v; t=`<b>Execute.</b> Das Rechenwerk zieht den Inhalt von Zelle ${a} (${v}) vom Akkumulator ab. Ergebnis: ${ACC}.`; } break;
+    case "HALT":  t=`<b>Execute.</b> Haltbefehl.`; break;
+  }
+  zeichneSim(t);
+}
+function ganzerBefehl(){
+  let n=0;
+  do{ naechstePhase(); n++; }
+  while(n<8 && !["increment","recompute","halt"].includes(phase));
+}
+let autoT=null;
+function stopAuto(){ if(autoT){ clearInterval(autoT); autoT=null; $("#bAuto").textContent="Automatisch"; } }
+$("#bPhase").addEventListener("click",()=>{ stopAuto(); naechstePhase(); });
+$("#bBefehl").addEventListener("click",()=>{ stopAuto(); ganzerBefehl(); });
+$("#bReset").addEventListener("click",reset);
+$("#bAuto").addEventListener("click",()=>{
+  if(autoT) return stopAuto();
+  $("#bAuto").textContent="Anhalten";
+  autoT=setInterval(()=>{ if(phase==="halt") return stopAuto(); naechstePhase(); },1100);
+});
+reset();
+
+/* ---------- Selbsttest ---------- */
+const FRAGEN=[
+  {q:"Was ist das Besondere am Von-Neumann-Prinzip?",
+   o:["Programme und Daten liegen im selben Speicher","Der Rechner hat mehrere Kerne","Das Rechenwerk arbeitet binär","Ein- und Ausgabe sind getrennt"],
+   r:0, e:"Genau das macht den Rechner universell: Programme lassen sich laden und austauschen, ohne die Maschine umzubauen."},
+  {q:"Welche Komponente deutet ein Bitmuster als Befehl?",
+   o:["Rechenwerk","Steuerwerk","Speicherwerk","Ein- und Ausgabewerk"],
+   r:1, e:"Das Steuerwerk decodiert den Befehl und steuert daraufhin alle anderen Teile."},
+  {q:"Wozu dient der Befehlszähler?",
+   o:["Er zählt, wie viele Befehle ausgeführt wurden","Er speichert das Rechenergebnis","Er enthält die Adresse des nächsten Befehls","Er misst die Taktfrequenz"],
+   r:2, e:"Er zeigt auf die Speicherzelle, aus der der nächste Befehl geholt wird. Sprungbefehle verändern genau diesen Wert."},
+  {q:"In welcher Phase wird der Befehl aus dem Speicher geholt?",
+   o:["Decode","Execute","Fetch","Inkrementieren"], r:2,
+   e:"Fetch heißt holen: Adresse über den Adressbus hinaus, Inhalt über den Datenbus zurück."},
+  {q:"Was passiert bei einem Sprungbefehl anders?",
+   o:["Der Befehl wird zweimal ausgeführt","Der Befehlszähler wird neu gesetzt statt erhöht","Das Rechenwerk wird übersprungen und der Speicher gelöscht","Der Takt wird angehalten"],
+   r:1, e:"Statt um eins weiterzurücken, bekommt der Befehlszähler einen neuen Wert — dadurch entstehen Schleifen und Verzweigungen."},
+  {q:"Was bezeichnet der Begriff Befehlssatz?",
+   o:["Die Reihenfolge der Befehle im Programm","Alle Maschinenbefehle, die ein Prozessor ausführen kann","Die Anzahl der Befehle pro Sekunde","Die Menge der belegten Speicherzellen"],
+   r:1, e:"Der Befehlssatz, englisch ISA, ist die Schnittstelle zwischen Hardware und Software. Beispiele sind x86 und ARM."},
+  {q:"Warum spricht man vom Von-Neumann-Flaschenhals?",
+   o:["Weil der Speicher zu klein ist","Weil Befehle und Daten sich denselben Bus teilen","Weil das Rechenwerk nur eine Operation kennt","Weil der Takt begrenzt ist"],
+   r:1, e:"Pro Takt passt nur eines durch. Caches und mehrere Kerne mildern das Problem, beseitigen es aber nicht."},
+  {q:"Wo findet man im heutigen PC die klassischen vier Werke wieder?",
+   o:["Im Netzteil","Im einzelnen CPU-Kern","Nur in alten Rechnern","Im Betriebssystem"],
+   r:1, e:"Jeder Kern für sich ist ein Von-Neumann-Rechner. Die Gleichzeitigkeit entsteht dadurch, dass es mehrere Kerne gibt."},
+  {q:"Welche Aussage zur Taktfrequenz stimmt?",
+   o:["Doppelter Takt bedeutet immer doppelte Leistung","Sie ist nur innerhalb derselben Prozessorfamilie ein sinnvoller Vergleich","Sie gibt die Zahl der Kerne an","Sie wird in Byte pro Sekunde gemessen"],
+   r:1, e:"Befehle pro Takt, Kernzahl, Cache und Speicheranbindung wirken oft stärker als ein paar hundert Megahertz."}
+];
+let beantwortet={};
+function zeichneTest(){
+  const w=$("#test"); w.innerHTML="";
+  FRAGEN.forEach((f,i)=>{
+    const d=document.createElement("div"); d.className="frage";
+    d.innerHTML=`<p class="q">${i+1}. ${f.q}</p>`;
+    f.o.forEach((o,j)=>{
+      const b=document.createElement("button");
+      b.className="opt"; b.textContent=o;
+      if(beantwortet[i]!==undefined){
+        if(j===f.r) b.classList.add("richtig");
+        else if(j===beantwortet[i]) b.classList.add("falsch");
+        b.disabled=true;
+      }
+      b.addEventListener("click",()=>{ if(beantwortet[i]===undefined){ beantwortet[i]=j; zeichneTest(); } });
+      d.appendChild(b);
+    });
+    if(beantwortet[i]!==undefined){
+      const r=document.createElement("div"); r.className="rueck";
+      r.innerHTML=(beantwortet[i]===f.r?"<b style='color:var(--ok)'>Richtig.</b> ":"<b style='color:var(--bad)'>Noch nicht.</b> ")+f.e;
+      d.appendChild(r);
+    }
+    w.appendChild(d);
+  });
+  const n=Object.keys(beantwortet).length;
+  const ok=Object.keys(beantwortet).filter(i=>beantwortet[i]===FRAGEN[i].r).length;
+  $("#testStand").textContent = n? `${ok} von ${n} beantworteten Fragen richtig (${FRAGEN.length} insgesamt).` : "";
+}
+$("#testReset").addEventListener("click",()=>{ beantwortet={}; zeichneTest(); });
+zeichneTest();
+</script>
+</body>
+</html>
