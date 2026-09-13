@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unterrichtsmaterial</title>
+<style>
+:root{
+  --bg:#0E1A1C; --panel:#142528; --panel2:#0F1F22; --line:#23393E; --line2:#2E4A50;
+  --ink:#DFEAEB; --ink2:#9FB6B9; --muted:#6F8A8F;
+  --brand:#2FB3A0; --hi:#FFC24B; --ok:#58C08C; --bad:#E4573D;
+  --r:12px;
+}
+[data-theme="light"]{
+  --bg:#F2F4F3; --panel:#FFFFFF; --panel2:#F7F9F8; --line:#D8E0DF; --line2:#C2CFCE;
+  --ink:#14242A; --ink2:#4A6066; --muted:#7B8F94;
+  --brand:#17897A; --hi:#E08A00;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  font-size:15px; line-height:1.5; display:flex; flex-direction:column;
+}
+a{color:inherit;text-decoration:none}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.mono{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}
+
+/* Kopfzeile */
+header{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:11px 20px;background:var(--panel);border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:20;
+}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand b{font-size:18px;font-weight:650;letter-spacing:-.2px}
+.brand span{color:var(--muted);font-size:12.5px}
+.spacer{flex:1}
+.search{
+  display:flex;align-items:center;gap:7px;background:var(--panel2);
+  border:1px solid var(--line2);border-radius:9px;padding:5px 11px;min-width:210px;
+}
+.search input{background:none;border:0;outline:none;width:100%;font-size:14px}
+.search kbd{border:1px solid var(--line2);border-radius:4px;padding:0 4px;font-size:11px;color:var(--muted)}
+.btn{background:var(--panel2);border:1px solid var(--line2);border-radius:9px;padding:6px 12px;transition:border-color .12s}
+.btn:hover{border-color:var(--brand)}
+.btn.small{padding:4px 9px;font-size:13px}
+
+main{flex:1;width:100%;max-width:1080px;margin:0 auto;padding:22px 20px 60px}
+
+/* Brotkrumen */
+.crumbs{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:13px;margin-bottom:16px;flex-wrap:wrap}
+.crumbs a:hover{color:var(--ink)}
+.crumbs i{font-style:normal;opacity:.5}
+
+h1{font-size:25px;margin:0 0 4px;letter-spacing:-.4px;font-weight:650}
+h2{font-size:17px;margin:26px 0 10px;font-weight:650}
+p.lead{color:var(--ink2);margin:0 0 24px;max-width:62ch}
+p.note{color:var(--muted);font-size:13px;margin:0 0 16px}
+
+/* Fachkacheln */
+.faecher{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:10px}
+.fach{
+  display:block;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:20px;border-left:4px solid var(--akz,var(--brand));transition:border-color .14s,transform .14s;
+}
+.fach:hover{border-color:var(--line2);border-left-color:var(--akz);transform:translateY(-2px)}
+.fach b{display:block;font-size:19px;margin-bottom:3px}
+.fach .i{color:var(--ink2);font-size:13.5px}
+.fach .z{color:var(--muted);font-size:12.5px;margin-top:12px}
+
+/* Klassenkacheln */
+.klassen{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:11px}
+.kl{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:14px 15px;transition:border-color .14s,transform .14s;display:block;
+}
+.kl:hover{border-color:var(--akz,var(--brand));transform:translateY(-2px)}
+.kl b{display:block;font-size:17px;font-weight:650}
+.kl small{color:var(--muted);font-size:12px}
+.kl .n{color:var(--akz,var(--brand));font-size:12.5px;font-weight:600;margin-top:7px;display:block}
+.kl .n.leer{color:var(--muted);font-weight:400}
+
+/* Themenbereiche */
+.bereich{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:15px 17px;margin-bottom:12px}
+.bereich.leer{background:none;border-style:dashed;opacity:.62}
+.bereich > .h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.bereich .t{font-weight:650;font-size:15.5px}
+.bereich .i{color:var(--muted);font-size:13px;flex:1;min-width:200px}
+.bereich .c{color:var(--muted);font-size:12px}
+.eintraege{margin-top:11px;display:flex;flex-direction:column;gap:8px}
+
+.eintrag{
+  display:flex;gap:12px;align-items:flex-start;background:var(--panel2);
+  border:1px solid var(--line);border-radius:10px;padding:10px 13px;transition:border-color .12s;
+}
+.eintrag:hover{border-color:var(--brand)}
+.eintrag .typ{
+  flex:0 0 auto;width:26px;height:26px;border-radius:7px;display:grid;place-items:center;
+  font-size:12px;font-weight:700;background:var(--line);color:var(--ink2);margin-top:1px;
+}
+.eintrag .tt{font-weight:600}
+.eintrag .ii{color:var(--ink2);font-size:13px;margin-top:1px}
+.eintrag .meta{color:var(--muted);font-size:11.5px;margin-top:3px}
+.tag{display:inline-block;background:var(--brand);color:#06211E;border-radius:5px;padding:0 6px;font-size:10.5px;font-weight:700;margin-left:7px;vertical-align:1px}
+.leerhinweis{color:var(--muted);font-size:13px;margin-top:9px;font-style:italic}
+
+.warn{border:1px solid var(--bad);border-radius:var(--r);padding:13px 15px;margin-bottom:18px;font-size:13.5px}
+.warn b{color:var(--bad)}
+
+.neu-liste{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+
+footer{
+  border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;
+  padding:14px 20px;text-align:center;
+}
+@media (max-width:620px){
+  main{padding:16px 14px 40px}
+  header{padding:9px 14px}
+  .search{min-width:0;flex:1}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-theme="dark">
+
+<header>
+  <a class="brand" href="#/"><b id="hTitel">Unterrichtsmaterial</b><span id="hSchule"></span></a>
+  <div class="spacer"></div>
+  <label class="search">
+    <span style="color:var(--muted)">Suche</span>
+    <input id="q" type="search" placeholder="Thema, Titel, Klasse …" aria-label="Material durchsuchen">
+    <kbd>/</kbd>
+  </label>
+  <button class="btn small" id="theme">Hell</button>
+</header>
+
+<main id="app"></main>
+
+<footer id="foot"></footer>
+
+<script src="kurse.js"></script>
+<script>
+"use strict";
+
+const TYP = {
+  werkzeug:    {k:"W", n:"Werkzeug"},
+  arbeitsblatt:{k:"A", n:"Arbeitsblatt"},
+  uebung:      {k:"Ü", n:"Übung"},
+  video:       {k:"V", n:"Video"},
+  link:        {k:"L", n:"Link"},
+  plan:        {k:"P", n:"Plan"},
+  loesung:     {k:"L", n:"Lösung"}
+};
+const KLASSEN = [5,6,7,8,9,10,11,12];
+const $ = s => document.querySelector(s);
+const app = $("#app");
+const esc = t => String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+/* ---------- Katalog aufbereiten ---------- */
+const fachById = id => FAECHER.find(f=>f.id===id);
+const klassenVon = e => Array.isArray(e.klasse) ? e.klasse : [e.klasse];
+const bereicheVon = (fach,kl) => (LEHRPLAN[fach] && LEHRPLAN[fach][kl]) || [];
+
+function eintraegeVon(fach, kl){
+  return MATERIAL.filter(e => e.fach===fach && klassenVon(e).includes(Number(kl)));
+}
+function zaehle(fach, kl){ return eintraegeVon(fach,kl).length; }
+function zaehleFach(fach){ return MATERIAL.filter(e=>e.fach===fach).length; }
+
+// Einträge, deren Bereich in keiner Klasse des Fachs vorkommt – Tippfehler sichtbar machen
+function verwaiste(){
+  return MATERIAL.filter(e=>{
+    const f=LEHRPLAN[e.fach]; if(!f) return true;
+    return !Object.values(f).some(list=>list.some(b=>b.id===e.bereich));
+  });
+}
+
+/* ---------- Bausteine ---------- */
+function eintragHtml(e, mitOrt){
+  const t=TYP[e.typ]||TYP.link;
+  const f=fachById(e.fach);
+  const ort = mitOrt ? `${f?f.name:e.fach} · Klasse ${klassenVon(e).join("/")}` : "";
+  const meta=[ort, t.n, e.stand?("Stand "+e.stand):""].filter(Boolean).join(" · ");
+  return `<a class="eintrag" href="${esc(e.url)}"${/^https?:/.test(e.url)?' target="_blank" rel="noopener"':""}>
+    <span class="typ" title="${t.n}">${t.k}</span>
+    <span>
+      <span class="tt">${esc(e.titel)}${e.neu?'<span class="tag">neu</span>':""}</span>
+      ${e.info?`<span class="ii">${esc(e.info)}</span>`:""}
+      <span class="meta">${esc(meta)}</span>
+    </span></a>`;
+}
+function crumbs(teile){
+  return `<nav class="crumbs">`+teile.map((t,i)=>
+    (i?`<i>›</i>`:"")+(t.href?`<a href="${t.href}">${esc(t.text)}</a>`:`<span>${esc(t.text)}</span>`)
+  ).join("")+`</nav>`;
+}
+
+/* ---------- Ansichten ---------- */
+function viewHome(){
+  const v=verwaiste();
+  let h = `<h1>${esc(SEITE.titel)}</h1><p class="lead">${esc(SEITE.hinweis)}</p>`;
+  if(v.length) h+=`<div class="warn"><b>Hinweis für die Redaktion:</b> ${v.length} Eintrag${v.length===1?"":"e"} in kurse.js verweist auf einen Themenbereich, den es im Lehrplan nicht gibt: ${v.map(e=>esc(e.titel)+" → "+esc(e.bereich)).join(", ")}</div>`;
+  h += `<div class="faecher">`+FAECHER.map(f=>{
+    const n=zaehleFach(f.id);
+    return `<a class="fach" href="#/${f.id}" style="--akz:${f.akzent}">
+      <b>${esc(f.name)}</b><span class="i">${esc(f.info||"")}</span>
+      <span class="z">Klassen 5 bis 12 · ${n} ${n===1?"Eintrag":"Einträge"}</span></a>`;
+  }).join("")+`</div>`;
+
+  const neu = MATERIAL.filter(e=>e.stand).sort((a,b)=>String(b.stand).localeCompare(String(a.stand))).slice(0,5);
+  if(neu.length){
+    h+=`<h2>Zuletzt ergänzt</h2><div class="neu-liste">`+neu.map(e=>eintragHtml(e,true)).join("")+`</div>`;
+  }
+  return h;
+}
+
+function viewFach(fid){
+  const f=fachById(fid); if(!f) return viewHome();
+  let h = crumbs([{text:"Start",href:"#/"},{text:f.name}]);
+  h += `<h1>${esc(f.name)}</h1><p class="lead">${esc(f.info||"")} — wähle deine Klassenstufe.</p>`;
+  h += `<div class="klassen">`+KLASSEN.map(k=>{
+    const n=zaehle(fid,k), b=bereicheVon(fid,k).length;
+    return `<a class="kl" href="#/${fid}/${k}" style="--akz:${f.akzent}">
+      <b>Klasse ${k}</b><small>${b} Themenbereich${b===1?"":"e"}</small>
+      <span class="n${n?"":" leer"}">${n?n+(n===1?" Eintrag":" Einträge"):"noch leer"}</span></a>`;
+  }).join("")+`</div>`;
+  return h;
+}
+
+function viewKlasse(fid, kl){
+  const f=fachById(fid); if(!f) return viewHome();
+  const bereiche=bereicheVon(fid,kl);
+  const alle=eintraegeVon(fid,kl);
+  let h = crumbs([{text:"Start",href:"#/"},{text:f.name,href:"#/"+fid},{text:"Klasse "+kl}]);
+  h += `<h1>${esc(f.name)} — Klasse ${kl}</h1>`;
+  h += `<p class="lead">${alle.length?`${alle.length} ${alle.length===1?"Eintrag":"Einträge"} in ${bereiche.length} Themenbereichen.`:"Für diese Klassenstufe ist noch kein Material eingestellt. Die Gliederung steht schon."}</p>`;
+  if(!bereiche.length) return h+`<p class="note">Für diese Klassenstufe ist in kurse.js noch keine Gliederung hinterlegt.</p>`;
+
+  const benutzt=new Set();
+  h += bereiche.map(b=>{
+    const es=alle.filter(e=>e.bereich===b.id);
+    es.forEach(e=>benutzt.add(e));
+    return `<section class="bereich${es.length?"":" leer"}" id="${esc(b.id)}">
+      <div class="h"><span class="t">${esc(b.name)}</span><span class="i">${esc(b.info||"")}</span>
+      <span class="c">${es.length?es.length+(es.length===1?" Eintrag":" Einträge"):""}</span></div>
+      ${es.length?`<div class="eintraege">${es.map(e=>eintragHtml(e)).join("")}</div>`
+                 :`<div class="leerhinweis">Noch kein Material.</div>`}
+    </section>`;
+  }).join("");
+
+  const rest=alle.filter(e=>!benutzt.has(e));
+  if(rest.length){
+    h+=`<h2>Weitere Materialien</h2><div class="eintraege">`+rest.map(e=>eintragHtml(e)).join("")+`</div>`;
+  }
+  return h;
+}
+
+function viewSuche(q){
+  const s=q.trim().toLowerCase();
+  const treffer=MATERIAL.filter(e=>{
+    const f=fachById(e.fach);
+    const bn=(LEHRPLAN[e.fach]?Object.values(LEHRPLAN[e.fach]).flat().find(b=>b.id===e.bereich):null);
+    return [e.titel,e.info,e.bereich,bn&&bn.name,f&&f.name,"klasse "+klassenVon(e).join(" ")]
+      .filter(Boolean).join(" ").toLowerCase().includes(s);
+  });
+  let h=`<h1>Suche</h1><p class="lead">${treffer.length} ${treffer.length===1?"Treffer":"Treffer"} für „${esc(q)}“.</p>`;
+  h+= treffer.length ? `<div class="eintraege">`+treffer.map(e=>eintragHtml(e,true)).join("")+`</div>`
+                     : `<p class="note">Nichts gefunden. Versuche einen kürzeren Suchbegriff.</p>`;
+  return h;
+}
+
+/* ---------- Wegweiser ---------- */
+function route(){
+  const q=$("#q").value;
+  if(q.trim()){ app.innerHTML=viewSuche(q); return; }
+  const teile=(location.hash.replace(/^#\/?/,"")).split("/").filter(Boolean);
+  if(!teile.length) app.innerHTML=viewHome();
+  else if(teile.length===1) app.innerHTML=viewFach(teile[0]);
+  else app.innerHTML=viewKlasse(teile[0], Number(teile[1]));
+  if(teile[2]){
+    const el=document.getElementById(teile[2]);
+    if(el) el.scrollIntoView({block:"start"});
+  } else window.scrollTo(0,0);
+}
+window.addEventListener("hashchange",route);
+$("#q").addEventListener("input",route);
+document.addEventListener("keydown",e=>{
+  if(e.key==="/" && document.activeElement!==$("#q")){ e.preventDefault(); $("#q").focus(); }
+  if(e.key==="Escape" && $("#q").value){ $("#q").value=""; route(); }
+});
+$("#theme").addEventListener("click",()=>{
+  const d=document.body.dataset.theme==="dark"?"light":"dark";
+  document.body.dataset.theme=d; $("#theme").textContent = d==="dark"?"Hell":"Dunkel";
+  try{ localStorage.setItem("mat.theme",d); }catch(err){}
+});
+
+/* ---------- Start ---------- */
+(function init(){
+  document.title = SEITE.titel + (SEITE.schule?" · "+SEITE.schule:"");
+  $("#hTitel").textContent = SEITE.titel;
+  $("#hSchule").textContent = SEITE.schule||"";
+  $("#foot").textContent = [SEITE.schule, SEITE.lehrer, SEITE.impressum].filter(Boolean).join(" · ");
+  try{
+    const t=localStorage.getItem("mat.theme");
+    if(t){ document.body.dataset.theme=t; $("#theme").textContent = t==="dark"?"Hell":"Dunkel"; }
+  }catch(err){}
+  route();
+})();
+</script>
+</body>
+</html>
