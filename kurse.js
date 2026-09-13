@@ -183,7 +183,7 @@ const MATERIAL = [
   { fach:"informatik", klasse:11, bereich:"technische-informatik",
     titel:"Logikwerkstatt",
     typ:"werkzeug",
-    url:"inf/sekII/logikwerkstatt.html",
+    url:"inf/sekii/logikwerkstatt.html",
     info:"Schaltnetze bauen, boolesche Ausdrücke eingeben, Wahrheitstabellen erzeugen und als SVG exportieren. Mit zehn Aufgaben vom Umkehrer bis zum Volladdierer.",
     stand:"2026-09", neu:true },
 
