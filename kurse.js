@@ -182,6 +182,13 @@ const MATERIAL = [
    { fach:"informatik", klasse:11, bereich:"technische-informatik",
     titel:"Zahlenformate",
     typ:"uebung",
+    url:"inf/sekii/exit-game.html",
+    info:"Praktikumstag im Rechenzentrum, und ausgerechnet jetzt fällt die Hauptversorgung aus. Schaffts du es alle Rätsel zu lösen...?",
+    stand:"2026-09", neu:true },
+   
+   { fach:"informatik", klasse:11, bereich:"technische-informatik",
+    titel:"Zahlenformate",
+    typ:"uebung",
     url:"inf/sekii/zahlenformate.html",
     info:"Wiederholung der wichtigsten Rechnungen, Zwerierkomplement sowie Gleitkomma-und Festkommazahlen",
     stand:"2026-09", neu:true },
