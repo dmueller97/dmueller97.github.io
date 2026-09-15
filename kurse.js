@@ -199,6 +199,13 @@ const MATERIAL = [
     typ:"uebung",
     url:"eng/sekI/personal-pronouns-quiz.html",
     info:"Übung zum Selbstlernen.",
+    stand:"2026-09" },
+
+   { fach:"englisch", klasse:5, bereich:"grammatik-5",
+    titel:"Unit 1 — forms of be",
+    typ:"uebung",
+    url:"eng/sekI/forms-of-be-quiz.html",
+    info:"Übung zum Selbstlernen.",
     stand:"2026-09" }
 
   /* Vorlagen zum Kopieren — Raute vor der Zeile entfernen und anpassen:
