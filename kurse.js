@@ -197,7 +197,7 @@ const MATERIAL = [
    { fach:"englisch", klasse:5, bereich:"grammatik-5",
     titel:"Unit 1 — personal pronouns",
     typ:"uebung",
-    url:"eng/seki/personal-pronouns-quiz.html",
+    url:"eng/sekI/personal-pronouns-quiz.html",
     info:"Übung zum Selbstlernen.",
     stand:"2026-09" }
 
