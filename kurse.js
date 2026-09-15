@@ -179,34 +179,40 @@ const LEHRPLAN = {
              klasse darf auch eine Liste sein: klasse: [11, 12]
    ------------------------------------------------------------------- */
 const MATERIAL = [
+   { fach:"informatik", klasse:11, bereich:"technische-informatik",
+    titel:"Zahlenformate",
+    typ:"uebung",
+    url:"inf/sekii/zahlenformate.html",
+    info:"Wiederholung der wichtigsten Rechnungen, Zwerierkomplement sowie Gleitkomma-und Festkommazahlen",
+    stand:"2026-09", neu:true },
 
   { fach:"informatik", klasse:11, bereich:"technische-informatik",
     titel:"Logikwerkstatt",
     typ:"werkzeug",
     url:"inf/sekii/logikwerkstatt.html",
     info:"Schaltnetze bauen, boolesche Ausdrücke eingeben, Wahrheitstabellen erzeugen und als SVG exportieren. Mit zehn Aufgaben vom Umkehrer bis zum Volladdierer.",
-    stand:"2026-09", neu:true },
+    stand:"2026-09", neu:false },
 
    { fach:"informatik", klasse:11, bereich:"technische-informatik",
     titel:"Der Von-Neumann-Rechner — Selbstlernkurs",
     typ:"uebung",
     url:"inf/sekii/von-neumann.html",
     info:"Aufbau, Befehlszyklus und Befehlssatz mit anklickbarem Schaubild, Zuordnungsübung, Schritt-für-Schritt-Simulation und Selbsttest. Enthält die Aufgaben 1.4.2 bis 1.4.4 mit aufklappbaren Lösungen.",
-    stand:"2026-09", neu:true },
+    stand:"2026-09", neu:false },
 
    { fach:"englisch", klasse:5, bereich:"grammatik-5",
     titel:"Unit 1 — personal pronouns",
     typ:"uebung",
     url:"eng/seki/personal-pronouns-quiz.html",
     info:"Übung zum Selbstlernen.",
-    stand:"2026-09" },
+    stand:"2026-09", neu:true},
 
    { fach:"englisch", klasse:5, bereich:"grammatik-5",
     titel:"Unit 1 — forms of be",
     typ:"uebung",
     url:"eng/seki/forms-of-be-quiz.html",
     info:"Übung zum Selbstlernen.",
-    stand:"2026-09" }
+    stand:"2026-09", neu:true}
 
   /* Vorlagen zum Kopieren — Raute vor der Zeile entfernen und anpassen:
 
