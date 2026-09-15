@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zahlen im Rechner — Umwandeln, Zweierkomplement, Fest- und Gleitkomma</title>
+<style>
+:root{
+  --bg:#0E1A1C; --panel:#142528; --panel2:#0F1F22; --line:#23393E; --line2:#2E4A50;
+  --ink:#DFEAEB; --ink2:#9FB6B9; --muted:#6F8A8F;
+  --brand:#2FB3A0; --hi:#FFC24B; --ok:#58C08C; --bad:#E4573D; --r:12px;
+}
+[data-theme="light"]{
+  --bg:#F2F4F3; --panel:#FFFFFF; --panel2:#F7F9F8; --line:#D8E0DF; --line2:#C2CFCE;
+  --ink:#14242A; --ink2:#4A6066; --muted:#7B8F94; --brand:#17897A; --hi:#C97A00;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;font-size:16px;line-height:1.6}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.mono{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}
+
+header{position:sticky;top:0;z-index:30;background:var(--panel);border-bottom:1px solid var(--line);
+  padding:9px 16px;display:flex;align-items:center;gap:10px}
+header b{font-size:16px;flex:1;letter-spacing:-.2px}
+.btn{background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:9px 14px;min-height:42px}
+.btn:hover{border-color:var(--brand)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#06211E;font-weight:600}
+.btn.klein{padding:6px 11px;min-height:36px;font-size:14px}
+details.inhalt{border-bottom:1px solid var(--line);background:var(--panel)}
+details.inhalt summary{padding:10px 16px;cursor:pointer;color:var(--ink2);font-size:14.5px;list-style:none}
+details.inhalt summary::-webkit-details-marker{display:none}
+details.inhalt summary::before{content:"☰  "}
+details.inhalt ol{margin:0;padding:0 16px 12px 34px;font-size:14.5px}
+details.inhalt a{color:var(--ink2);text-decoration:none;display:block;padding:4px 0}
+
+main{max-width:720px;margin:0 auto;padding:20px 16px 70px}
+h1{font-size:26px;margin:0 0 6px;letter-spacing:-.5px;line-height:1.25}
+h2{font-size:20px;margin:40px 0 10px;scroll-margin-top:60px;line-height:1.3}
+h3{font-size:16.5px;margin:22px 0 7px}
+p{margin:0 0 13px}
+p.lead{color:var(--ink2);margin-bottom:22px}
+ul,ol.liste{margin:0 0 13px;padding-left:21px}
+li{margin-bottom:5px}
+.merk{border-left:3px solid var(--brand);background:var(--panel);border-radius:0 var(--r) var(--r) 0;padding:12px 15px;margin:16px 0}
+.merk b{color:var(--brand)}
+.warnung{border-left:3px solid var(--bad);background:var(--panel);border-radius:0 var(--r) var(--r) 0;padding:12px 15px;margin:16px 0}
+.warnung b{color:var(--bad)}
+.karte{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:16px 0}
+
+.feld{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch;margin-bottom:10px}
+input[type=text],select{background:var(--panel2);border:1px solid var(--line2);border-radius:10px;
+  padding:10px 12px;min-height:44px;font-family:ui-monospace,monospace;font-size:16px;width:100%}
+.feld > label{flex:1 1 130px;min-width:120px}
+.feld label span{display:block;font-size:12.5px;color:var(--muted);margin-bottom:3px;font-family:inherit}
+.fehler{color:var(--bad);font-size:13.5px;margin:4px 0 0}
+
+.erg{display:grid;gap:8px;margin:12px 0}
+@media(min-width:520px){.erg{grid-template-columns:1fr 1fr}}
+.ez{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.ez .n{font-size:12px;color:var(--muted);display:block}
+.ez .w{font-family:ui-monospace,monospace;font-size:17px;font-weight:700;color:var(--hi);word-break:break-all}
+
+.weg{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin-top:10px}
+.weg h4{margin:0 0 7px;font-size:13.5px;color:var(--ink2)}
+.weg table{font-size:13.5px}
+.weg .z{font-family:ui-monospace,monospace;font-size:14px;line-height:1.9}
+.weg .b{color:var(--muted);font-size:12.5px}
+
+table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0}
+th,td{border:1px solid var(--line);padding:5px 7px;text-align:center}
+th{background:var(--panel2);color:var(--ink2);font-weight:650;font-size:12.5px}
+td.l,th.l{text-align:left}
+.scroll{overflow-x:auto}
+
+.bits{font-family:ui-monospace,monospace;font-size:15px;word-break:break-all;line-height:2}
+.bits b{padding:2px 1px}
+.bv{color:var(--bad);font-weight:700}
+.be{color:var(--brand);font-weight:700}
+.bm{color:var(--hi);font-weight:700}
+.legende{font-size:12.5px;color:var(--muted);margin-top:6px}
+.legende i{font-style:normal;font-weight:700}
+
+details.loesung{margin-top:11px;border-top:1px solid var(--line);padding-top:9px}
+details.loesung summary{cursor:pointer;color:var(--brand);font-size:14px;font-weight:600;list-style:none}
+details.loesung summary::-webkit-details-marker{display:none}
+details.loesung summary::before{content:"▸ "}
+details.loesung[open] summary::before{content:"▾ "}
+details.loesung .inh{margin-top:9px;font-size:14.5px;color:var(--ink2)}
+.aufgabe{border:1px solid var(--line2);border-radius:var(--r);padding:14px;margin:18px 0;background:var(--panel2)}
+.aufgabe .kopf{font-weight:650;color:var(--hi);font-size:12.5px;margin-bottom:6px}
+
+.frage{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:13px;margin-bottom:11px}
+.frage .q{font-weight:600;margin:0 0 9px}
+.opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line2);
+  border-radius:10px;padding:11px 13px;margin-bottom:7px;font-size:15px;min-height:46px}
+.opt:hover{border-color:var(--brand)}
+.opt.richtig{border-color:var(--ok);background:rgba(88,192,140,.14)}
+.opt.falsch{border-color:var(--bad);background:rgba(228,87,61,.13)}
+.rueck{font-size:13.5px;color:var(--ink2);margin-top:6px}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;padding:14px 16px;text-align:center}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body data-theme="dark">
+
+<header><b>Zahlen im Rechner</b><button class="btn klein" id="theme">Hell</button></header>
+<details class="inhalt"><summary>Inhalt</summary><ol id="toc"></ol></details>
+
+<main>
+<h1>Wie ein Rechner Zahlen aufschreibt</h1>
+<p class="lead">Von der Umwandlung zwischen Stellenwertsystemen über negative Zahlen im Zweierkomplement bis zu
+Fest- und Gleitkommazahlen. Jeder Rechner auf dieser Seite zeigt den Rechenweg mit — so kannst du deine eigene
+Rechnung Schritt für Schritt vergleichen.</p>
+
+<!-- ================================================================= -->
+<h2 id="s1">1. Stellenwertsysteme</h2>
+<p>In jedem Stellenwertsystem hat eine Ziffer zwei Eigenschaften: ihren Wert und ihre Stelle. Der Beitrag einer
+Ziffer ist das Produkt aus beidem. Im Dezimalsystem bedeutet <span class="mono">407</span>:</p>
+<div class="merk mono">4 · 10² + 0 · 10¹ + 7 · 10⁰ = 400 + 0 + 7</div>
+<p>Ersetzt man die 10 durch eine andere <b>Basis</b>, ändert sich nichts am Prinzip. Im Dualsystem mit der
+Basis 2 bedeutet <span class="mono">1101</span>:</p>
+<div class="merk mono">1 · 2³ + 1 · 2² + 0 · 2¹ + 1 · 2⁰ = 8 + 4 + 0 + 1 = 13</div>
+
+<div class="scroll"><table>
+<thead><tr><th class="l">System</th><th>Basis</th><th class="l">Ziffern</th><th class="l">Wozu</th></tr></thead>
+<tbody>
+<tr><td class="l">Dual (binär)</td><td>2</td><td class="l mono">0 1</td><td class="l">die Sprache der Schaltung: Strom an oder aus</td></tr>
+<tr><td class="l">Oktal</td><td>8</td><td class="l mono">0–7</td><td class="l">Kurzschreibweise, drei Bit je Ziffer</td></tr>
+<tr><td class="l">Dezimal</td><td>10</td><td class="l mono">0–9</td><td class="l">unser Alltagssystem</td></tr>
+<tr><td class="l">Hexadezimal</td><td>16</td><td class="l mono">0–9, A–F</td><td class="l">Kurzschreibweise, vier Bit je Ziffer</td></tr>
+</tbody></table></div>
+<div class="merk"><b>Warum ausgerechnet 2, 8 und 16?</b> Weil 8 = 2³ und 16 = 2⁴ sind. Deshalb entspricht jede
+Oktalziffer genau drei Bit und jede Hexadezimalziffer genau vier — man kann Bitmuster gruppenweise ablesen,
+ohne zu rechnen. Ein Byte braucht so nur zwei Zeichen statt acht.</div>
+
+<!-- ================================================================= -->
+<h2 id="s2">2. Der Umrechner</h2>
+<p>Gib eine Zahl ein und wähle, in welchem System sie steht. Unten stehen alle Umrechnungen und darunter
+der Weg dorthin.</p>
+
+<div class="karte">
+  <div class="feld">
+    <label style="flex:2 1 180px"><span>Zahl</span>
+      <input type="text" id="uZahl" value="1101" inputmode="text" autocomplete="off" spellcheck="false"></label>
+    <label><span>ist im System</span>
+      <select id="uBasis">
+        <option value="2">Dual (2)</option><option value="8">Oktal (8)</option>
+        <option value="10" selected>Dezimal (10)</option><option value="16">Hexadezimal (16)</option>
+      </select></label>
+  </div>
+  <p class="fehler" id="uFehler"></p>
+  <div class="erg" id="uErg"></div>
+  <div id="uWeg"></div>
+</div>
+
+<h3>Weg 1: Von Dezimal in eine andere Basis</h3>
+<p>Fortgesetzte Division durch die Basis. Die <b>Reste von unten nach oben</b> gelesen ergeben das Ergebnis.
+Das ist der Weg, den man in der Klausur aufschreibt.</p>
+<h3>Weg 2: In das Dezimalsystem</h3>
+<p>Jede Ziffer mit ihrem Stellenwert multiplizieren und alles addieren. Der Umrechner zeigt beide Wege,
+je nachdem, was gerade gebraucht wird.</p>
+<h3>Weg 3: Zwischen Dual, Oktal und Hexadezimal</h3>
+<p>Hier ist gar keine Rechnung nötig: Bits von rechts in Dreier- oder Vierergruppen aufteilen, jede Gruppe
+einzeln übersetzen. Bei Bedarf vorn mit Nullen auffüllen.</p>
+<div class="merk mono">1101 1010 → D A → 0xDA<br>011 011 010 → 3 3 2 → 0o332</div>
+
+<div class="aufgabe"><div class="kopf">Aufgabe 1</div>
+  <p style="margin:0">Wandle <span class="mono">173</span> (dezimal) in das Dual- und in das Hexadezimalsystem um. Rechne erst selbst.</p>
+  <details class="loesung"><summary>Lösung anzeigen</summary><div class="inh">
+    <p>173 : 2 = 86 Rest <b>1</b> · 86 : 2 = 43 Rest <b>0</b> · 43 : 2 = 21 Rest <b>1</b> · 21 : 2 = 10 Rest <b>1</b> ·
+    10 : 2 = 5 Rest <b>0</b> · 5 : 2 = 2 Rest <b>1</b> · 2 : 2 = 1 Rest <b>0</b> · 1 : 2 = 0 Rest <b>1</b></p>
+    <p>Reste von unten nach oben: <span class="mono">10101101</span></p>
+    <p>Hexadezimal geht danach ohne Rechnung: <span class="mono">1010 1101</span> → <span class="mono">A D</span> → <b>0xAD</b>.
+    Zur Probe: 10 · 16 + 13 = 173.</p>
+  </div></details>
+</div>
+
+<!-- ================================================================= -->
+<h2 id="s3">3. Negative Zahlen: das Zweierkomplement</h2>
+<p>Ein Rechner kennt kein Minuszeichen, nur Bits. Man könnte das oberste Bit als Vorzeichen verwenden — dann
+gäbe es aber zwei Nullen (+0 und −0), und die Addition müsste Vorzeichen getrennt behandeln. Das
+Zweierkomplement löst beides auf einen Schlag.</p>
+
+<div class="merk"><b>So bildet man es.</b> Alle Bits umdrehen, dann 1 addieren. Fertig.<br>
+Und der eigentliche Gewinn: <b>Subtraktion wird zur Addition.</b> Der Rechner braucht kein Subtrahierwerk,
+er addiert einfach das Zweierkomplement.</div>
+
+<div class="karte">
+  <div class="feld">
+    <label style="flex:2 1 160px"><span>Dezimalzahl (auch negativ)</span>
+      <input type="text" id="kZahl" value="-42" inputmode="text" autocomplete="off"></label>
+    <label><span>Bitbreite</span>
+      <select id="kBits"><option>4</option><option selected>8</option><option>16</option><option>32</option></select></label>
+  </div>
+  <p class="fehler" id="kFehler"></p>
+  <div id="kErg"></div>
+</div>
+
+<div class="merk"><b>Das oberste Bit verrät das Vorzeichen</b>, ist aber kein reines Vorzeichenbit: Es hat einen
+eigenen, negativen Stellenwert. Bei 8 Bit ist das −128. Deshalb gilt
+<span class="mono">10000000</span> = −128 und der Wertebereich ist unsymmetrisch: −128 bis +127.</div>
+
+<div class="aufgabe"><div class="kopf">Aufgabe 2</div>
+  <p style="margin:0">Berechne <span class="mono">37 − 50</span> in 8 Bit als Addition im Zweierkomplement.</p>
+  <details class="loesung"><summary>Lösung anzeigen</summary><div class="inh">
+    <p>50 = <span class="mono">00110010</span>. Invertiert: <span class="mono">11001101</span>, plus 1:
+    <span class="mono">11001110</span> = −50.</p>
+    <p>37 = <span class="mono">00100101</span>. Addition:<br>
+    <span class="mono">00100101 + 11001110 = 11110011</span></p>
+    <p>Das oberste Bit ist 1, also negativ. Rückumwandlung: invertieren ergibt <span class="mono">00001100</span>,
+    plus 1 ergibt <span class="mono">00001101</span> = 13. Ergebnis also <b>−13</b>. Stimmt: 37 − 50 = −13.</p>
+  </div></details>
+</div>
+
+<!-- ================================================================= -->
+<h2 id="s4">4. Festkommazahlen</h2>
+<p>Bisher ging es nur um ganze Zahlen. Die Nachkommastellen folgen demselben Prinzip — die Stellenwerte laufen
+rechts vom Komma einfach weiter: 2⁻¹ = 0,5, dann 0,25, dann 0,125 und so fort.</p>
+<div class="merk mono">0,1011₂ = 0,5 + 0 + 0,125 + 0,0625 = 0,6875</div>
+<p>Beim <b>Festkomma</b> legt man vorab fest, wie viele Bits vor und wie viele nach dem Komma stehen.
+Das Komma sitzt immer an derselben Stelle — deshalb der Name. Der Rechner speichert nur die Bits,
+die Kommaposition steht im Programm.</p>
+
+<div class="merk"><b>Umwandlung der Nachkommastellen:</b> wiederholt mit 2 multiplizieren. Die Stellen vor dem
+Komma ergeben von oben nach unten gelesen die Bits — genau andersherum als beim ganzzahligen Teil.</div>
+
+<div class="karte">
+  <div class="feld">
+    <label style="flex:2 1 160px"><span>Dezimalzahl mit Komma</span>
+      <input type="text" id="fZahl" value="6,375" inputmode="decimal" autocomplete="off"></label>
+    <label><span>Nachkommabits</span>
+      <select id="fBits"><option>4</option><option selected>8</option><option>12</option><option>16</option></select></label>
+  </div>
+  <p class="fehler" id="fFehler"></p>
+  <div id="fErg"></div>
+</div>
+
+<div class="warnung"><b>Nicht jede Dezimalzahl geht auf.</b> 0,1 lässt sich im Dualsystem nicht exakt
+darstellen — die Multiplikation mit 2 gerät in eine Endlosschleife, genau wie 1/3 im Dezimalsystem.
+Probiere im Rechner oben <span class="mono">0,1</span> aus und sieh dir die Periode an.</div>
+
+<!-- ================================================================= -->
+<h2 id="s5">5. Gleitkommazahlen nach IEEE 754</h2>
+<p>Festkomma hat einen Nachteil: Der Wertebereich ist starr. Wer sehr große und sehr kleine Zahlen braucht,
+verschwendet Bits. Die Lösung ist dieselbe wie bei der wissenschaftlichen Schreibweise
+<span class="mono">6,022 · 10²³</span> — nur zur Basis 2.</p>
+
+<div class="merk mono">Zahl = (−1)<sup>V</sup> · 1,M · 2<sup>E−127</sup></div>
+<p>Ein 32-Bit-Wert wird dazu aufgeteilt:</p>
+<div class="scroll"><table>
+<thead><tr><th class="l">Teil</th><th>Bits</th><th class="l">Bedeutung</th></tr></thead>
+<tbody>
+<tr><td class="l">Vorzeichen V</td><td>1</td><td class="l">0 = positiv, 1 = negativ</td></tr>
+<tr><td class="l">Exponent E</td><td>8</td><td class="l">Zweierpotenz, um 127 verschoben gespeichert</td></tr>
+<tr><td class="l">Mantisse M</td><td>23</td><td class="l">die Nachkommastellen; die führende 1 wird nicht gespeichert</td></tr>
+</tbody></table></div>
+<p>Zwei Kniffe stecken darin. Der <b>Bias 127</b> erspart ein eigenes Vorzeichen für den Exponenten: Gespeichert
+wird E = e + 127, der gespeicherte Bereich 1 bis 254 steht also für Exponenten von −126 bis +127. Und das
+<b>versteckte Bit</b>: Weil eine normalisierte Zahl immer mit <span class="mono">1,</span> beginnt, muss man
+diese 1 nicht speichern — man bekommt 24 Bit Genauigkeit zum Preis von 23.</p>
+
+<div class="karte">
+  <div class="feld">
+    <label style="flex:2 1 200px"><span>Dezimalzahl</span>
+      <input type="text" id="gZahl" value="-6,375" inputmode="decimal" autocomplete="off"></label>
+  </div>
+  <p class="fehler" id="gFehler"></p>
+  <div id="gErg"></div>
+  <div class="feld" style="margin-top:10px">
+    <button class="btn klein" data-g="0,1">0,1</button>
+    <button class="btn klein" data-g="1">1</button>
+    <button class="btn klein" data-g="0,5">0,5</button>
+    <button class="btn klein" data-g="-6,375">−6,375</button>
+    <button class="btn klein" data-g="3,14159265">π</button>
+    <button class="btn klein" data-g="16777217">2²⁴+1</button>
+  </div>
+</div>
+
+<div class="warnung"><b>Der berühmte Rundungsfehler.</b> <span class="mono">0,1 + 0,2</span> ergibt in jeder
+gängigen Programmiersprache nicht 0,3, sondern 0,30000000000000004. Der Grund steht oben: 0,1 und 0,2 sind
+im Dualsystem periodisch und werden beim Speichern gerundet. Deshalb prüft man Kommazahlen nie mit
+<span class="mono">==</span> auf Gleichheit, sondern fragt, ob der Abstand klein genug ist.</div>
+
+<div class="aufgabe"><div class="kopf">Aufgabe 3</div>
+  <p style="margin:0">Gib <span class="mono">16777217</span> (also 2²⁴ + 1) im Rechner oben ein. Erkläre, was passiert.</p>
+  <details class="loesung"><summary>Lösung anzeigen</summary><div class="inh">
+    <p>Die Zahl braucht 25 signifikante Bits, gespeichert werden aber nur 24 (23 plus das versteckte Bit).
+    Das letzte Bit fällt weg, gespeichert wird 16777216. Die Zahl ist also zu groß für die Genauigkeit —
+    nicht zu groß für den Wertebereich. Beides zu unterscheiden ist der Kern der Sache.</p>
+    <p>Praktische Folge: Ab 2²⁴ kann eine 32-Bit-Gleitkommazahl nicht mehr jede ganze Zahl darstellen.
+    Deshalb rechnet man Geldbeträge in Cent als Ganzzahl und nicht in Euro als Gleitkommazahl.</p>
+  </div></details>
+</div>
+
+<!-- ================================================================= -->
+<h2 id="s6">6. Welches Format wofür?</h2>
+<div class="scroll"><table>
+<thead><tr><th class="l">Format</th><th class="l">Stärke</th><th class="l">Schwäche</th><th class="l">Typisch für</th></tr></thead>
+<tbody>
+<tr><td class="l">Ganzzahl ohne Vorzeichen</td><td class="l">exakt, einfach</td><td class="l">nur nicht-negativ</td><td class="l">Adressen, Zähler, Farbwerte</td></tr>
+<tr><td class="l">Zweierkomplement</td><td class="l">exakt, Subtraktion = Addition</td><td class="l">unsymmetrischer Bereich</td><td class="l">alle ganzzahligen Rechnungen</td></tr>
+<tr><td class="l">Festkomma</td><td class="l">exakt im festen Bereich, schnell</td><td class="l">starrer Wertebereich</td><td class="l">Geldbeträge, Messwerte, Mikrocontroller</td></tr>
+<tr><td class="l">Gleitkomma</td><td class="l">riesiger Wertebereich</td><td class="l">Rundungsfehler, langsamer</td><td class="l">Naturwissenschaft, Grafik, KI</td></tr>
+</tbody></table></div>
+
+<!-- ================================================================= -->
+<h2 id="s7">7. Test</h2>
+<p>Neun Fragen. Jede Antwort wird sofort ausgewertet.</p>
+<div id="test"></div>
+<div id="testStand" style="color:var(--ink2);font-size:14.5px;margin-top:10px"></div>
+<button class="btn klein" id="testReset" style="margin-top:10px">Test zurücksetzen</button>
+</main>
+
+<footer>Informatik Klasse 11 · LB 1 Technische Informatik · 1.1 Zahlsysteme und Zeichenkodierung</footer>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const ZIF="0123456789ABCDEF";
+
+/* ---------- Kopf ---------- */
+(function(){
+  const ol=$("#toc");
+  $$("h2[id]").forEach(h=>{ const li=document.createElement("li");
+    li.innerHTML=`<a href="#${h.id}">${h.textContent.replace(/^\d+\.\s*/,"")}</a>`; ol.appendChild(li); });
+  $("details.inhalt").addEventListener("click",e=>{ if(e.target.tagName==="A") $("details.inhalt").open=false; });
+  $("#theme").addEventListener("click",()=>{
+    const d=document.body.dataset.theme==="dark"?"light":"dark";
+    document.body.dataset.theme=d; $("#theme").textContent=d==="dark"?"Hell":"Dunkel";
+    try{ localStorage.setItem("zf.theme",d); }catch(e){}
+  });
+  try{ const t=localStorage.getItem("zf.theme");
+    if(t){ document.body.dataset.theme=t; $("#theme").textContent=t==="dark"?"Hell":"Dunkel"; } }catch(e){}
+})();
+
+/* ================= Umrechner ================= */
+function zuBasis(n, basis){
+  if(n===0) return "0";
+  let s="";
+  while(n>0){ s=ZIF[n%basis]+s; n=Math.floor(n/basis); }
+  return s;
+}
+function vonBasis(s, basis){
+  let w=0;
+  for(const c of s.toUpperCase()){
+    const z=ZIF.indexOf(c);
+    if(z<0||z>=basis) return null;
+    w=w*basis+z;
+  }
+  return w;
+}
+function divSchritte(n, basis){
+  const r=[];
+  if(n===0) return [{n:0,q:0,rest:0}];
+  while(n>0){ const q=Math.floor(n/basis); r.push({n, q, rest:n%basis}); n=q; }
+  return r;
+}
+function stellenSchritte(s, basis){
+  const c=s.toUpperCase().split("");
+  return c.map((z,i)=>{
+    const stelle=c.length-1-i, zw=ZIF.indexOf(z);
+    return {z, stelle, faktor:Math.pow(basis,stelle), teil:zw*Math.pow(basis,stelle), zw};
+  });
+}
+function gruppenL(s, n){          // Bitfeld von links gruppieren, ohne aufzufüllen
+  const g=[];
+  for(let i=0;i<s.length;i+=n) g.push(s.slice(i,i+n));
+  return g;
+}
+function gruppen(bin, n){
+  const g=[], b=bin.padStart(Math.ceil(bin.length/n)*n,"0");
+  for(let i=0;i<b.length;i+=n) g.push(b.slice(i,i+n));
+  return g;
+}
+function umrechnen(){
+  const roh=$("#uZahl").value.trim().replace(/\s/g,"").replace(/^0[xbo]/i,"");
+  const basis=+$("#uBasis").value;
+  const f=$("#uFehler"), e=$("#uErg"), w=$("#uWeg");
+  if(!roh){ f.textContent=""; e.innerHTML=""; w.innerHTML=""; return; }
+  const wert=vonBasis(roh, basis);
+  if(wert===null){
+    f.textContent=`„${roh}" enthält Ziffern, die es im System zur Basis ${basis} nicht gibt. Erlaubt sind ${basis<=10?"0 bis "+(basis-1):"0 bis 9 und A bis "+ZIF[basis-1]}.`;
+    e.innerHTML=""; w.innerHTML=""; return;
+  }
+  if(wert>Number.MAX_SAFE_INTEGER){ f.textContent="Die Zahl ist zu groß für eine exakte Rechnung."; return; }
+  f.textContent="";
+  const bin=zuBasis(wert,2);
+  e.innerHTML=[["Dual (2)",bin],["Oktal (8)",zuBasis(wert,8)],["Dezimal (10)",String(wert)],["Hexadezimal (16)",zuBasis(wert,16)]]
+    .map(([n,v])=>`<div class="ez"><span class="n">${n}</span><span class="w">${v}</span></div>`).join("");
+
+  let h="";
+  // Weg in das Dezimalsystem
+  if(basis!==10){
+    const st=stellenSchritte(roh,basis);
+    h+=`<div class="weg"><h4>Von Basis ${basis} ins Dezimalsystem — Stellenwerte addieren</h4><div class="z">`
+     + st.map(s=>`${s.z} · ${basis}<sup>${s.stelle}</sup> = ${s.zw} · ${s.faktor} = ${s.teil}`).join("<br>")
+     + `<br>Summe = <b>${wert}</b></div></div>`;
+  }
+  // Weg aus dem Dezimalsystem
+  [2,8,16].filter(b=>b!==basis).forEach(b=>{
+    const st=divSchritte(wert,b);
+    h+=`<div class="weg"><h4>Ins System zur Basis ${b} — fortgesetzt teilen, Reste von unten nach oben</h4><div class="z">`
+     + st.map(s=>`${s.n} : ${b} = ${s.q} Rest <b class="bm">${ZIF[s.rest]}</b>`).join("<br>")
+     + `<br>Ergebnis = <b>${zuBasis(wert,b)}</b></div></div>`;
+  });
+  // Gruppenverfahren
+  h+=`<div class="weg"><h4>Ohne Rechnung: Bits gruppieren</h4><div class="z">`
+   + `Vierergruppen → hexadezimal:<br>${gruppen(bin,4).join(" ")} → <b>${gruppen(bin,4).map(g=>ZIF[parseInt(g,2)]).join(" ")}</b><br>`
+   + `Dreiergruppen → oktal:<br>${gruppen(bin,3).join(" ")} → <b>${gruppen(bin,3).map(g=>ZIF[parseInt(g,2)]).join(" ")}</b>`
+   + `</div><p class="b">Von rechts gruppieren, vorn mit Nullen auffüllen.</p></div>`;
+  w.innerHTML=h;
+}
+$("#uZahl").addEventListener("input",umrechnen);
+$("#uBasis").addEventListener("change",umrechnen);
+umrechnen();
+
+/* ================= Zweierkomplement ================= */
+function invertieren(b){ return b.split("").map(c=>c==="1"?"0":"1").join(""); }
+function plusEins(b){
+  const a=b.split(""); let i=a.length-1;
+  while(i>=0){ if(a[i]==="0"){ a[i]="1"; break; } a[i]="0"; i--; }
+  return a.join("");
+}
+function komplement(){
+  const roh=$("#kZahl").value.trim().replace(/\s/g,"").replace("−","-").replace(",",".");
+  const bits=+$("#kBits").value;
+  const f=$("#kFehler"), e=$("#kErg");
+  const n=Number(roh);
+  if(roh===""||!Number.isFinite(n)||!Number.isInteger(n)){
+    f.textContent="Bitte eine ganze Zahl eingeben."; e.innerHTML=""; return;
+  }
+  const min=-(2**(bits-1)), max=2**(bits-1)-1;
+  if(n<min||n>max){
+    f.textContent=`${n} passt nicht in ${bits} Bit. Darstellbar ist ${min} bis ${max}.`;
+    e.innerHTML=""; return;
+  }
+  f.textContent="";
+  const betrag=Math.abs(n);
+  const bBetrag=zuBasis(betrag,2).padStart(bits,"0");
+  let h="";
+  if(n>=0){
+    h+=`<div class="weg"><h4>Positive Zahl — nichts weiter zu tun</h4><div class="z">`
+     + `${n} in ${bits} Bit: <b class="bm">${bBetrag}</b><br>Das oberste Bit ist 0, also positiv.</div></div>`;
+  }else{
+    const inv=invertieren(bBetrag), erg=plusEins(inv);
+    h+=`<div class="weg"><h4>Rechenweg</h4><div class="z">`
+     + `1. Betrag ${betrag} in ${bits} Bit: ${bBetrag}<br>`
+     + `2. alle Bits umdrehen: ${inv}<br>`
+     + `3. eins addieren: <b class="bm">${erg}</b></div>`
+     + `<p class="b">Probe: ${erg} + ${bBetrag} = ${"0".repeat(bits)} mit Übertrag heraus — genau das soll ein Gegenstück leisten.</p></div>`;
+  }
+  const muster = n>=0 ? bBetrag : plusEins(invertieren(bBetrag));
+  const stellen = muster.split("").map((b,i)=>{
+    const p=bits-1-i, wert=(i===0? -(2**p) : 2**p);
+    return {b, p, wert, teil:b==="1"?wert:0};
+  });
+  h = `<div class="erg">
+      <div class="ez"><span class="n">Bitmuster (${bits} Bit)</span><span class="w">${gruppen(muster,4).join(" ")}</span></div>
+      <div class="ez"><span class="n">Hexadezimal</span><span class="w">${zuBasis(parseInt(muster,2),16).padStart(bits/4,"0")}</span></div>
+      <div class="ez"><span class="n">Wert</span><span class="w">${n}</span></div>
+      <div class="ez"><span class="n">Bereich bei ${bits} Bit</span><span class="w">${min} … ${max}</span></div>
+      </div>` + h
+    + `<div class="weg"><h4>Probe über die Stellenwerte</h4><div class="z">`
+    + stellen.filter(s=>s.b==="1").map(s=>`Bit ${s.p}: ${s.wert}`).join("<br>")
+    + (stellen.every(s=>s.b==="0")?"keine gesetzten Bits":"")
+    + `<br>Summe = <b>${stellen.reduce((a,s)=>a+s.teil,0)}</b></div>`
+    + `<p class="b">Das oberste Bit zählt negativ: bei ${bits} Bit ist sein Stellenwert −${2**(bits-1)}.</p></div>`;
+  e.innerHTML=h;
+}
+$("#kZahl").addEventListener("input",komplement);
+$("#kBits").addEventListener("change",komplement);
+komplement();
+
+/* ================= Festkomma ================= */
+function nachkommaSchritte(bruch, n){
+  const s=[];
+  for(let i=0;i<n && bruch>0;i++){
+    const v=bruch*2, bit=v>=1?1:0;
+    s.push({vor:bruch, prod:v, bit});
+    bruch = v-bit;
+  }
+  return {schritte:s, rest:bruch};
+}
+function festkomma(){
+  const roh=$("#fZahl").value.trim().replace("−","-").replace(",",".");
+  const n=+$("#fBits").value;
+  const f=$("#fFehler"), e=$("#fErg");
+  const x=Number(roh);
+  if(roh===""||!Number.isFinite(x)){ f.textContent="Bitte eine Zahl eingeben, zum Beispiel 6,375."; e.innerHTML=""; return; }
+  if(Math.abs(x)>=2**20){ f.textContent="Bitte eine kleinere Zahl wählen."; e.innerHTML=""; return; }
+  f.textContent="";
+  const neg=x<0, a=Math.abs(x);
+  const ganz=Math.floor(a), bruch=a-ganz;
+  const bGanz=zuBasis(ganz,2);
+  const {schritte,rest}=nachkommaSchritte(bruch,n);
+  let bits=schritte.map(s=>s.bit).join("");
+  bits=bits.padEnd(n,"0");
+  const dargestellt=(neg?-1:1)*(ganz + parseInt(bits||"0",2)/2**n);
+  const fehler=Math.abs(x-dargestellt);
+  e.innerHTML=`<div class="erg">
+      <div class="ez"><span class="n">Vorkommateil</span><span class="w">${bGanz}</span></div>
+      <div class="ez"><span class="n">Nachkommateil (${n} Bit)</span><span class="w">${bits}</span></div>
+      <div class="ez"><span class="n">Festkommazahl</span><span class="w">${neg?"−":""}${bGanz},${bits}</span></div>
+      <div class="ez"><span class="n">Tatsächlich dargestellt</span><span class="w">${dargestellt}</span></div>
+    </div>`
+    + `<div class="weg"><h4>Vorkommateil — fortgesetzt teilen</h4><div class="z">`
+    + divSchritte(ganz,2).map(s=>`${s.n} : 2 = ${s.q} Rest <b class="bm">${s.rest}</b>`).join("<br>")
+    + `<br>von unten nach oben gelesen: <b>${bGanz}</b></div></div>`
+    + `<div class="weg"><h4>Nachkommateil — fortgesetzt mit 2 malnehmen</h4><div class="z">`
+    + (schritte.length
+        ? schritte.map(s=>`${runde(s.vor)} · 2 = ${runde(s.prod)} → Bit <b class="bm">${s.bit}</b>`).join("<br>")
+        : "kein Nachkommateil")
+    + `<br>von oben nach unten gelesen: <b>${bits}</b></div>`
+    + `<p class="b">${rest>1e-12
+        ? `Nach ${n} Schritten ist noch ein Rest übrig — die Zahl lässt sich im Dualsystem nicht exakt darstellen. Abweichung: ${fehler.toExponential(3)}`
+        : "Der Rest ist 0, die Zahl geht exakt auf."}</p></div>`;
+}
+const runde=v=>Number(v.toFixed(10)).toString().replace(".",",");
+$("#fZahl").addEventListener("input",festkomma);
+$("#fBits").addEventListener("change",festkomma);
+festkomma();
+
+/* ================= IEEE 754 ================= */
+function ieeeBits(x){
+  const b=new ArrayBuffer(4);
+  new Float32Array(b)[0]=x;
+  const u=new Uint32Array(b)[0];
+  return u.toString(2).padStart(32,"0");
+}
+function gleitkomma(){
+  const roh=$("#gZahl").value.trim().replace("−","-").replace(",",".");
+  const f=$("#gFehler"), e=$("#gErg");
+  const x=Number(roh);
+  if(roh===""||!Number.isFinite(x)){ f.textContent="Bitte eine Zahl eingeben, zum Beispiel −6,375."; e.innerHTML=""; return; }
+  f.textContent="";
+  const bits=ieeeBits(x);
+  const V=bits[0], E=bits.slice(1,9), M=bits.slice(9);
+  const Ez=parseInt(E,2), e2=Ez-127;
+  const gespeichert=new Float32Array([x])[0];
+  const fehler=Math.abs(x-gespeichert);
+
+  let h=`<div class="bits"><b class="bv">${V}</b> <b class="be">${gruppenL(E,4).join(" ")}</b> <b class="bm">${gruppenL(M,4).join(" ")}</b></div>
+    <p class="legende"><i class="bv">rot</i> Vorzeichen · <i class="be">grün</i> Exponent · <i class="bm">gelb</i> Mantisse (1 + 8 + 23 = 32 Bit)</p>
+    <div class="erg">
+      <div class="ez"><span class="n">Hexadezimal</span><span class="w">0x${parseInt(bits,2).toString(16).toUpperCase().padStart(8,"0")}</span></div>
+      <div class="ez"><span class="n">Gespeicherter Wert</span><span class="w">${gespeichert}</span></div>
+    </div>`;
+
+  if(Ez===255){
+    h+=`<div class="weg"><h4>Sonderfall</h4><div class="z">${M.includes("1")?"Keine Zahl (NaN)":"Unendlich"} — der Exponent besteht nur aus Einsen.</div></div>`;
+    e.innerHTML=h; return;
+  }
+  if(x===0){
+    h+=`<div class="weg"><h4>Sonderfall Null</h4><div class="z">Alle Bits sind 0. Die Null lässt sich nicht als 1,M · 2<sup>e</sup> schreiben, deshalb ist sie eigens festgelegt. Es gibt sogar zwei: +0 und −0.</div></div>`;
+    e.innerHTML=h; return;
+  }
+  const denorm = Ez===0;
+  h+=`<div class="weg"><h4>Rechenweg</h4><div class="z">`
+   + `1. Vorzeichen: ${x<0?"negativ → V = 1":"positiv → V = 0"}<br>`
+   + `2. Betrag normalisieren: ${Math.abs(x)} = 1,… · 2<sup>${e2}</sup><br>`
+   + `3. Exponent speichern: ${e2} + 127 = ${Ez} → <b class="be">${E}</b><br>`
+   + `4. Mantisse: die Nachkommastellen der Form 1,M, also <b class="bm">${M}</b><br>`
+   + `5. Zusammensetzen: ${V} | ${E} | ${M}`
+   + `</div><p class="b">${denorm?"Denormalisierte Zahl: der Exponent ist 0, hier gilt ausnahmsweise 0,M statt 1,M.":"Die führende 1 vor dem Komma wird nicht gespeichert — sie ist immer da."}</p></div>`
+   + `<div class="weg"><h4>Probe: zurückgerechnet</h4><div class="z">`
+   + `(−1)<sup>${V}</sup> · 1,${M.replace(/0+$/,"")||"0"}₂ · 2<sup>${e2}</sup> = <b>${gespeichert}</b></div>`
+   + `<p class="b">${fehler===0
+       ? "Die Zahl ist exakt darstellbar — kein Rundungsfehler."
+       : `Eingegeben war ${x}. Abweichung: ${fehler.toExponential(3)}. Die Zahl musste beim Speichern gerundet werden.`}</p></div>`;
+  e.innerHTML=h;
+}
+$("#gZahl").addEventListener("input",gleitkomma);
+$$("[data-g]").forEach(b=>b.addEventListener("click",()=>{ $("#gZahl").value=b.dataset.g; gleitkomma(); }));
+gleitkomma();
+
+/* ================= Test ================= */
+const FRAGEN=[
+  {q:"Welchen Dezimalwert hat 1011₂?",o:["9","11","13","23"],r:1,
+   e:"8 + 0 + 2 + 1 = 11. Die Stellenwerte sind von links 8, 4, 2, 1."},
+  {q:"Wie viele Bit entsprechen genau einer Hexadezimalziffer?",o:["2","3","4","8"],r:2,
+   e:"16 = 2⁴, deshalb steht jede Hexadezimalziffer für vier Bit. Bei Oktal sind es drei."},
+  {q:"Welcher Rest steht beim Divisionsverfahren ganz oben im Ergebnis?",
+   o:["Der erste Rest","Der letzte Rest","Der größte Rest","Das spielt keine Rolle"],r:1,
+   e:"Die Reste werden von unten nach oben gelesen — der zuletzt berechnete Rest ist die höchstwertige Ziffer."},
+  {q:"Wie bildet man das Zweierkomplement?",
+   o:["Alle Bits umdrehen","Alle Bits umdrehen und 1 addieren","Das oberste Bit auf 1 setzen","1 abziehen und umdrehen"],r:1,
+   e:"Invertieren allein ist das Einerkomplement. Erst das Addieren der 1 macht daraus das Zweierkomplement."},
+  {q:"Welchen Wertebereich hat eine 8-Bit-Zahl im Zweierkomplement?",
+   o:["0 bis 255","−127 bis +127","−128 bis +127","−255 bis +255"],r:2,
+   e:"Unsymmetrisch, weil es nur eine Null gibt. Das Muster 10000000 ist −128."},
+  {q:"Warum wird Subtraktion im Rechner als Addition ausgeführt?",
+   o:["Weil Addition schneller ist","Weil das Zweierkomplement die Subtraktion überflüssig macht","Weil es kein Minuszeichen gibt","Weil Subtraktion ungenau wäre"],r:1,
+   e:"a − b ist dasselbe wie a + (−b). Das Rechenwerk braucht deshalb nur ein Addierwerk."},
+  {q:"Warum lässt sich 0,1 nicht exakt als Dualzahl speichern?",
+   o:["Die Zahl ist zu klein","Der Nenner 10 enthält den Primfaktor 5","Der Rechner rundet immer","0,1 ist keine Kommazahl"],r:1,
+   e:"Exakt darstellbar sind nur Brüche, deren Nenner eine Zweierpotenz ist. 1/10 ist es nicht und wird periodisch — wie 1/3 im Dezimalsystem."},
+  {q:"Wozu dient der Bias 127 beim Exponenten?",
+   o:["Er vergrößert den Wertebereich","Er erspart ein Vorzeichen für den Exponenten","Er rundet das Ergebnis","Er speichert die führende 1"],r:1,
+   e:"Gespeichert wird e + 127, dadurch kommt man mit einer gewöhnlichen vorzeichenlosen Zahl aus."},
+  {q:"Was passiert mit 16777217 als 32-Bit-Gleitkommazahl?",
+   o:["Es entsteht Unendlich","Sie wird zu 16777216 gerundet","Es entsteht ein Fehler","Sie wird exakt gespeichert"],r:1,
+   e:"Die Genauigkeit reicht nur für 24 signifikante Bits. Der Wertebereich wäre kein Problem — die Genauigkeit ist es."}
+];
+let antw={};
+function zeichneTest(){
+  const w=$("#test"); w.innerHTML="";
+  FRAGEN.forEach((f,i)=>{
+    const d=document.createElement("div"); d.className="frage";
+    d.innerHTML=`<p class="q">${i+1}. ${f.q}</p>`;
+    f.o.forEach((o,j)=>{
+      const b=document.createElement("button"); b.className="opt"; b.textContent=o;
+      if(antw[i]!==undefined){
+        if(j===f.r) b.classList.add("richtig"); else if(j===antw[i]) b.classList.add("falsch");
+        b.disabled=true;
+      }
+      b.addEventListener("click",()=>{ if(antw[i]===undefined){ antw[i]=j; zeichneTest(); } });
+      d.appendChild(b);
+    });
+    if(antw[i]!==undefined){
+      const r=document.createElement("div"); r.className="rueck";
+      r.innerHTML=(antw[i]===f.r?"<b style='color:var(--ok)'>Richtig.</b> ":"<b style='color:var(--bad)'>Noch nicht.</b> ")+f.e;
+      d.appendChild(r);
+    }
+    w.appendChild(d);
+  });
+  const n=Object.keys(antw).length, ok=Object.keys(antw).filter(i=>antw[i]===FRAGEN[i].r).length;
+  $("#testStand").textContent = n?`${ok} von ${n} beantworteten Fragen richtig (${FRAGEN.length} insgesamt).`:"";
+}
+$("#testReset").addEventListener("click",()=>{ antw={}; zeichneTest(); });
+zeichneTest();
+</script>
+</body>
+</html>
