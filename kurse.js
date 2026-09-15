@@ -202,7 +202,7 @@ const MATERIAL = [
     stand:"2026-09", neu:false },
 
    { fach:"informatik", klasse:11, bereich:"technische-informatik",
-    titel:"Zahlenformate",
+    titel:"Exit-Game",
     typ:"uebung",
     url:"inf/sekii/exit-game.html",
     info:"Praktikumstag im Rechenzentrum, und ausgerechnet jetzt fällt die Hauptversorgung aus. Schaffts du es alle Rätsel zu lösen...?",
