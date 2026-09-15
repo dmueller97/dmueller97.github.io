@@ -179,12 +179,6 @@ const LEHRPLAN = {
              klasse darf auch eine Liste sein: klasse: [11, 12]
    ------------------------------------------------------------------- */
 const MATERIAL = [
-   { fach:"informatik", klasse:11, bereich:"technische-informatik",
-    titel:"Zahlenformate",
-    typ:"uebung",
-    url:"inf/sekii/exit-game.html",
-    info:"Praktikumstag im Rechenzentrum, und ausgerechnet jetzt fällt die Hauptversorgung aus. Schaffts du es alle Rätsel zu lösen...?",
-    stand:"2026-09", neu:true },
    
    { fach:"informatik", klasse:11, bereich:"technische-informatik",
     titel:"Zahlenformate",
@@ -206,6 +200,13 @@ const MATERIAL = [
     url:"inf/sekii/von-neumann.html",
     info:"Aufbau, Befehlszyklus und Befehlssatz mit anklickbarem Schaubild, Zuordnungsübung, Schritt-für-Schritt-Simulation und Selbsttest. Enthält die Aufgaben 1.4.2 bis 1.4.4 mit aufklappbaren Lösungen.",
     stand:"2026-09", neu:false },
+
+   { fach:"informatik", klasse:11, bereich:"technische-informatik",
+    titel:"Zahlenformate",
+    typ:"uebung",
+    url:"inf/sekii/exit-game.html",
+    info:"Praktikumstag im Rechenzentrum, und ausgerechnet jetzt fällt die Hauptversorgung aus. Schaffts du es alle Rätsel zu lösen...?",
+    stand:"2026-09", neu:true },
 
    { fach:"englisch", klasse:5, bereich:"grammatik-5",
     titel:"Unit 1 — personal pronouns",
