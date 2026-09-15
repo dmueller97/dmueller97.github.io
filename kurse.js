@@ -194,6 +194,13 @@ const MATERIAL = [
     info:"Aufbau, Befehlszyklus und Befehlssatz mit anklickbarem Schaubild, Zuordnungsübung, Schritt-für-Schritt-Simulation und Selbsttest. Enthält die Aufgaben 1.4.2 bis 1.4.4 mit aufklappbaren Lösungen.",
     stand:"2026-09", neu:true },
 
+   { fach:"englisch", klasse:5, bereich:"grammatik-5",
+    titel:"Unit 1 — personal pronouns",
+    typ:"uebung",
+    url:"eng/seki/personal-pronouns-quiz.html",
+    info:"Übung zum Selbstlernen.",
+    stand:"2026-09" }
+
   /* Vorlagen zum Kopieren — Raute vor der Zeile entfernen und anpassen:
 
   { fach:"informatik", klasse:10, bereich:"python-turtle",
