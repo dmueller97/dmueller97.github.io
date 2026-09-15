@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blackout — Exit-Game Technische Informatik</title>
+<style>
+:root{
+  --bg:#0A1416; --tief:#06100F; --panel:#122125; --panel2:#0D1B1E; --line:#1F3439; --line2:#2C4A50;
+  --ink:#DFEAEB; --ink2:#9FB6B9; --muted:#6B8388;
+  --brand:#2FB3A0; --hi:#FFC24B; --ok:#58C08C; --bad:#E4573D; --lila:#A78BFA;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;font-size:16px;line-height:1.55;
+  overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(900px 500px at 50% -10%, rgba(47,179,160,.10), transparent 70%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.017) 0 1px, transparent 1px 3px);}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.mono{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}
+
+/* ---------- Kopfleiste ---------- */
+header{position:sticky;top:0;z-index:20;background:rgba(10,20,22,.93);border-bottom:1px solid var(--line);
+  padding:8px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.uhr{font-family:ui-monospace,monospace;font-size:26px;font-weight:700;letter-spacing:1px;
+  color:var(--hi);min-width:98px;text-shadow:0 0 18px rgba(255,194,75,.35)}
+.uhr.knapp{color:var(--bad);text-shadow:0 0 18px rgba(228,87,61,.5);animation:puls 1s infinite}
+@keyframes puls{50%{opacity:.45}}
+.akku{flex:1;min-width:110px;height:9px;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;overflow:hidden}
+.akku i{display:block;height:100%;background:linear-gradient(90deg,var(--bad),var(--hi),var(--ok));
+  transition:width 1s linear}
+.stat{display:flex;gap:12px;font-size:13px;color:var(--ink2);font-family:ui-monospace,monospace}
+.stat b{color:var(--hi)}
+.punkte{color:var(--brand)}
+
+main{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:18px 14px 80px}
+
+/* ---------- Karten ---------- */
+.szene{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+  border-radius:var(--r);padding:18px;margin-bottom:16px;box-shadow:0 18px 40px rgba(0,0,0,.3)}
+h1{font-size:30px;margin:0 0 4px;letter-spacing:-.6px;line-height:1.1}
+h1 span{color:var(--bad)}
+h2{font-size:20px;margin:0 0 4px;letter-spacing:-.3px}
+h3{font-size:16px;margin:16px 0 6px}
+p{margin:0 0 12px}
+p.lead{color:var(--ink2)}
+.funk{border-left:3px solid var(--brand);background:rgba(47,179,160,.07);border-radius:0 10px 10px 0;
+  padding:11px 14px;margin:14px 0;font-size:15px}
+.funk b{color:var(--brand)}
+.funk .von{display:block;font-size:11.5px;color:var(--muted);letter-spacing:.4px;margin-bottom:3px}
+
+.btn{background:var(--panel2);border:1px solid var(--line2);border-radius:11px;padding:11px 16px;min-height:46px}
+.btn:hover{border-color:var(--brand)}
+.btn.gross{width:100%;font-size:17px;font-weight:600;padding:15px}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#04201C;font-weight:700}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.klein{padding:7px 12px;min-height:38px;font-size:14px}
+.btn.warn{border-color:var(--hi);color:var(--hi)}
+.btn:disabled{opacity:.4;cursor:default}
+.reihe{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+
+/* ---------- Modulübersicht ---------- */
+.module{display:grid;gap:12px;margin:16px 0}
+@media(min-width:620px){.module{grid-template-columns:1fr 1fr}}
+.modul{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r);padding:14px;
+  display:flex;gap:13px;align-items:flex-start;text-align:left;transition:border-color .15s,transform .15s}
+.modul:hover:not(:disabled){border-color:var(--brand);transform:translateY(-2px)}
+.modul.fertig{border-color:rgba(88,192,140,.5)}
+.modul.gesperrt{opacity:.45}
+.modul .ico{flex:0 0 auto}
+.modul .t{font-weight:650;font-size:15.5px}
+.modul .s{font-size:12.5px;color:var(--muted);display:block;margin-top:2px}
+.modul .z{font-family:ui-monospace,monospace;font-size:22px;font-weight:700;color:var(--ok);margin-left:auto}
+
+/* ---------- Rätsel ---------- */
+.fortschritt{display:flex;gap:6px;margin-bottom:14px}
+.fortschritt i{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.fortschritt i.an{background:var(--brand);box-shadow:0 0 10px rgba(47,179,160,.5)}
+.frageK{font-size:17px;font-weight:600;margin-bottom:10px}
+.vis{background:var(--tief);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:12px 0;
+  overflow-x:auto}
+.vis svg{display:block;width:100%;height:auto;max-width:520px;margin:0 auto}
+
+.dips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.dip{width:44px;border:1px solid var(--line2);border-radius:9px;background:var(--panel2);padding:6px 0;text-align:center}
+.dip .l{display:block;font-size:10px;color:var(--muted)}
+.dip .s{display:block;width:24px;height:36px;margin:4px auto;border-radius:6px;background:var(--line);
+  position:relative;transition:background .15s}
+.dip .s::after{content:"";position:absolute;left:3px;right:3px;height:15px;border-radius:4px;
+  background:var(--muted);top:18px;transition:top .15s,background .15s}
+.dip.an .s{background:rgba(255,194,75,.25)}
+.dip.an .s::after{top:3px;background:var(--hi)}
+.dip .w{font-family:ui-monospace,monospace;font-size:12px;color:var(--ink2)}
+.dipAnzeige{text-align:center;margin-top:10px;font-family:ui-monospace,monospace;font-size:15px;color:var(--ink2)}
+.dipAnzeige b{color:var(--hi);font-size:19px}
+
+.opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line2);
+  border-radius:11px;padding:12px 14px;margin-bottom:8px;font-size:15.5px;min-height:48px;transition:border-color .12s}
+.opt:hover{border-color:var(--brand)}
+.opt.richtig{border-color:var(--ok);background:rgba(88,192,140,.15)}
+.opt.falsch{border-color:var(--bad);background:rgba(228,87,61,.13)}
+
+.eingabe{display:flex;gap:9px;flex-wrap:wrap}
+.eingabe input{flex:1 1 150px;background:var(--panel2);border:1px solid var(--line2);border-radius:11px;
+  padding:12px 14px;min-height:48px;font-family:ui-monospace,monospace;font-size:18px;text-align:center}
+
+.tt{border-collapse:collapse;margin:0 auto;font-family:ui-monospace,monospace}
+.tt th,.tt td{border:1px solid var(--line2);padding:5px 12px;text-align:center;font-size:14px}
+.tt th{background:var(--panel2);color:var(--ink2);font-size:12px}
+.tt td.klick{cursor:pointer;background:var(--panel2);min-width:46px;font-weight:700}
+.tt td.klick:hover{border-color:var(--brand)}
+.tt td.k1{color:var(--hi)}
+.tt td.k0{color:var(--muted)}
+.tt td.leer{color:var(--muted);font-weight:400}
+
+.ordnen{display:flex;flex-direction:column;gap:8px}
+.ordnen .el{background:var(--panel2);border:1px solid var(--line2);border-radius:11px;padding:11px 14px;
+  display:flex;align-items:center;gap:11px;text-align:left;min-height:48px}
+.ordnen .el .nr{width:26px;height:26px;border-radius:7px;background:var(--line);display:grid;place-items:center;
+  font-family:ui-monospace,monospace;font-size:13px;color:var(--muted);flex:0 0 auto}
+.ordnen .el.gesetzt{border-color:var(--brand)}
+.ordnen .el.gesetzt .nr{background:var(--brand);color:#04201C;font-weight:700}
+
+.zuord{display:grid;gap:9px;margin-top:10px}
+@media(min-width:560px){.zuord{grid-template-columns:1fr 1fr}}
+.zu{background:var(--panel2);border:1px solid var(--line2);border-radius:11px;padding:10px 12px}
+.zu .f{font-size:14px;margin-bottom:7px}
+.zu select{width:100%;background:var(--tief);border:1px solid var(--line2);border-radius:9px;
+  padding:9px;min-height:42px;font-size:14.5px;color:inherit}
+
+.rueck{border-radius:11px;padding:11px 14px;margin-top:12px;font-size:14.5px;display:none}
+.rueck.zeig{display:block;animation:rein .25s}
+@keyframes rein{from{opacity:0;transform:translateY(-4px)}}
+.rueck.ok{background:rgba(88,192,140,.12);border:1px solid rgba(88,192,140,.5)}
+.rueck.nein{background:rgba(228,87,61,.10);border:1px solid rgba(228,87,61,.45)}
+.tipp{background:rgba(255,194,75,.09);border:1px solid rgba(255,194,75,.4);border-radius:11px;
+  padding:10px 13px;margin-top:10px;font-size:14.5px}
+.tipp b{color:var(--hi)}
+
+/* ---------- Tür ---------- */
+.tuer{text-align:center}
+.anzeigefeld{font-family:ui-monospace,monospace;font-size:38px;letter-spacing:12px;color:var(--hi);
+  background:var(--tief);border:1px solid var(--line2);border-radius:12px;padding:16px 10px;margin:14px auto;
+  max-width:300px;text-shadow:0 0 20px rgba(255,194,75,.4);min-height:76px}
+.tastenfeld{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;max-width:300px;margin:0 auto}
+.tastenfeld button{background:var(--panel2);border:1px solid var(--line2);border-radius:12px;
+  padding:16px 0;font-family:ui-monospace,monospace;font-size:22px;min-height:58px}
+.tastenfeld button:hover{border-color:var(--brand)}
+
+/* ---------- Abschluss ---------- */
+.rang{text-align:center;padding:10px 0}
+.rang .titel{font-size:30px;font-weight:700;letter-spacing:-.6px;color:var(--hi)}
+.rang .sterne{font-size:34px;letter-spacing:6px;color:var(--hi);margin:6px 0}
+.bilanz{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:16px 0}
+.bilanz div{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:10px 12px;text-align:center}
+.bilanz .n{font-size:12px;color:var(--muted);display:block}
+.bilanz .w{font-family:ui-monospace,monospace;font-size:20px;font-weight:700;color:var(--hi)}
+.orden{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.orden span{background:var(--panel2);border:1px solid var(--line2);border-radius:20px;padding:6px 13px;font-size:13px}
+.orden span.hat{border-color:var(--hi);color:var(--hi)}
+.lernbilanz{margin-top:16px;font-size:14.5px}
+.lernbilanz li{margin-bottom:7px;color:var(--ink2)}
+.verborgen{display:none}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header id="kopf" class="verborgen">
+  <span class="uhr" id="uhr">25:00</span>
+  <span class="akku"><i id="akku" style="width:100%"></i></span>
+  <span class="stat">
+    <span class="punkte">▲ <b id="pPunkte">0</b></span>
+    <span>Module <b id="pModule">0/4</b></span>
+  </span>
+</header>
+
+<main id="buehne"></main>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const B=$("#buehne");
+
+/* =====================================================================
+   Grafiken
+   ===================================================================== */
+const G={
+rack:(f="#FFC24B")=>`<svg viewBox="0 0 120 120"><rect x="14" y="8" width="92" height="104" rx="8" fill="none" stroke="${f}" stroke-width="2.5"/>
+ ${[0,1,2,3].map(i=>`<rect x="24" y="${20+i*22}" width="72" height="16" rx="3" fill="${f}" opacity="${.14+i*.05}" stroke="${f}" stroke-width="1"/>
+ <circle cx="88" cy="${28+i*22}" r="2.6" fill="${f}" opacity="${i<2?1:.3}"/>`).join("")}</svg>`,
+logik:(f="#2FB3A0")=>`<svg viewBox="0 0 120 120"><rect x="10" y="26" width="100" height="68" rx="8" fill="none" stroke="${f}" stroke-width="2.5"/>
+ <rect x="34" y="46" width="30" height="28" rx="3" fill="none" stroke="${f}" stroke-width="2"/>
+ <text x="49" y="66" font-size="15" text-anchor="middle" fill="${f}" font-family="monospace">&amp;</text>
+ <path d="M10 54 H34 M10 66 H34 M64 60 H92" stroke="${f}" stroke-width="2" fill="none"/>
+ <circle cx="98" cy="60" r="6" fill="none" stroke="${f}" stroke-width="2"/></svg>`,
+speicher:(f="#A78BFA")=>`<svg viewBox="0 0 120 120"><rect x="16" y="30" width="88" height="60" rx="6" fill="none" stroke="${f}" stroke-width="2.5"/>
+ ${[0,1,2].map(i=>`<rect x="26" y="${40+i*17}" width="68" height="11" rx="2" fill="${f}" opacity="${.5-i*.12}"/>`).join("")}
+ ${[0,1,2,3,4,5].map(i=>`<path d="M${26+i*14} 30 V20 M${26+i*14} 90 V100" stroke="${f}" stroke-width="2"/>`).join("")}</svg>`,
+cpu:(f="#E4573D")=>`<svg viewBox="0 0 120 120"><rect x="28" y="28" width="64" height="64" rx="7" fill="none" stroke="${f}" stroke-width="2.5"/>
+ <rect x="44" y="44" width="32" height="32" rx="4" fill="${f}" opacity=".25" stroke="${f}" stroke-width="1.6"/>
+ ${[0,1,2,3].map(i=>`<path d="M${40+i*13} 28 V14 M${40+i*13} 92 V106 M28 ${40+i*13} H14 M92 ${40+i*13} H106" stroke="${f}" stroke-width="2"/>`).join("")}</svg>`,
+tuer:()=>`<svg viewBox="0 0 200 130"><rect x="8" y="6" width="184" height="118" rx="10" fill="none" stroke="var(--line2)" stroke-width="2"/>
+ <rect x="20" y="18" width="78" height="94" rx="5" fill="rgba(47,179,160,.06)" stroke="var(--brand)" stroke-width="2"/>
+ <rect x="104" y="18" width="78" height="94" rx="5" fill="rgba(47,179,160,.06)" stroke="var(--brand)" stroke-width="2"/>
+ <circle cx="92" cy="66" r="4" fill="var(--hi)"/><circle cx="112" cy="66" r="4" fill="var(--hi)"/>
+ <path d="M101 18 V112" stroke="var(--line2)" stroke-width="1.5" stroke-dasharray="5 5"/></svg>`,
+gatter:(sym,a,b,y)=>`<svg viewBox="0 0 240 110">
+ <text x="12" y="${a?40:40}" font-size="13" fill="${a?"var(--hi)":"var(--muted)"}" font-family="monospace">A=${a}</text>
+ <text x="12" y="82" font-size="13" fill="${b?"var(--hi)":"var(--muted)"}" font-family="monospace">B=${b}</text>
+ <path d="M52 36 H96" stroke="${a?"var(--hi)":"var(--line2)"}" stroke-width="2.4" fill="none"/>
+ <path d="M52 78 H96" stroke="${b?"var(--hi)":"var(--line2)"}" stroke-width="2.4" fill="none"/>
+ <rect x="96" y="22" width="56" height="70" rx="5" fill="var(--panel2)" stroke="var(--ink2)" stroke-width="2"/>
+ <text x="124" y="64" font-size="17" text-anchor="middle" fill="var(--ink)" font-family="monospace">${sym}</text>
+ <path d="M152 57 H188" stroke="${y?"var(--hi)":"var(--line2)"}" stroke-width="2.4" fill="none"/>
+ <circle cx="204" cy="57" r="14" fill="${y?"var(--hi)":"var(--panel2)"}" stroke="var(--ink2)" stroke-width="2"/></svg>`,
+bus:()=>`<svg viewBox="0 0 320 130">
+ <rect x="6" y="10" width="120" height="70" rx="7" fill="none" stroke="var(--brand)" stroke-width="2"/>
+ <text x="66" y="38" font-size="12" text-anchor="middle" fill="var(--ink2)">Steuerwerk</text>
+ <rect x="18" y="46" width="96" height="24" rx="4" fill="rgba(47,179,160,.12)" stroke="var(--brand)" stroke-width="1.4"/>
+ <text x="66" y="62" font-size="11" text-anchor="middle" fill="var(--ink2)">Rechenwerk</text>
+ <rect x="142" y="10" width="78" height="70" rx="7" fill="none" stroke="var(--lila)" stroke-width="2"/>
+ <text x="181" y="48" font-size="12" text-anchor="middle" fill="var(--ink2)">Speicher</text>
+ <rect x="236" y="10" width="78" height="70" rx="7" fill="none" stroke="var(--hi)" stroke-width="2"/>
+ <text x="275" y="42" font-size="12" text-anchor="middle" fill="var(--ink2)">Ein- und</text>
+ <text x="275" y="58" font-size="12" text-anchor="middle" fill="var(--ink2)">Ausgabe</text>
+ <rect x="6" y="98" width="308" height="24" rx="6" fill="rgba(255,194,75,.10)" stroke="var(--hi)" stroke-width="1.6"/>
+ <text x="160" y="114" font-size="12" text-anchor="middle" fill="var(--hi)">Daten-, Adress- und Steuerbus</text>
+ ${[66,181,275].map(x=>`<path d="M${x} 80 V98" stroke="var(--line2)" stroke-width="2"/>`).join("")}</svg>`
+};
+
+/* =====================================================================
+   Rätsel
+   ===================================================================== */
+const RAEUME=[
+{ id:"energie", nr:"A", titel:"Notstromverteiler", thema:"Zahlenformate",
+  ico:G.rack(), ziffer:"4",
+  brief:"Der Verteiler ist auf Handbetrieb gefallen. Du musst die Sollwerte von Hand einstellen — dieselben Zahlen, nur in der Schreibweise der Maschine.",
+  raetsel:[
+    {typ:"bits", bits:8,
+     frage:"Stelle die Sicherungsspannung auf 0xB4 ein.",
+     hinweis:"Acht Kippschalter, links das höchstwertige Bit.",
+     ziel:180,
+     tipps:["B im Hexadezimalsystem ist 11, die 4 bleibt 4. Jede Hexziffer sind genau vier Bit.",
+            "11 = 1011, 4 = 0100. Zusammen: 1011 0100."],
+     erklaerung:"0xB4 = 1011 0100₂ = 180₁₀. Eine Hexziffer entspricht immer vier Bit — deshalb braucht man hier gar nicht zu rechnen."},
+    {typ:"text",
+     frage:"Der Temperatursensor meldet das Byte 11101100 im Zweierkomplement. Welcher Wert ist das?",
+     hinweis:"Antwort als Dezimalzahl, Minuszeichen nicht vergessen.",
+     pruef:a=>Number(a.replace("−","-"))===-20,
+     tipps:["Das oberste Bit ist 1 — die Zahl ist negativ.",
+            "Invertieren ergibt 00010011, plus 1 ergibt 00010100 = 20. Also −20."],
+     erklaerung:"11101100 → invertiert 00010011 → plus 1 → 00010100 = 20. Das Ergebnis ist −20 °C."},
+    {typ:"mc",
+     frage:"Im Puffer steht die 32-Bit-Gleitkommazahl 0 10000010 01000000000000000000000. Welcher Wert ist das?",
+     optionen:["2,5","10","20","130"], richtig:1,
+     tipps:["Der Exponent ist um 127 verschoben gespeichert: 10000010₂ = 130, also e = 3.",
+            "Die Mantisse 01000… bedeutet 1,01₂ = 1,25. Und 1,25 · 2³ = 10."],
+     erklaerung:"Vorzeichen 0 heißt positiv. E = 130, also e = 130 − 127 = 3. Mantisse 1,01₂ = 1,25. Ergebnis: 1,25 · 8 = 10."}
+  ]},
+
+{ id:"logik", nr:"B", titel:"Logikplatine", thema:"Boolesche Algebra",
+  ico:G.logik(), ziffer:"7",
+  brief:"Die Verriegelung hängt an einem Schaltnetz. Repariere es, sonst bleibt der Riegel unten.",
+  raetsel:[
+    {typ:"tabelle",
+     frage:"Vervollständige die Wahrheitstabelle für Y = (A ∨ B) ∧ ¬C.",
+     hinweis:"Tippe auf die Felder der Spalte Y, bis der richtige Wert steht.",
+     vars:["A","B","C"], fn:(a,b,c)=>((a||b)&&!c)?1:0,
+     tipps:["Y kann nur 1 werden, wenn C gleich 0 ist — sonst sperrt das ¬C alles.",
+            "Bei C = 0 genügt einer von A oder B."],
+     erklaerung:"Y ist genau dann 1, wenn C = 0 ist und mindestens einer von A und B eingeschaltet ist."},
+    {typ:"mc",
+     frage:"Auf der Platine ist ein NOR-Gatter durchgebrannt. Womit lässt es sich ersetzen?",
+     optionen:["¬A ∨ ¬B","¬A ∧ ¬B","A ∧ B","¬(A ∧ B)"], richtig:1,
+     tipps:["Ein NOR berechnet ¬(A ∨ B).","De Morgan: die Verneinung wandert hinein, das Zeichen kippt."],
+     erklaerung:"¬(A ∨ B) = ¬A ∧ ¬B. Ein NOR ist also dasselbe wie ein UND mit negierten Eingängen."},
+    {typ:"gatter",
+     frage:"Welches Gatter gehört in die Lücke, damit die Lampe genau dann leuchtet, wenn die Schalter verschieden stehen?",
+     optionen:["UND (&)","ODER (≥1)","XOR (=1)","NAND"], richtig:2,
+     tipps:["Verschieden heißt: genau einer von beiden ist an.",
+            "Das Gatter mit dem Zeichen =1 prüft auf Ungleichheit."],
+     erklaerung:"Genau ein Eingang auf 1 — das ist die Antivalenz, Schaltzeichen =1. Sie steckt auch in jedem Halbaddierer als Summenbit."}
+  ]},
+
+{ id:"speicher", nr:"C", titel:"Speicherbank", thema:"Kodierung und Speicherbedarf",
+  ico:G.speicher(), ziffer:"2",
+  brief:"Die Bank ist noch heil, aber der Inhalt liegt als rohes Bitmuster vor. Lies ihn aus.",
+  raetsel:[
+    {typ:"text",
+     frage:"An Adresse 0x00 stehen die Bytes 0x49 0x4E 0x46. Welches Wort ergibt das in ASCII?",
+     hinweis:"Drei Großbuchstaben. Groß- und Kleinschreibung egal.",
+     pruef:a=>a.trim().toUpperCase()==="INF",
+     tipps:["Das große A hat den Code 0x41 = 65. Zähle von dort weiter.",
+            "0x49 = 73 = I, 0x4E = 78 = N, 0x46 = 70 = F."],
+     erklaerung:"0x41 ist das A. 0x49 ist acht Schritte weiter, also I; 0x4E ist N, 0x46 ist F. Zusammen INF."},
+    {typ:"text",
+     frage:"Ein Logo ist 64 × 64 Pixel groß und liegt mit 24 Bit Farbtiefe unkomprimiert vor. Wie viele Kibibyte belegt es?",
+     hinweis:"Antwort als Zahl, nur der Zahlenwert.",
+     pruef:a=>Number(a.replace(",","."))===12,
+     tipps:["24 Bit sind 3 Byte je Pixel.","64 · 64 · 3 = 12288 Byte. Und 1 KiB sind 1024 Byte."],
+     erklaerung:"64 · 64 = 4096 Pixel, mal 3 Byte = 12288 Byte. Geteilt durch 1024 ergibt genau 12 KiB."},
+    {typ:"mc",
+     frage:"Welche Aussage über UTF-8 stimmt?",
+     optionen:["Jedes Zeichen belegt genau ein Byte",
+               "Jedes Zeichen belegt genau zwei Byte",
+               "Zeichen belegen je nach Zeichen ein bis vier Byte",
+               "UTF-8 kann keine Umlaute darstellen"], richtig:2,
+     tipps:["Warum wohl sieht man bei falscher Kodierung statt eines Umlauts zwei seltsame Zeichen?",
+            "UTF-8 ist eine Kodierung mit veränderlicher Länge."],
+     erklaerung:"UTF-8 nutzt ein bis vier Byte je Zeichen. Die ersten 128 Zeichen sind mit ASCII identisch, ein Umlaut braucht zwei Byte — daher die typischen Darstellungsfehler."}
+  ]},
+
+{ id:"cpu", nr:"D", titel:"Prozessorsteuerung", thema:"Von-Neumann-Rechner",
+  ico:G.cpu(), ziffer:"9",
+  brief:"Letzte Station. Der Prozessor muss von Hand durch seinen Zyklus geführt werden, sonst bootet nichts.",
+  raetsel:[
+    {typ:"ordnen",
+     frage:"Bringe den Befehlszyklus in die richtige Reihenfolge.",
+     hinweis:"Tippe die Schritte in der Reihenfolge an, in der sie ablaufen.",
+     elemente:["Befehl aus dem Speicher holen (Fetch)","Bitmuster als Befehl deuten (Decode)",
+               "Befehl ausführen (Execute)","Befehlszähler erhöhen"],
+     tipps:["Ohne den Befehlszähler weiß der Rechner gar nicht, wo er lesen soll.",
+            "Erhöht wird erst danach — sonst würde der nächste Befehl übersprungen."],
+     erklaerung:"Holen, deuten, ausführen, weiterzählen. Bei einem Sprungbefehl wird der Zähler nicht erhöht, sondern neu gesetzt."},
+    {typ:"zuordnen",
+     frage:"Ordne jede Aufgabe der richtigen Komponente zu.",
+     hinweis:"Vier Aufgaben, vier Komponenten.",
+     ziele:["Steuerwerk","Rechenwerk","Speicherwerk","Ein- und Ausgabewerk"],
+     paare:[["Befehle deuten und alles koordinieren",0],["Arithmetische und logische Verknüpfungen",1],
+            ["Programme und Daten aufbewahren",2],["Datenaustausch mit der Peripherie",3]],
+     tipps:["Das Steuerwerk rechnet selbst nichts.","Programme und Daten liegen im selben Speicher — das ist der Kern des Von-Neumann-Prinzips."],
+     erklaerung:"Steuerwerk deutet und koordiniert, Rechenwerk verknüpft, Speicherwerk hält Programm und Daten, Ein- und Ausgabewerk verbindet nach außen."},
+    {typ:"text",
+     frage:"Das Startprogramm lautet: LOAD 12 · ADD 13 · SUB 14 · STORE 15. Im Speicher steht an Adresse 12 die 40, an 13 die 17 und an 14 die 9. Welcher Wert landet an Adresse 15?",
+     hinweis:"Antwort als Dezimalzahl.",
+     pruef:a=>Number(a)===48,
+     tipps:["LOAD holt den Wert in den Akkumulator, ADD und SUB rechnen darauf weiter.",
+            "40 + 17 = 57, dann 57 − 9."],
+     erklaerung:"Der Akkumulator wird mit 40 geladen, 17 addiert ergibt 57, 9 abgezogen ergibt 48. STORE schreibt 48 an Adresse 15."}
+  ]}
+];
+
+const ORDEN=[
+  {id:"schnell", n:"Unter 15 Minuten", pruef:s=>s.zeitGebraucht<=900},
+  {id:"ohneTipp", n:"Ohne einen einzigen Tipp", pruef:s=>s.tipps===0},
+  {id:"sauber", n:"Alles im ersten Versuch", pruef:s=>s.fehlversuche===0},
+  {id:"puffer", n:"Mehr als 10 Minuten Restzeit", pruef:s=>s.rest>=600}
+];
+
+/* =====================================================================
+   Spielzustand
+   ===================================================================== */
+const START=30*60;
+let S={ rest:START, punkte:0, tipps:0, fehlversuche:0, geloest:{}, module:{},
+        raum:null, index:0, laeuft:false, zeitGebraucht:0, tippOffen:0 };
+let uhrT=null;
+
+function zeitText(s){
+  s=Math.max(0,s);
+  return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+}
+function kopfAktualisieren(){
+  $("#uhr").textContent=zeitText(S.rest);
+  $("#uhr").classList.toggle("knapp", S.rest<=300);
+  $("#akku").style.width=Math.max(0,S.rest/START*100)+"%";
+  $("#pPunkte").textContent=S.punkte;
+  $("#pModule").textContent=Object.keys(S.module).length+"/4";
+}
+function uhrStart(){
+  S.laeuft=true; $("#kopf").classList.remove("verborgen");
+  clearInterval(uhrT);
+  uhrT=setInterval(()=>{
+    if(!S.laeuft) return;
+    S.rest--; kopfAktualisieren();
+    if(S.rest<=0){ S.laeuft=false; clearInterval(uhrT); zeigeGescheitert(); }
+  },1000);
+}
+const alleGeloest=r=>r.raetsel.every((_,i)=>S.geloest[r.id+":"+i]);
+
+/* =====================================================================
+   Bildschirme
+   ===================================================================== */
+function zeigeStart(){
+  S={ rest:START, punkte:0, tipps:0, fehlversuche:0, geloest:{}, module:{},
+      raum:null, index:0, laeuft:false, zeitGebraucht:0, tippOffen:0 };
+  clearInterval(uhrT); $("#kopf").classList.add("verborgen");
+  B.innerHTML=`
+  <div class="szene">
+    <h1>BLACKOUT <span>·</span> Serverraum B3</h1>
+    <p class="lead">Exit-Game zur Technischen Informatik · vier Module · 30 Minuten</p>
+    <div class="vis" style="max-width:420px;margin:16px auto">${G.tuer()}</div>
+    <div class="funk"><span class="von">Funkgerät · 21:47 Uhr</span>
+      <b>„Du bist noch drin?"</b> — Praktikumstag im Rechenzentrum, und ausgerechnet jetzt fällt die
+      Hauptversorgung aus. Die Tür von Serverraum B3 ist elektronisch verriegelt und öffnet erst wieder,
+      wenn die Steuerung läuft. Der Notstromakku hält noch <b>30 Minuten</b>.</div>
+    <p>Vier Module musst du von Hand hochfahren: Notstromverteiler, Logikplatine, Speicherbank und
+    Prozessorsteuerung. Jedes freigeschaltete Modul zeigt dir eine Ziffer des Türcodes.</p>
+    <h3>Spielregeln</h3>
+    <ul>
+      <li><b>100 Punkte</b> je gelöstem Rätsel.</li>
+      <li>Ein <b>Tipp</b> kostet 25 Punkte und 20 Sekunden Notstrom. Zwei Tipps gibt es je Rätsel.</li>
+      <li>Ein falscher Versuch kostet 10 Sekunden — aber du darfst es erneut probieren.</li>
+      <li>Läuft der Akku leer, bleibt die Tür zu. Dann hilft nur noch ein neuer Anlauf.</li>
+    </ul>
+    <p class="lead">Taschenrechner brauchst du nicht. Papier und Stift schon.</p>
+    <button class="btn primary gross" id="los">Notstrom starten und loslegen</button>
+  </div>`;
+  $("#los").addEventListener("click",()=>{ uhrStart(); zeigeUebersicht(); });
+}
+
+function zeigeUebersicht(){
+  kopfAktualisieren();
+  const fertig=Object.keys(S.module).length;
+  B.innerHTML=`
+  <div class="szene">
+    <h2>Serverraum B3 — Modulübersicht</h2>
+    <p class="lead">${fertig===0?"Noch läuft nichts. Fang an, wo du willst."
+      :fertig<4?`${fertig} von 4 Modulen sind online. Weiter.`
+      :"Alle vier Module laufen. Der Türcode ist vollständig."}</p>
+    <div class="module">${RAEUME.map(r=>{
+      const fertig=!!S.module[r.id];
+      return `<button class="modul ${fertig?"fertig":""}" data-r="${r.id}">
+        <span class="ico"><svg viewBox="0 0 120 120" width="46" height="46">${r.ico.replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg></span>
+        <span><span class="t">Modul ${r.nr} · ${r.titel}</span>
+        <span class="s">${r.thema} · ${r.raetsel.filter((_,i)=>S.geloest[r.id+":"+i]).length}/${r.raetsel.length} gelöst</span></span>
+        ${fertig?`<span class="z">${r.ziffer}</span>`:""}</button>`;
+    }).join("")}</div>
+    ${fertig===4?`<button class="btn primary gross" id="zurTuer">Zur Tür — Code eingeben</button>`:""}
+  </div>`;
+  $$("[data-r]").forEach(b=>b.addEventListener("click",()=>{
+    S.raum=RAEUME.find(r=>r.id===b.dataset.r);
+    S.index=S.raum.raetsel.findIndex((_,i)=>!S.geloest[S.raum.id+":"+i]);
+    if(S.index<0) S.index=0;
+    zeigeRaetsel();
+  }));
+  const t=$("#zurTuer"); if(t) t.addEventListener("click",zeigeTuer);
+}
+
+/* ---------- Rätselanzeige ---------- */
+function zeigeRaetsel(){
+  const r=S.raum, p=r.raetsel[S.index];
+  S.tippOffen=0;
+  kopfAktualisieren();
+  B.innerHTML=`
+  <div class="szene">
+    <div class="fortschritt">${r.raetsel.map((_,i)=>`<i class="${S.geloest[r.id+":"+i]?"an":""}"></i>`).join("")}</div>
+    <h2>Modul ${r.nr} · ${r.titel}</h2>
+    <p class="lead">${esc(r.thema)} · Rätsel ${S.index+1} von ${r.raetsel.length}</p>
+    ${S.index===0?`<div class="funk"><span class="von">Notiz an der Wand</span>${esc(r.brief)}</div>`:""}
+    <p class="frageK">${p.frage}</p>
+    ${p.hinweis?`<p class="lead" style="font-size:14px">${esc(p.hinweis)}</p>`:""}
+    <div id="spiel"></div>
+    <div class="reihe">
+      <button class="btn primary" id="pruefen">Prüfen</button>
+      <button class="btn warn klein" id="tipp">Tipp (−25 Punkte, −20 s)</button>
+      <button class="btn klein" id="zurueck">Übersicht</button>
+    </div>
+    <div id="tipps"></div>
+    <div class="rueck" id="rueck"></div>
+  </div>`;
+  const bau=BAU[p.typ](p, $("#spiel"));
+  $("#pruefen").addEventListener("click",()=>pruefe(p,bau));
+  $("#zurueck").addEventListener("click",zeigeUebersicht);
+  $("#tipp").addEventListener("click",()=>{
+    if(S.tippOffen>=p.tipps.length){ return; }
+    S.punkte=Math.max(0,S.punkte-25); S.rest=Math.max(1,S.rest-20); S.tipps++; S.tippOffen++;
+    kopfAktualisieren();
+    $("#tipps").innerHTML=p.tipps.slice(0,S.tippOffen)
+      .map((t,i)=>`<div class="tipp"><b>Tipp ${i+1}:</b> ${esc(t)}</div>`).join("");
+    if(S.tippOffen>=p.tipps.length) $("#tipp").disabled=true;
+  });
+}
+
+function pruefe(p,bau){
+  const rueck=$("#rueck");
+  const richtig=bau.pruef();
+  if(richtig){
+    S.geloest[S.raum.id+":"+S.index]=true;
+    S.punkte+=100; kopfAktualisieren();
+    rueck.className="rueck ok zeig";
+    rueck.innerHTML=`<b style="color:var(--ok)">Freigegeben.</b> ${esc(p.erklaerung)}`;
+    $("#pruefen").disabled=true; $("#tipp").disabled=true;
+    if(bau.sperren) bau.sperren();
+    const weiter=document.createElement("button");
+    weiter.className="btn primary gross"; weiter.style.marginTop="12px";
+    const letztes=S.index>=S.raum.raetsel.length-1;
+    weiter.textContent=letztes?"Modul abschließen":"Weiter";
+    weiter.addEventListener("click",()=>{
+      if(letztes){
+        if(alleGeloest(S.raum)) S.module[S.raum.id]=true;
+        zeigeModulFertig();
+      } else { S.index++; zeigeRaetsel(); }
+    });
+    rueck.appendChild(weiter);
+  }else{
+    S.fehlversuche++; S.rest=Math.max(1,S.rest-10); kopfAktualisieren();
+    rueck.className="rueck nein zeig";
+    rueck.innerHTML=`<b style="color:var(--bad)">Abgewiesen.</b> 10 Sekunden Notstrom verloren. Sieh es dir noch einmal an — oder hol dir einen Tipp.`;
+  }
+}
+
+function zeigeModulFertig(){
+  const r=S.raum;
+  B.innerHTML=`
+  <div class="szene" style="text-align:center">
+    <div class="vis" style="max-width:220px;margin:0 auto 14px">${r.ico}</div>
+    <h2>Modul ${r.nr} ist online</h2>
+    <p class="lead">${esc(r.titel)} läuft wieder.</p>
+    <p>Auf dem Display erscheint eine Ziffer des Türcodes:</p>
+    <div class="anzeigefeld" style="font-size:52px;letter-spacing:0">${r.ziffer}</div>
+    <p class="lead">Merk sie dir — die Reihenfolge ist A, B, C, D.</p>
+    <button class="btn primary gross" id="weiter">Zurück zur Übersicht</button>
+  </div>`;
+  $("#weiter").addEventListener("click",zeigeUebersicht);
+}
+
+/* ---------- Tür ---------- */
+function zeigeTuer(){
+  let eingabe="";
+  const code=RAEUME.map(r=>r.ziffer).join("");
+  const zeichne=()=>{
+    $("#feld").textContent=eingabe.padEnd(4,"·");
+  };
+  B.innerHTML=`
+  <div class="szene tuer">
+    <h2>Sicherheitstür B3</h2>
+    <p class="lead">Vier Ziffern, in der Reihenfolge der Module A bis D.</p>
+    <div class="vis" style="max-width:340px;margin:0 auto">${G.tuer()}</div>
+    <div class="anzeigefeld" id="feld">····</div>
+    <div class="tastenfeld">
+      ${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-t="${n}">${n}</button>`).join("")}
+      <button data-t="l">←</button><button data-t="0">0</button>
+      <button data-t="ok" style="color:var(--brand)">✓</button>
+    </div>
+    <div class="rueck" id="rueck"></div>
+    <div class="reihe" style="justify-content:center"><button class="btn klein" id="zurueck">Übersicht</button></div>
+  </div>`;
+  zeichne();
+  $("#zurueck").addEventListener("click",zeigeUebersicht);
+  $$("[data-t]").forEach(b=>b.addEventListener("click",()=>{
+    const t=b.dataset.t;
+    if(t==="l") eingabe=eingabe.slice(0,-1);
+    else if(t==="ok"){
+      if(eingabe===code){ S.laeuft=false; clearInterval(uhrT); S.zeitGebraucht=START-S.rest; zeigeSieg(); return; }
+      S.fehlversuche++; S.rest=Math.max(1,S.rest-10); kopfAktualisieren();
+      const r=$("#rueck"); r.className="rueck nein zeig";
+      r.innerHTML="<b style='color:var(--bad)'>Falscher Code.</b> Die Ziffern stehen in der Reihenfolge der Module A, B, C, D.";
+      eingabe="";
+    }
+    else if(eingabe.length<4) eingabe+=t;
+    zeichne();
+  }));
+}
+
+/* ---------- Ende ---------- */
+function zeigeSieg(){
+  const zeitBonus=S.rest;   // ein Punkt je verbleibender Sekunde
+  const gesamt=S.punkte+zeitBonus;
+  // Höchstens 1200 Rätselpunkte plus Zeitbonus. Ein zügiger Lauf ohne Tipps landet
+  // bei etwa 2800, ein bedächtiger mit Tipps bei etwa 1300.
+  const sterne = gesamt>=1900?3 : gesamt>=1300?2 : 1;
+  const rang = sterne===3?"Systemadministrator" : sterne===2?"Technikerin im Dienst" : "Praktikant mit Glück";
+  const erreicht=ORDEN.filter(o=>o.pruef(S));
+  B.innerHTML=`
+  <div class="szene">
+    <div class="rang">
+      <div class="sterne">${"★".repeat(sterne)}${"☆".repeat(3-sterne)}</div>
+      <div class="titel">Tür offen.</div>
+      <p class="lead">Rang: ${rang}</p>
+    </div>
+    <div class="funk"><span class="von">Funkgerät · ${zeitText(S.zeitGebraucht)} später</span>
+      <b>„Ich seh dich auf der Kamera — gut gemacht."</b> Die Steuerung läuft wieder, der Riegel ist offen.</div>
+    <div class="bilanz">
+      <div><span class="n">Gebraucht</span><span class="w">${zeitText(S.zeitGebraucht)}</span></div>
+      <div><span class="n">Restzeit</span><span class="w">${zeitText(S.rest)}</span></div>
+      <div><span class="n">Rätselpunkte</span><span class="w">${S.punkte}</span></div>
+      <div><span class="n">Zeitbonus</span><span class="w">${zeitBonus}</span></div>
+      <div><span class="n">Tipps genutzt</span><span class="w">${S.tipps}</span></div>
+      <div><span class="n">Fehlversuche</span><span class="w">${S.fehlversuche}</span></div>
+    </div>
+    <div style="text-align:center;font-family:ui-monospace,monospace;font-size:26px;color:var(--brand);font-weight:700">
+      ${gesamt} Punkte</div>
+    <h3>Abzeichen</h3>
+    <div class="orden">${ORDEN.map(o=>
+      `<span class="${erreicht.includes(o)?"hat":""}">${erreicht.includes(o)?"●":"○"} ${o.n}</span>`).join("")}</div>
+    <h3>Was du dabei angewendet hast</h3>
+    <ul class="lernbilanz">
+      <li><b>Zahlenformate:</b> Hexadezimal in Bitmuster, Zweierkomplement rückwärts gelesen, eine Gleitkommazahl entschlüsselt.</li>
+      <li><b>Boolesche Algebra:</b> eine Wahrheitstabelle aufgestellt, De Morgan angewendet, ein Gatter nach seiner Funktion ausgewählt.</li>
+      <li><b>Kodierung:</b> ASCII gelesen, Speicherbedarf berechnet, UTF-8 eingeordnet.</li>
+      <li><b>Von-Neumann-Rechner:</b> den Befehlszyklus geordnet, Komponenten zugeordnet, ein Maschinenprogramm im Kopf ausgeführt.</li>
+    </ul>
+    <button class="btn primary gross" id="nochmal" style="margin-top:14px">Noch einmal spielen</button>
+  </div>`;
+  $("#nochmal").addEventListener("click",zeigeStart);
+}
+function zeigeGescheitert(){
+  B.innerHTML=`
+  <div class="szene" style="text-align:center">
+    <h1 style="color:var(--bad)">Notstrom leer</h1>
+    <p class="lead">Die Tür bleibt zu — bis morgen früh die Haupttechnik kommt. Peinlich, aber nicht tödlich.</p>
+    <div class="bilanz" style="max-width:420px;margin:16px auto">
+      <div><span class="n">Module online</span><span class="w">${Object.keys(S.module).length}/4</span></div>
+      <div><span class="n">Rätsel gelöst</span><span class="w">${Object.keys(S.geloest).length}/${RAEUME.reduce((a,r)=>a+r.raetsel.length,0)}</span></div>
+    </div>
+    <p>Beim zweiten Anlauf geht es schneller — du weißt jetzt, worauf es ankommt.</p>
+    <button class="btn primary gross" id="nochmal">Neuer Versuch</button>
+  </div>`;
+  $("#nochmal").addEventListener("click",zeigeStart);
+}
+
+/* =====================================================================
+   Rätseltypen
+   ===================================================================== */
+const BAU={
+  bits(p,el){
+    let bits=new Array(p.bits).fill(0);
+    const zeichne=()=>{
+      const wert=parseInt(bits.join(""),2);
+      el.innerHTML=`<div class="vis"><div class="dips">`
+        + bits.map((b,i)=>`<button class="dip ${b?"an":""}" data-i="${i}">
+            <span class="l">Bit ${p.bits-1-i}</span><span class="s"></span>
+            <span class="w">${2**(p.bits-1-i)}</span></button>`).join("")
+        + `</div><div class="dipAnzeige">Muster ${bits.join("")} · dezimal <b>${wert}</b>
+           · hexadezimal <b>0x${wert.toString(16).toUpperCase().padStart(2,"0")}</b></div></div>`;
+      el.querySelectorAll("[data-i]").forEach(b=>b.addEventListener("click",()=>{
+        if(el.dataset.aus) return;
+        bits[+b.dataset.i]^=1; zeichne();
+      }));
+    };
+    zeichne();
+    return { pruef:()=>parseInt(bits.join(""),2)===p.ziel, sperren:()=>{ el.dataset.aus="1"; } };
+  },
+
+  text(p,el){
+    el.innerHTML=`<div class="eingabe"><input type="text" id="ein" autocomplete="off" spellcheck="false"
+      inputmode="text" placeholder="Antwort"></div>`;
+    const i=el.querySelector("#ein");
+    i.addEventListener("keydown",e=>{ if(e.key==="Enter") $("#pruefen").click(); });
+    return { pruef:()=>{ const v=i.value.trim(); return v!=="" && p.pruef(v); },
+             sperren:()=>{ i.disabled=true; } };
+  },
+
+  mc(p,el){
+    let gewaehlt=-1;
+    el.innerHTML=p.optionen.map((o,i)=>`<button class="opt" data-o="${i}">${esc(o)}</button>`).join("");
+    el.querySelectorAll("[data-o]").forEach(b=>b.addEventListener("click",()=>{
+      if(el.dataset.aus) return;
+      gewaehlt=+b.dataset.o;
+      el.querySelectorAll(".opt").forEach(x=>x.style.borderColor="");
+      b.style.borderColor="var(--brand)";
+    }));
+    return { pruef:()=>gewaehlt===p.richtig,
+             sperren:()=>{ el.dataset.aus="1";
+               el.querySelectorAll(".opt").forEach((x,i)=>{ if(i===p.richtig) x.classList.add("richtig"); }); } };
+  },
+
+  gatter(p,el){
+    let gewaehlt=-1, a=1, b=0;
+    const sym=["&","≥1","=1","&"];
+    const zeichne=()=>{
+      const y = gewaehlt<0?0 : [a&&b, a||b, a^b, !(a&&b)][gewaehlt]?1:0;
+      el.innerHTML=`<div class="vis">${G.gatter(gewaehlt<0?"?":sym[gewaehlt],a,b,y)}</div>
+        <div class="reihe" style="justify-content:center">
+          <button class="btn klein" data-s="a">A umschalten</button>
+          <button class="btn klein" data-s="b">B umschalten</button></div>`
+        + p.optionen.map((o,i)=>`<button class="opt" data-o="${i}" ${i===gewaehlt?'style="border-color:var(--brand)"':""}>${esc(o)}</button>`).join("");
+      el.querySelectorAll("[data-s]").forEach(x=>x.addEventListener("click",()=>{
+        if(x.dataset.s==="a") a^=1; else b^=1; zeichne();
+      }));
+      el.querySelectorAll("[data-o]").forEach(x=>x.addEventListener("click",()=>{
+        if(el.dataset.aus) return; gewaehlt=+x.dataset.o; zeichne();
+      }));
+    };
+    zeichne();
+    return { pruef:()=>gewaehlt===p.richtig, sperren:()=>{ el.dataset.aus="1"; } };
+  },
+
+  tabelle(p,el){
+    const n=p.vars.length, zeilen=1<<n;
+    let y=new Array(zeilen).fill(null);
+    const zeichne=()=>{
+      let h=`<div class="vis"><table class="tt"><thead><tr>${p.vars.map(v=>`<th>${v}</th>`).join("")}<th>Y</th></tr></thead><tbody>`;
+      for(let m=0;m<zeilen;m++){
+        const bits=p.vars.map((_,i)=>(m>>(n-1-i))&1);
+        h+=`<tr>${bits.map(b=>`<td class="${b?"k1":"k0"}">${b}</td>`).join("")}`
+          + `<td class="klick ${y[m]===null?"leer":(y[m]?"k1":"k0")}" data-z="${m}">${y[m]===null?"?":y[m]}</td></tr>`;
+      }
+      el.innerHTML=h+`</tbody></table></div>`;
+      el.querySelectorAll("[data-z]").forEach(td=>td.addEventListener("click",()=>{
+        if(el.dataset.aus) return;
+        const m=+td.dataset.z;
+        y[m] = y[m]===null?0 : (y[m]===0?1:null);
+        zeichne();
+      }));
+    };
+    zeichne();
+    return { pruef:()=>{
+        for(let m=0;m<zeilen;m++){
+          const bits=p.vars.map((_,i)=>(m>>(n-1-i))&1);
+          if(y[m]!==p.fn(...bits)) return false;
+        }
+        return true;
+      }, sperren:()=>{ el.dataset.aus="1"; } };
+  },
+
+  ordnen(p,el){
+    let folge=[];
+    const zeichne=()=>{
+      el.innerHTML=`<div class="ordnen">`+p.elemente.map((t,i)=>{
+        const pos=folge.indexOf(i);
+        return `<button class="el ${pos>=0?"gesetzt":""}" data-e="${i}">
+          <span class="nr">${pos>=0?pos+1:"·"}</span><span>${esc(t)}</span></button>`;
+      }).join("")+`</div>
+      <div class="reihe"><button class="btn klein" id="ordReset">Reihenfolge löschen</button></div>`;
+      el.querySelectorAll("[data-e]").forEach(b=>b.addEventListener("click",()=>{
+        if(el.dataset.aus) return;
+        const i=+b.dataset.e;
+        if(folge.includes(i)) folge=folge.filter(x=>x!==i); else folge.push(i);
+        zeichne();
+      }));
+      el.querySelector("#ordReset").addEventListener("click",()=>{ folge=[]; zeichne(); });
+    };
+    zeichne();
+    return { pruef:()=>folge.length===p.elemente.length && folge.every((v,i)=>v===i),
+             sperren:()=>{ el.dataset.aus="1"; } };
+  },
+
+  zuordnen(p,el){
+    const wahl=new Array(p.paare.length).fill(-1);
+    el.innerHTML=`<div class="zuord">`+p.paare.map((pa,i)=>
+      `<div class="zu"><div class="f">${esc(pa[0])}</div>
+        <select data-z="${i}"><option value="-1">— wählen —</option>
+        ${p.ziele.map((z,j)=>`<option value="${j}">${esc(z)}</option>`).join("")}</select></div>`).join("")
+      +`</div>`;
+    el.querySelectorAll("[data-z]").forEach(s=>s.addEventListener("change",()=>{
+      wahl[+s.dataset.z]=+s.value;
+    }));
+    return { pruef:()=>p.paare.every((pa,i)=>wahl[i]===pa[1]),
+             sperren:()=>{ el.querySelectorAll("select").forEach(s=>s.disabled=true); } };
+  }
+};
+
+zeigeStart();
+</script>
+</body>
+</html>
