@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forms of be – Quiz Klasse 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FDFDF8;
+    --grid: #DCE7F2;
+    --ink: #1F3A68;
+    --ink-soft: #5A6F92;
+    --marker: #FFE45C;
+    --red: #C8322B;
+    --green: #2E7D4F;
+    --tile: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Andika", "Comic Sans MS", system-ui, sans-serif;
+    color: var(--ink);
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+  main {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 32px 20px 48px;
+  }
+  h1 {
+    font-size: 2.2rem;
+    line-height: 1.1;
+    margin: 0 0 4px;
+  }
+  .intro {
+    margin: 0 0 20px;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+  }
+
+  /* progress: one box per question */
+  .progress {
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    gap: 4px;
+    margin-bottom: 20px;
+    list-style: none;
+    padding: 0;
+  }
+  .progress li {
+    height: 14px;
+    border: 2px solid var(--ink);
+    border-radius: 3px;
+    background: var(--paper);
+  }
+  .progress li.current { background: var(--marker); }
+  .progress li.right { background: var(--green); border-color: var(--green); }
+  .progress li.wrong { background: var(--red); border-color: var(--red); }
+
+  .sheet {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    padding: 24px 24px 20px;
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 1rem;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+  .type {
+    font-weight: 700;
+    color: var(--ink);
+    border-bottom: 3px solid var(--marker);
+  }
+  .sentence {
+    font-size: 1.7rem;
+    line-height: 1.6;
+    margin: 0 0 24px;
+    min-height: 3.2em;
+  }
+  .sentence .line { display: block; }
+  .sentence .speaker { color: var(--ink-soft); }
+  .gap {
+    display: inline-block;
+    min-width: 3.4em;
+    text-align: center;
+    border-bottom: 3px dashed var(--ink);
+    padding: 0 6px;
+    font-weight: 700;
+  }
+  .gap.filled-right {
+    border-bottom-style: solid;
+    background: linear-gradient(transparent 20%, var(--marker) 20%, var(--marker) 90%, transparent 90%);
+  }
+  .gap.filled-wrong {
+    border-bottom: 3px solid var(--red);
+    color: var(--red);
+  }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .tile {
+    font: inherit;
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--ink);
+    background: var(--tile);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 12px 4px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--ink);
+    transition: transform .08s, box-shadow .08s;
+  }
+  .tile:hover:not(:disabled) { background: #FFF8CC; }
+  .tile:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+  .tile:disabled { cursor: default; opacity: .45; }
+  .tile.is-right { background: var(--green); border-color: var(--green); color: #fff; opacity: 1; box-shadow: 0 4px 0 #1C5234; }
+  .tile.is-wrong { background: var(--red); border-color: var(--red); color: #fff; opacity: 1; box-shadow: 0 4px 0 #86211C; }
+  .tile:focus-visible, .btn:focus-visible {
+    outline: 3px solid var(--marker);
+    outline-offset: 3px;
+  }
+
+  .feedback {
+    min-height: 3.2em;
+    margin: 18px 0 0;
+    font-size: 1.15rem;
+  }
+  .feedback strong.ok { color: var(--green); }
+  .feedback strong.no { color: var(--red); }
+  .feedback .tip { display: block; color: var(--ink-soft); font-size: 1.05rem; }
+
+  .actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+  .btn {
+    font: inherit;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--paper);
+    background: var(--ink);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 10px 22px;
+    cursor: pointer;
+  }
+  .btn:hover { background: #2B4E8A; }
+  .btn[hidden] { display: none; }
+
+  /* result */
+  .score {
+    font-size: 3.4rem;
+    font-weight: 700;
+    line-height: 1;
+    margin: 4px 0 8px;
+  }
+  .verdict { font-size: 1.3rem; margin: 0 0 20px; }
+  .review { list-style: none; padding: 0; margin: 0 0 20px; }
+  .review li {
+    border-left: 4px solid var(--red);
+    padding: 6px 12px;
+    margin-bottom: 10px;
+    background: #FFF;
+    font-size: 1.1rem;
+  }
+  .review .yours { color: var(--red); text-decoration: line-through; }
+  .review .correct { font-weight: 700; }
+
+  @keyframes stamp {
+    0% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+  }
+  .gap.pop { animation: stamp .22s ease-out; }
+  @media (prefers-reduced-motion: reduce) {
+    .gap.pop { animation: none; }
+    .tile { transition: none; }
+  }
+
+  @media (max-width: 480px) {
+    h1 { font-size: 1.8rem; }
+    .sheet { padding: 18px 16px 16px; }
+    .sentence { font-size: 1.4rem; }
+    .tiles { grid-template-columns: repeat(3, 1fr); }
+    .tile { font-size: 1.3rem; }
+    .score { font-size: 2.8rem; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Forms of be</h1>
+  <p class="intro">Welche Form von <i>be</i> passt in die Lücke? Tippe auf die richtige Form.</p>
+
+  <ol class="progress" id="progress" aria-label="Fortschritt"></ol>
+
+  <section class="sheet" id="quiz" aria-live="polite">
+    <div class="meta">
+      <span class="type" id="type"></span>
+      <span id="counter"></span>
+    </div>
+    <p class="sentence" id="sentence"></p>
+    <div class="tiles" id="tiles"></div>
+    <p class="feedback" id="feedback"></p>
+    <div class="actions">
+      <button class="btn" id="next" hidden>Weiter</button>
+    </div>
+  </section>
+
+  <section class="sheet" id="result" hidden aria-live="polite">
+    <p class="score" id="score"></p>
+    <p class="verdict" id="verdict"></p>
+    <ul class="review" id="review"></ul>
+    <div class="actions">
+      <button class="btn" id="restart">Nochmal üben</button>
+    </div>
+  </section>
+</main>
+
+<script>
+  const PRONOUNS = ["am", "is", "are", "am not", "isn't", "aren't"];
+
+  // ___ marks the gap. "lines" allows short dialogues.
+  const QUESTIONS = [
+    // Aussagen
+    { type: "Aussage",    lines: ["I ___ eleven."], answer: "am",
+      tip: "Zu I gehört immer am." },
+    { type: "Aussage",    lines: ["Tom ___ my brother."], answer: "is",
+      tip: "Tom = he → is" },
+    { type: "Aussage",    lines: ["We ___ in class 5."], answer: "are",
+      tip: "Zu we gehört are." },
+    { type: "Aussage",    lines: ["My cat ___ black."], answer: "is",
+      tip: "My cat = it → is" },
+    { type: "Aussage",    lines: ["You ___ my friend."], answer: "are",
+      tip: "Zu you gehört are." },
+
+    // Verneinungen
+    { type: "Verneinung", lines: ["I ___ twelve. I am eleven."], answer: "am not",
+      tip: "Verneinung mit I → am not" },
+    { type: "Verneinung", lines: ["My dog is small. It ___ big."], answer: "isn't",
+      tip: "it → is, verneint → isn't" },
+    { type: "Verneinung", lines: ["Jack and Olivia are ten. They ___ eleven."], answer: "aren't",
+      tip: "they → are, verneint → aren't" },
+    { type: "Verneinung", lines: ["Emma is at home. She ___ at school."], answer: "isn't",
+      tip: "she → is, verneint → isn't" },
+    { type: "Verneinung", lines: ["Max and I are friends. We ___ brothers."], answer: "aren't",
+      tip: "we → are, verneint → aren't" },
+
+    // Fragen
+    { type: "Frage",      lines: ["A: ___ you eleven?", "B: Yes, I am."], answer: "are",
+      tip: "Frage mit you → Are you …?" },
+    { type: "Frage",      lines: ["A: ___ she your sister?", "B: Yes, she is."], answer: "is",
+      tip: "Frage mit she → Is she …?" },
+    { type: "Frage",      lines: ["A: ___ they your friends?", "B: Yes, they are."], answer: "are",
+      tip: "Frage mit they → Are they …?" },
+    { type: "Frage",      lines: ["A: ___ your dad at home?", "B: No, he isn't."], answer: "is",
+      tip: "Your dad = he → Is your dad …?" },
+    { type: "Frage",      lines: ["A: Is it your bag?", "B: No, it ___."], answer: "isn't",
+      tip: "Kurzantwort mit No → No, it isn't." }
+  ];
+
+  const $ = id => document.getElementById(id);
+  let index = 0;
+  let results = [];
+
+  // Capitalise the pronoun when the gap starts a sentence or follows "A: "
+  function formatPronoun(line, pronoun) {
+    const before = line.split("___")[0].replace(/^[AB]: /, "").trim();
+    if (pronoun === "I" || before === "") return pronoun.charAt(0).toUpperCase() + pronoun.slice(1);
+    return pronoun;
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function renderLine(line, gapHtml) {
+    let speaker = "";
+    let text = line;
+    const m = line.match(/^([AB]): (.*)$/);
+    if (m) { speaker = `<span class="speaker">${m[1]}:</span> `; text = m[2]; }
+    const parts = text.split("___").map(escapeHtml);
+    return `<span class="line">${speaker}${parts.join(gapHtml)}</span>`;
+  }
+
+  function buildProgress() {
+    $("progress").innerHTML = QUESTIONS.map((_, i) =>
+      `<li aria-label="Frage ${i + 1}"></li>`).join("");
+  }
+
+  function updateProgress() {
+    [...$("progress").children].forEach((li, i) => {
+      li.className = "";
+      if (results[i]) li.classList.add(results[i].correct ? "right" : "wrong");
+      else if (i === index) li.classList.add("current");
+    });
+  }
+
+  function showQuestion() {
+    const q = QUESTIONS[index];
+    $("type").textContent = q.type;
+    $("counter").textContent = `Frage ${index + 1} von ${QUESTIONS.length}`;
+    $("sentence").innerHTML = q.lines
+      .map(l => renderLine(l, l.includes("___") ? '<span class="gap" id="gap">&nbsp;</span>' : "___"))
+      .join("");
+    $("tiles").innerHTML = PRONOUNS.map(p =>
+      `<button class="tile" data-p="${p}">${p}</button>`).join("");
+    $("feedback").innerHTML = "";
+    $("next").hidden = true;
+    updateProgress();
+    $("tiles").querySelector(".tile").focus({ preventScroll: true });
+  }
+
+  function answer(choice) {
+    const q = QUESTIONS[index];
+    const correct = choice === q.answer;
+    const gapLine = q.lines.find(l => l.includes("___"));
+    results[index] = { correct, choice };
+
+    $("tiles").querySelectorAll(".tile").forEach(t => {
+      t.disabled = true;
+      if (t.dataset.p === q.answer) t.classList.add("is-right");
+      else if (t.dataset.p === choice) t.classList.add("is-wrong");
+    });
+
+    const gap = $("gap");
+    gap.textContent = formatPronoun(gapLine, q.answer);
+    gap.classList.add(correct ? "filled-right" : "filled-wrong", "pop");
+
+    $("feedback").innerHTML = correct
+      ? `<strong class="ok">Richtig!</strong><span class="tip">${q.tip}</span>`
+      : `<strong class="no">Nicht ganz. Richtig ist: ${formatPronoun(gapLine, q.answer)}</strong><span class="tip">${q.tip}</span>`;
+
+    updateProgress();
+    $("next").textContent = index === QUESTIONS.length - 1 ? "Ergebnis zeigen" : "Weiter";
+    $("next").hidden = false;
+    $("next").focus({ preventScroll: true });
+  }
+
+  function showResult() {
+    const right = results.filter(r => r.correct).length;
+    $("quiz").hidden = true;
+    $("result").hidden = false;
+    $("score").textContent = `${right} von ${QUESTIONS.length}`;
+
+    let verdict;
+    if (right === QUESTIONS.length) verdict = "Super! Alles richtig.";
+    else if (right >= 12) verdict = "Sehr gut! Schau dir die Fehler noch einmal an.";
+    else if (right >= 8) verdict = "Gut gemacht! Übe die roten Sätze noch einmal.";
+    else verdict = "Übe noch einmal – beim zweiten Mal klappt es besser.";
+    $("verdict").textContent = verdict;
+
+    $("review").innerHTML = QUESTIONS.map((q, i) => {
+      if (results[i].correct) return "";
+      const gapLine = q.lines.find(l => l.includes("___"));
+      const text = gapLine.replace(/^[AB]: /, "");
+      const parts = text.split("___").map(escapeHtml);
+      return `<li>${parts.join(
+        `<span class="yours">${formatPronoun(gapLine, results[i].choice)}</span> <span class="correct">${formatPronoun(gapLine, q.answer)}</span>`
+      )}</li>`;
+    }).join("");
+    updateProgress();
+    $("restart").focus({ preventScroll: true });
+  }
+
+  function start() {
+    index = 0;
+    results = [];
+    $("result").hidden = true;
+    $("quiz").hidden = false;
+    buildProgress();
+    showQuestion();
+  }
+
+  $("tiles").addEventListener("click", e => {
+    const t = e.target.closest(".tile");
+    if (t && !t.disabled) answer(t.dataset.p);
+  });
+  $("next").addEventListener("click", () => {
+    if (index < QUESTIONS.length - 1) { index++; showQuestion(); }
+    else showResult();
+  });
+  $("restart").addEventListener("click", start);
+
+  start();
+</script>
+</body>
+</html>
