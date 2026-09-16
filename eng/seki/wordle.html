@@ -219,6 +219,27 @@
 
   function normalise(w){ return w.trim().toLowerCase().replace(/[^a-z]/g,""); }
 
+  // Eigene Wörter, die Lehrkräfte über "Geheimes Wort" eingegeben haben,
+  // werden im Browser gemerkt und künftig auch beim Zufallswort genutzt.
+  function ladeEigeneWoerter(){
+    try{
+      return JSON.parse(localStorage.getItem("wordle.eigeneWoerter")||"[]");
+    }catch(err){ return []; }
+  }
+  function speichereEigeneWoerter(liste){
+    try{ localStorage.setItem("wordle.eigeneWoerter", JSON.stringify(liste)); }catch(err){}
+  }
+  function alleWoerter(){
+    return WORDPOOL.concat(ladeEigeneWoerter());
+  }
+  function merkeWortFallsNeu(w){
+    const bekannt = alleWoerter().some(v=>v.toLowerCase()===w);
+    if(bekannt) return;
+    const eigene = ladeEigeneWoerter();
+    eigene.push(w);
+    speichereEigeneWoerter(eigene);
+  }
+
   function buildBoard(){
     $("board").innerHTML = "";
     for(let r=0;r<MAXTRIES;r++){
@@ -262,7 +283,8 @@
   }
 
   function randomWord(){
-    return WORDPOOL[Math.floor(Math.random()*WORDPOOL.length)];
+    const woerter = alleWoerter();
+    return woerter[Math.floor(Math.random()*woerter.length)];
   }
 
   function evaluate(guess){
@@ -359,6 +381,7 @@
     }
     $("setupError").textContent = "";
     $("secretWord").value = "";
+    merkeWortFallsNeu(w);
     startGame(w);
   });
 
