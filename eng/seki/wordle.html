@@ -161,6 +161,14 @@
       <button class="btn secondary" id="secretStart">Los geht's</button>
     </div>
     <p class="hint" id="setupError" style="color:var(--red)"></p>
+    <details id="neueWoerter" hidden>
+      <summary class="hint" style="cursor:pointer">Neue eigene Wörter noch nicht dauerhaft gespeichert</summary>
+      <p class="hint">Diese Wörter merkt sich nur dieser Browser. Damit sie für alle dauerhaft in der Liste stehen, kopiere sie und schicke sie an Claude, damit sie in <code>wordle.html</code> eingetragen werden.</p>
+      <div class="setup-row">
+        <input type="text" id="neueWoerterListe" readonly style="font-family:monospace">
+        <button class="btn secondary" id="neueWoerterKopieren" type="button">Kopieren</button>
+      </div>
+    </details>
   </section>
 
   <section class="sheet" id="game" hidden>
@@ -238,6 +246,12 @@
     const eigene = ladeEigeneWoerter();
     eigene.push(w);
     speichereEigeneWoerter(eigene);
+    zeigeNeueWoerter();
+  }
+  function zeigeNeueWoerter(){
+    const eigene = ladeEigeneWoerter();
+    $("neueWoerter").hidden = eigene.length===0;
+    $("neueWoerterListe").value = eigene.join(", ");
   }
 
   function buildBoard(){
@@ -397,6 +411,14 @@
     $("setup").hidden = false;
     $("setupError").textContent = "";
   });
+
+  $("neueWoerterKopieren").addEventListener("click", ()=>{
+    const feld = $("neueWoerterListe");
+    feld.select();
+    navigator.clipboard && navigator.clipboard.writeText(feld.value).catch(()=>document.execCommand("copy"));
+  });
+
+  zeigeNeueWoerter();
 </script>
 </body>
 </html>
