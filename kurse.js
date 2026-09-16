@@ -220,6 +220,13 @@ const MATERIAL = [
     typ:"uebung",
     url:"eng/seki/forms-of-be-quiz.html",
     info:"Übung zum Selbstlernen.",
+    stand:"2026-09", neu:true},
+
+   { fach:"englisch", klasse:5, bereich:"wortschatz-5",
+    titel:"Vokabel-Wordle",
+    typ:"werkzeug",
+    url:"eng/seki/wordle.html",
+    info:"Wortratespiel für die Vokabelkontrolle: zufälliges Wort aus dem Pool oder eigenes geheimes Wort der Lehrkraft, beliebig oft neu spielbar.",
     stand:"2026-09", neu:true}
 
   /* Vorlagen zum Kopieren — Raute vor der Zeile entfernen und anpassen:
