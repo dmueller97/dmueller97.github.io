@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vokabel-Spielbrett – Klasse 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FDFDF8; --grid: #DCE7F2; --ink: #1F3A68; --ink-soft: #5A6F92;
+    --marker: #FFE45C; --red: #C8322B; --green: #2E7D4F; --tile: #FFFFFF; --frosch:#7BC77E;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Andika", "Comic Sans MS", system-ui, sans-serif;
+    color: var(--ink); background-color: var(--paper);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px; min-height: 100vh; line-height: 1.5;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 20px 48px; }
+  h1 { font-size: 2.2rem; line-height: 1.1; margin: 0 0 4px; }
+  .intro { margin: 0 0 20px; color: var(--ink-soft); font-size: 1.05rem; }
+  .sheet { background: var(--paper); border: 2px solid var(--ink); border-radius: 6px; padding: 24px; box-shadow: 5px 5px 0 var(--ink); margin-bottom: 20px; }
+  .setup { display:flex; flex-direction:column; gap:14px; }
+  .setup-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  .setup label { font-weight:700; }
+  select, input[type=text] { font: inherit; font-size: 1.05rem; padding: 7px 10px; border: 2px solid var(--ink); border-radius: 6px; background: var(--tile); }
+  input[type=text] { flex:1; min-width:140px; }
+  .btn { font: inherit; font-size: 1.1rem; font-weight: 700; color: var(--paper); background: var(--ink); border: 2px solid var(--ink); border-radius: 8px; padding: 9px 20px; cursor: pointer; }
+  .btn:hover { background: #2B4E8A; }
+  .btn.secondary { background: var(--paper); color: var(--ink); }
+  .btn.secondary:hover { background: #FFF8CC; }
+  .btn:disabled { opacity:.4; cursor:default; }
+
+  #strecke { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:18px; }
+  .feld {
+    width: 40px; height:40px; border:2px solid var(--ink); border-radius:7px;
+    display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700;
+    background: var(--tile); position:relative;
+  }
+  .feld.frosch { background: var(--frosch); }
+  .feld.ziel { background: var(--marker); }
+  .chip { position:absolute; bottom:-6px; right:-6px; width:16px; height:16px; border-radius:50%; border:2px solid var(--ink); font-size:0; }
+
+  .spielerleiste { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px; }
+  .spielerkarte { display:flex; align-items:center; gap:8px; padding:6px 12px; border:2px solid var(--ink); border-radius:8px; }
+  .spielerkarte.aktiv { background: var(--marker); }
+  .punkt { width:14px; height:14px; border-radius:50%; border:2px solid var(--ink); }
+
+  .frage { text-align:center; margin: 10px 0 16px; }
+  .frage .label { color: var(--ink-soft); font-size:.95rem; }
+  .frage .text { font-size:1.6rem; font-weight:700; margin: 4px 0 14px; }
+  .optionen { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; max-width:420px; margin:0 auto; }
+  .option { font: inherit; font-size:1.1rem; font-weight:700; border:2px solid var(--ink); border-radius:8px; padding:10px; background:var(--tile); cursor:pointer; }
+  .option:hover:not(:disabled) { background:#FFF8CC; }
+  .option.richtig { background:var(--green); border-color:var(--green); color:#fff; }
+  .option.falsch { background:var(--red); border-color:var(--red); color:#fff; }
+  .option:disabled { cursor:default; }
+
+  .status { text-align:center; margin:14px 0; font-size:1.15rem; min-height:1.6em; }
+  .status strong.ok { color: var(--green); }
+  .status strong.no { color: var(--red); }
+
+  [hidden] { display:none !important; }
+  @media (max-width:480px){ h1{font-size:1.8rem;} .sheet{padding:16px;} .feld{width:32px;height:32px;font-size:.65rem;} }
+</style>
+</head>
+<body>
+<a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
+<main>
+  <h1>Vokabel-Spielbrett</h1>
+  <p class="intro">Beantworte die Vokabel richtig, würfle und ziehe vor. Landest du auf einem Frosch 🐸, ziehst du eine Aktionskarte. Wer zuerst im Ziel ist, gewinnt.</p>
+
+  <section class="sheet setup" id="setup">
+    <div class="setup-row">
+      <label for="name1">Name Spieler 1</label>
+      <input type="text" id="name1" value="Spieler 1" maxlength="16">
+    </div>
+    <div class="setup-row">
+      <label for="name2">Name Spieler 2</label>
+      <input type="text" id="name2" value="Spieler 2" maxlength="16">
+    </div>
+    <div class="setup-row">
+      <label for="modus">Modus</label>
+      <select id="modus">
+        <option value="leicht">Easy — vier Antworten zur Auswahl</option>
+        <option value="profi">Profi — englisches Wort selbst eintippen</option>
+      </select>
+    </div>
+    <div class="setup-row">
+      <button class="btn" id="starten">Spiel starten</button>
+    </div>
+  </section>
+
+  <section class="sheet" id="spiel" hidden>
+    <div class="spielerleiste" id="spielerleiste"></div>
+    <div id="strecke"></div>
+
+    <div class="frage">
+      <div class="label" id="frageLabel">Übersetze ins Englische</div>
+      <div class="text" id="frageText">—</div>
+      <div class="optionen" id="optionen"></div>
+      <div class="optionen" id="eingabeBereich" hidden style="grid-template-columns:1fr auto">
+        <input type="text" id="antwortEingabe" autocomplete="off" placeholder="englisches Wort">
+        <button class="btn" id="antwortAbschicken" type="button">Prüfen</button>
+      </div>
+    </div>
+
+    <p class="status" id="status"></p>
+    <div class="setup-row" style="justify-content:center">
+      <button class="btn" id="wuerfeln" type="button" hidden>🎲 Würfeln</button>
+      <button class="btn secondary" id="neuesSpiel" type="button">Neues Spiel</button>
+    </div>
+  </section>
+</main>
+
+<script src="vokabeln-data.js"></script>
+<script>
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const STRECKE_LAENGE = 24;
+  const FROSCH_FELDER = [5,11,17,21];
+  const AKTIONSKARTEN = [
+    { text:"Toller Zug! Ziehe 2 Felder vor.", effekt:2 },
+    { text:"Du bist gestolpert. Ziehe 1 Feld zurück.", effekt:-1 },
+    { text:"Bonusrunde! Würfle sofort noch einmal.", effekt:0, nochmal:true },
+    { text:"Kurze Pause. Setze diese Runde aus.", effekt:0, aussetzen:true },
+    { text:"Glückspilz! Ziehe 3 Felder vor.", effekt:3 }
+  ];
+  const FARBEN = ["#C8322B","#2B4E8A"];
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+    return a;
+  }
+
+  let spieler = [];
+  let aktiverIndex = 0;
+  let modus = "leicht";
+  let aktuellesWort = null;
+  let frageBeantwortet = false;
+  let aussetzenFlag = [false,false];
+
+  function starteSpiel(){
+    modus = $("modus").value;
+    spieler = [
+      { name: $("name1").value.trim() || "Spieler 1", pos: 0, farbe: FARBEN[0] },
+      { name: $("name2").value.trim() || "Spieler 2", pos: 0, farbe: FARBEN[1] }
+    ];
+    aktiverIndex = 0;
+    aussetzenFlag = [false,false];
+
+    $("setup").hidden = true;
+    $("spiel").hidden = false;
+    renderStrecke();
+    renderSpielerleiste();
+    naechsteRunde();
+  }
+
+  function renderStrecke(){
+    const el = $("strecke");
+    el.innerHTML = "";
+    for(let i=0;i<STRECKE_LAENGE;i++){
+      const feld = document.createElement("div");
+      feld.className = "feld" + (FROSCH_FELDER.includes(i) ? " frosch" : "") + (i===STRECKE_LAENGE-1 ? " ziel" : "");
+      feld.id = "feld-"+i;
+      feld.textContent = i===STRECKE_LAENGE-1 ? "ZIEL" : (FROSCH_FELDER.includes(i) ? "🐸" : String(i+1));
+      el.appendChild(feld);
+    }
+    aktualisiereChips();
+  }
+
+  function aktualisiereChips(){
+    document.querySelectorAll(".chip").forEach(c=>c.remove());
+    spieler.forEach(s=>{
+      const feld = $("feld-"+Math.min(s.pos, STRECKE_LAENGE-1));
+      const chip = document.createElement("div");
+      chip.className = "chip";
+      chip.style.background = s.farbe;
+      feld.appendChild(chip);
+    });
+  }
+
+  function renderSpielerleiste(){
+    const el = $("spielerleiste");
+    el.innerHTML = "";
+    spieler.forEach((s,i)=>{
+      const karte = document.createElement("div");
+      karte.className = "spielerkarte" + (i===aktiverIndex ? " aktiv" : "");
+      karte.innerHTML = `<span class="punkt" style="background:${s.farbe}"></span> ${escapeHtml(s.name)} — Feld ${Math.min(s.pos,STRECKE_LAENGE-1)+1}`;
+      el.appendChild(karte);
+    });
+  }
+  function escapeHtml(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  function naechsteRunde(){
+    if(aussetzenFlag[aktiverIndex]){
+      aussetzenFlag[aktiverIndex] = false;
+      $("status").innerHTML = `<strong class="no">${escapeHtml(spieler[aktiverIndex].name)} setzt aus.</strong>`;
+      wechsleSpieler();
+      setTimeout(naechsteRunde, 900);
+      return;
+    }
+    frageBeantwortet = false;
+    $("wuerfeln").hidden = true;
+    $("status").innerHTML = "";
+    renderSpielerleiste();
+    stelleFrage();
+  }
+
+  function stelleFrage(){
+    aktuellesWort = VOKABELN[Math.floor(Math.random()*VOKABELN.length)];
+    $("frageText").textContent = aktuellesWort.de;
+
+    if(modus==="leicht"){
+      $("optionen").hidden = false;
+      $("eingabeBereich").hidden = true;
+      const falsche = shuffle(VOKABELN.filter(v=>v.en!==aktuellesWort.en)).slice(0,3);
+      const optionen = shuffle([aktuellesWort, ...falsche]);
+      $("optionen").innerHTML = "";
+      optionen.forEach(o=>{
+        const btn = document.createElement("button");
+        btn.className = "option";
+        btn.textContent = o.en;
+        btn.addEventListener("click", ()=> antwortPruefen(o.en===aktuellesWort.en, btn));
+        $("optionen").appendChild(btn);
+      });
+    } else {
+      $("optionen").hidden = true;
+      $("eingabeBereich").hidden = false;
+      $("antwortEingabe").value = "";
+      $("antwortEingabe").focus();
+    }
+  }
+
+  function antwortPruefen(richtig, btnEl){
+    if(frageBeantwortet) return;
+    frageBeantwortet = true;
+    if(modus==="leicht"){
+      [...$("optionen").children].forEach(b=>{
+        b.disabled = true;
+        if(b.textContent===aktuellesWort.en) b.classList.add("richtig");
+        else if(b===btnEl && !richtig) b.classList.add("falsch");
+      });
+    }
+    if(richtig){
+      $("status").innerHTML = `<strong class="ok">Richtig!</strong>`;
+      $("wuerfeln").hidden = false;
+    } else {
+      $("status").innerHTML = `<strong class="no">Leider falsch. Richtig wäre: ${aktuellesWort.en}</strong>`;
+      setTimeout(()=>{ wechsleSpieler(); naechsteRunde(); }, 1400);
+    }
+  }
+
+  $("antwortAbschicken").addEventListener("click", ()=>{
+    const eingabe = $("antwortEingabe").value.trim().toLowerCase();
+    antwortPruefen(eingabe === aktuellesWort.en.toLowerCase(), null);
+  });
+  $("antwortEingabe").addEventListener("keydown", e=>{
+    if(e.key==="Enter") $("antwortAbschicken").click();
+  });
+
+  function wechsleSpieler(){
+    aktiverIndex = (aktiverIndex+1) % spieler.length;
+  }
+
+  function wuerfeln(){
+    $("wuerfeln").hidden = true;
+    const zahl = 1 + Math.floor(Math.random()*6);
+    const s = spieler[aktiverIndex];
+    s.pos = Math.min(s.pos + zahl, STRECKE_LAENGE-1);
+    aktualisiereChips();
+    renderSpielerleiste();
+
+    let nachricht = `${escapeHtml(s.name)} würfelt eine ${zahl}.`;
+    let nochmal = false;
+
+    if(s.pos >= STRECKE_LAENGE-1){
+      $("status").innerHTML = `<strong class="ok">🎉 ${escapeHtml(s.name)} erreicht das Ziel und gewinnt!</strong>`;
+      return;
+    }
+
+    if(FROSCH_FELDER.includes(s.pos)){
+      const karte = AKTIONSKARTEN[Math.floor(Math.random()*AKTIONSKARTEN.length)];
+      nachricht += ` Frosch-Feld: ${karte.text}`;
+      s.pos = Math.max(0, Math.min(s.pos + karte.effekt, STRECKE_LAENGE-1));
+      if(karte.aussetzen) aussetzenFlag[aktiverIndex] = true;
+      if(karte.nochmal) nochmal = true;
+      aktualisiereChips();
+    }
+
+    $("status").innerHTML = nachricht;
+
+    if(s.pos >= STRECKE_LAENGE-1){
+      setTimeout(()=>{
+        $("status").innerHTML = `<strong class="ok">🎉 ${escapeHtml(s.name)} erreicht das Ziel und gewinnt!</strong>`;
+      }, 900);
+      return;
+    }
+
+    if(!nochmal) wechsleSpieler();
+    setTimeout(naechsteRunde, 1400);
+  }
+
+  $("wuerfeln").addEventListener("click", wuerfeln);
+  $("starten").addEventListener("click", starteSpiel);
+  $("neuesSpiel").addEventListener("click", ()=>{
+    $("spiel").hidden = true;
+    $("setup").hidden = false;
+  });
+</script>
+</body>
+</html>

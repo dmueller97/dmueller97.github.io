@@ -227,6 +227,34 @@ const MATERIAL = [
     typ:"werkzeug",
     url:"eng/seki/wordle.html",
     info:"Wortratespiel für die Vokabelkontrolle: zufälliges Wort aus dem Pool oder eigenes geheimes Wort der Lehrkraft, beliebig oft neu spielbar.",
+    stand:"2026-09", neu:true},
+
+   { fach:"englisch", klasse:5, bereich:"wortschatz-5",
+    titel:"Vokabel-Bingo",
+    typ:"werkzeug",
+    url:"eng/seki/bingo.html",
+    info:"Bingo mit englischen Vokabeln: Easy-Variante liest das Wort vor (Hörverstehen), Profi-Variante zeigt die deutsche Übersetzung. Rastergröße und Thema wählbar.",
+    stand:"2026-09", neu:true},
+
+   { fach:"englisch", klasse:5, bereich:"wortschatz-5",
+    titel:"Vokabel-Memory",
+    typ:"werkzeug",
+    url:"eng/seki/memory.html",
+    info:"Klassisches Memory mit Englisch-Deutsch-Wortpaaren. Anzahl der Paare und Thema frei wählbar.",
+    stand:"2026-09", neu:true},
+
+   { fach:"englisch", klasse:5, bereich:"wortschatz-5",
+    titel:"Vokabel-Spielbrett",
+    typ:"werkzeug",
+    url:"eng/seki/spielbrett.html",
+    info:"Frage-Antwort-Brettspiel für zwei Spieler: Vokabel richtig beantworten, würfeln, vorrücken. Frosch-Felder lösen Aktionskarten aus. Easy (Multiple Choice) oder Profi (Wort eintippen).",
+    stand:"2026-09", neu:true},
+
+   { fach:"englisch", klasse:5, bereich:"wortschatz-5",
+    titel:"Englisches Bombenspiel",
+    typ:"werkzeug",
+    url:"eng/seki/bombenspiel.html",
+    info:"Reihum ein englisches Wort zum Thema nennen und die tickende Bombe weitergeben, bevor sie explodiert. Für 2 bis 6 Spieler, Thema fest oder zufällig wechselnd.",
     stand:"2026-09", neu:true}
 
   /* Vorlagen zum Kopieren — Raute vor der Zeile entfernen und anpassen:

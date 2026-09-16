@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vokabel-Bingo – Klasse 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FDFDF8; --grid: #DCE7F2; --ink: #1F3A68; --ink-soft: #5A6F92;
+    --marker: #FFE45C; --red: #C8322B; --green: #2E7D4F; --tile: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Andika", "Comic Sans MS", system-ui, sans-serif;
+    color: var(--ink); background-color: var(--paper);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px; min-height: 100vh; line-height: 1.5;
+  }
+  main { max-width: 640px; margin: 0 auto; padding: 32px 20px 48px; }
+  h1 { font-size: 2.2rem; line-height: 1.1; margin: 0 0 4px; }
+  .intro { margin: 0 0 20px; color: var(--ink-soft); font-size: 1.05rem; }
+  .sheet { background: var(--paper); border: 2px solid var(--ink); border-radius: 6px; padding: 24px; box-shadow: 5px 5px 0 var(--ink); margin-bottom: 20px; }
+  .setup { display:flex; flex-direction:column; gap:14px; }
+  .setup-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  .setup label { font-weight:700; }
+  select { font: inherit; font-size: 1.05rem; padding: 7px 10px; border: 2px solid var(--ink); border-radius: 6px; background: var(--tile); }
+  .btn { font: inherit; font-size: 1.1rem; font-weight: 700; color: var(--paper); background: var(--ink); border: 2px solid var(--ink); border-radius: 8px; padding: 9px 20px; cursor: pointer; }
+  .btn:hover { background: #2B4E8A; }
+  .btn.secondary { background: var(--paper); color: var(--ink); }
+  .btn.secondary:hover { background: #FFF8CC; }
+  .btn:disabled { opacity:.45; cursor:default; }
+
+  .clue { text-align:center; margin-bottom:18px; }
+  .clue .label { color: var(--ink-soft); font-size: .95rem; }
+  .clue .text { font-size: 1.8rem; font-weight:700; min-height:1.4em; }
+  .clue .actions { display:flex; gap:10px; justify-content:center; margin-top:10px; flex-wrap:wrap; }
+
+  #board { display:grid; gap:8px; margin-bottom: 10px; }
+  .cell {
+    aspect-ratio: 1; display:flex; align-items:center; justify-content:center; text-align:center;
+    border:2px solid var(--ink); border-radius:8px; background:var(--tile); font-weight:700;
+    padding: 4px; font-size: .95rem; cursor:pointer; transition: transform .1s, background .15s;
+  }
+  .cell.done { background: var(--green); border-color:var(--green); color:#fff; cursor:default; }
+  .cell.wrong { animation: shake .3s; background:#FCEBE8; border-color:var(--red); }
+  .cell.bingo { background: var(--marker); border-color:#E0C43E; color:var(--ink); }
+  @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);} }
+  @media (prefers-reduced-motion: reduce) { .cell.wrong { animation:none; } }
+
+  .status { text-align:center; margin: 10px 0; font-size:1.15rem; min-height:1.6em; }
+  .status strong.ok { color: var(--green); }
+
+  [hidden] { display:none !important; }
+  @media (max-width:480px){ h1{font-size:1.8rem;} .sheet{padding:16px;} .cell{font-size:.8rem;} .clue .text{font-size:1.4rem;} }
+</style>
+</head>
+<body>
+<a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
+<main>
+  <h1>Vokabel-Bingo</h1>
+  <p class="intro">Fülle dein Raster mit Vokabeln. Wird dein Wort aufgerufen, tippe darauf. Drei (oder mehr) in einer Reihe — waagrecht, senkrecht oder diagonal — heißt Bingo!</p>
+
+  <section class="sheet setup" id="setup">
+    <div class="setup-row">
+      <label for="groesse">Rastergröße</label>
+      <select id="groesse">
+        <option value="3">3 × 3 (9 Felder)</option>
+        <option value="4" selected>4 × 4 (16 Felder)</option>
+        <option value="5">5 × 5 (25 Felder)</option>
+      </select>
+    </div>
+    <div class="setup-row">
+      <label for="modus">Modus</label>
+      <select id="modus">
+        <option value="leicht">Easy — Wort wird vorgelesen</option>
+        <option value="profi">Profi — deutsche Übersetzung wird gezeigt</option>
+      </select>
+    </div>
+    <div class="setup-row">
+      <label for="thema">Thema</label>
+      <select id="thema"><option value="">Alle Themen</option></select>
+    </div>
+    <div class="setup-row">
+      <button class="btn" id="starten">Bingo starten</button>
+    </div>
+  </section>
+
+  <section class="sheet" id="spiel" hidden>
+    <div class="clue">
+      <div class="label" id="clueLabel">Nächstes Wort</div>
+      <div class="text" id="clueText">—</div>
+      <div class="actions">
+        <button class="btn secondary" id="vorlesen" type="button">🔊 Vorlesen</button>
+        <button class="btn" id="naechstes" type="button">Nächstes Wort</button>
+      </div>
+    </div>
+    <div id="board"></div>
+    <p class="status" id="status"></p>
+    <div class="clue actions">
+      <button class="btn secondary" id="neuesSpiel" type="button">Neues Spiel</button>
+    </div>
+  </section>
+</main>
+
+<script src="vokabeln-data.js"></script>
+<script>
+  "use strict";
+  const $ = id => document.getElementById(id);
+
+  const themaSelect = $("thema");
+  Object.entries(THEMEN).forEach(([id,name])=>{
+    const o=document.createElement("option"); o.value=id; o.textContent=name;
+    themaSelect.appendChild(o);
+  });
+
+  let boardWords = [];   // aktuelles Raster
+  let callOrder = [];    // Reihenfolge, in der Wörter aufgerufen werden
+  let callIndex = -1;
+  let markiert = [];     // bool je Feld
+  let groesse = 4;
+  let modus = "leicht";
+  let bingoGefeiert = false;
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+    return a;
+  }
+
+  function pool(){
+    const t = themaSelect.value;
+    return t ? VOKABELN.filter(v=>v.thema===t) : VOKABELN;
+  }
+
+  function starteSpiel(){
+    groesse = Number($("groesse").value);
+    modus = $("modus").value;
+    const n = groesse*groesse;
+    const verfuegbar = pool();
+    if(verfuegbar.length < n){
+      alert(`Für dieses Thema gibt es nur ${verfuegbar.length} Wörter. Wähle ein kleineres Raster oder "Alle Themen".`);
+      return;
+    }
+    boardWords = shuffle(verfuegbar).slice(0, n);
+    callOrder = shuffle(boardWords);
+    callIndex = -1;
+    markiert = new Array(n).fill(false);
+    bingoGefeiert = false;
+
+    $("setup").hidden = true;
+    $("spiel").hidden = false;
+    $("board").style.gridTemplateColumns = `repeat(${groesse}, 1fr)`;
+    renderBoard();
+    $("clueText").textContent = "—";
+    $("status").innerHTML = "";
+    $("naechstes").disabled = false;
+    naechstesWort();
+  }
+
+  function renderBoard(){
+    const board = $("board");
+    board.innerHTML = "";
+    boardWords.forEach((w,i)=>{
+      const cell = document.createElement("div");
+      cell.className = "cell" + (markiert[i] ? " done" : "");
+      cell.textContent = w.en;
+      cell.addEventListener("click", ()=> feldKlick(i));
+      board.appendChild(cell);
+    });
+  }
+
+  function speak(text){
+    try{
+      if(!("speechSynthesis" in window)) return;
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "en-GB";
+      speechSynthesis.cancel();
+      speechSynthesis.speak(u);
+    }catch(err){}
+  }
+
+  function naechstesWort(){
+    callIndex++;
+    if(callIndex >= callOrder.length){
+      $("clueText").textContent = "Alle Wörter aufgerufen!";
+      $("naechstes").disabled = true;
+      return;
+    }
+    const w = callOrder[callIndex];
+    if(modus === "leicht"){
+      $("clueLabel").textContent = "Hör zu und finde das Wort";
+      $("clueText").textContent = "🔊 …";
+      speak(w.en);
+    } else {
+      $("clueLabel").textContent = "Finde das englische Wort für";
+      $("clueText").textContent = w.de;
+    }
+  }
+
+  function aktuellesWort(){
+    return callIndex>=0 && callIndex<callOrder.length ? callOrder[callIndex] : null;
+  }
+
+  function feldKlick(i){
+    if(markiert[i]) return;
+    const aktuell = aktuellesWort();
+    if(!aktuell) return;
+    const cells = $("board").children;
+    if(boardWords[i].en === aktuell.en){
+      markiert[i] = true;
+      cells[i].classList.add("done");
+      if(modus==="profi") cells[i].textContent = boardWords[i].en;
+      pruefeBingo();
+    } else {
+      cells[i].classList.add("wrong");
+      setTimeout(()=>cells[i].classList.remove("wrong"), 300);
+    }
+  }
+
+  function pruefeBingo(){
+    const linien = [];
+    for(let r=0;r<groesse;r++) linien.push([...Array(groesse)].map((_,c)=>r*groesse+c));
+    for(let c=0;c<groesse;c++) linien.push([...Array(groesse)].map((_,r)=>r*groesse+c));
+    linien.push([...Array(groesse)].map((_,i)=>i*groesse+i));
+    linien.push([...Array(groesse)].map((_,i)=>i*groesse+(groesse-1-i)));
+
+    const volleLinie = linien.find(l => l.every(i=>markiert[i]));
+    if(volleLinie && !bingoGefeiert){
+      bingoGefeiert = true;
+      volleLinie.forEach(i => $("board").children[i].classList.add("bingo"));
+      $("status").innerHTML = `<strong class="ok">BINGO! 🎉</strong>`;
+    }
+    if(markiert.every(Boolean)){
+      $("status").innerHTML = `<strong class="ok">Ganzes Raster geschafft! 🎉</strong>`;
+      $("naechstes").disabled = true;
+    }
+  }
+
+  $("starten").addEventListener("click", starteSpiel);
+  $("naechstes").addEventListener("click", naechstesWort);
+  $("vorlesen").addEventListener("click", ()=>{
+    const w = aktuellesWort();
+    if(w) speak(w.en);
+  });
+  $("neuesSpiel").addEventListener("click", ()=>{
+    $("spiel").hidden = true;
+    $("setup").hidden = false;
+  });
+</script>
+</body>
+</html>

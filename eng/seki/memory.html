@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vokabel-Memory – Klasse 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FDFDF8; --grid: #DCE7F2; --ink: #1F3A68; --ink-soft: #5A6F92;
+    --marker: #FFE45C; --red: #C8322B; --green: #2E7D4F; --tile: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Andika", "Comic Sans MS", system-ui, sans-serif;
+    color: var(--ink); background-color: var(--paper);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px; min-height: 100vh; line-height: 1.5;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 20px 48px; }
+  h1 { font-size: 2.2rem; line-height: 1.1; margin: 0 0 4px; }
+  .intro { margin: 0 0 20px; color: var(--ink-soft); font-size: 1.05rem; }
+  .sheet { background: var(--paper); border: 2px solid var(--ink); border-radius: 6px; padding: 24px; box-shadow: 5px 5px 0 var(--ink); margin-bottom: 20px; }
+  .setup { display:flex; flex-direction:column; gap:14px; }
+  .setup-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  .setup label { font-weight:700; }
+  select { font: inherit; font-size: 1.05rem; padding: 7px 10px; border: 2px solid var(--ink); border-radius: 6px; background: var(--tile); }
+  .btn { font: inherit; font-size: 1.1rem; font-weight: 700; color: var(--paper); background: var(--ink); border: 2px solid var(--ink); border-radius: 8px; padding: 9px 20px; cursor: pointer; }
+  .btn:hover { background: #2B4E8A; }
+  .btn.secondary { background: var(--paper); color: var(--ink); }
+  .btn.secondary:hover { background: #FFF8CC; }
+
+  .meta { display:flex; justify-content:space-between; margin-bottom:14px; font-size:1.05rem; color:var(--ink-soft); }
+  .meta b { color: var(--ink); }
+
+  #board { display:grid; gap:8px; }
+  .karte {
+    aspect-ratio: 3/2; border:2px solid var(--ink); border-radius:8px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; text-align:center; padding:4px;
+    font-weight:700; font-size:.95rem; background: var(--ink); color: var(--ink);
+    transition: transform .15s, background .15s, color .15s;
+  }
+  .karte.offen { background: var(--tile); color: var(--ink); }
+  .karte.gefunden { background: var(--green); border-color:var(--green); color:#fff; cursor:default; }
+  .karte.falsch { animation: shake .3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);} }
+  @media (prefers-reduced-motion: reduce) { .karte.falsch { animation:none; } }
+
+  .status { text-align:center; margin: 14px 0 0; font-size:1.15rem; min-height:1.6em; }
+  .status strong.ok { color: var(--green); }
+
+  [hidden] { display:none !important; }
+  @media (max-width:480px){ h1{font-size:1.8rem;} .sheet{padding:16px;} .karte{font-size:.75rem;} }
+</style>
+</head>
+<body>
+<a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
+<main>
+  <h1>Vokabel-Memory</h1>
+  <p class="intro">Finde die passenden Englisch-Deutsch-Paare. Zwei Karten aufdecken — stimmen sie überein, bleiben sie offen.</p>
+
+  <section class="sheet setup" id="setup">
+    <div class="setup-row">
+      <label for="anzahl">Anzahl Paare</label>
+      <select id="anzahl">
+        <option value="6">6 Paare — Einsteiger</option>
+        <option value="8" selected>8 Paare</option>
+        <option value="10">10 Paare</option>
+        <option value="12">12 Paare — Profi</option>
+      </select>
+    </div>
+    <div class="setup-row">
+      <label for="thema">Thema</label>
+      <select id="thema"><option value="">Alle Themen</option></select>
+    </div>
+    <div class="setup-row">
+      <button class="btn" id="starten">Memory starten</button>
+    </div>
+  </section>
+
+  <section class="sheet" id="spiel" hidden>
+    <div class="meta">
+      <span>Versuche: <b id="versuche">0</b></span>
+      <span>Gefundene Paare: <b id="gefunden">0</b> / <b id="gesamt">0</b></span>
+    </div>
+    <div id="board"></div>
+    <p class="status" id="status"></p>
+    <div class="setup-row" style="justify-content:center;margin-top:10px">
+      <button class="btn secondary" id="neuesSpiel" type="button">Neues Spiel</button>
+    </div>
+  </section>
+</main>
+
+<script src="vokabeln-data.js"></script>
+<script>
+  "use strict";
+  const $ = id => document.getElementById(id);
+
+  const themaSelect = $("thema");
+  Object.entries(THEMEN).forEach(([id,name])=>{
+    const o=document.createElement("option"); o.value=id; o.textContent=name;
+    themaSelect.appendChild(o);
+  });
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+    return a;
+  }
+  function pool(){
+    const t = themaSelect.value;
+    return t ? VOKABELN.filter(v=>v.thema===t) : VOKABELN;
+  }
+
+  let karten = [];       // { text, paarId, art:"en"|"de" }
+  let offen = [];        // aktuell aufgedeckte Kartenindizes (max 2)
+  let gefundenePaare = 0;
+  let versuche = 0;
+  let sperre = false;
+
+  function starteSpiel(){
+    const anzahl = Number($("anzahl").value);
+    const verfuegbar = pool();
+    if(verfuegbar.length < anzahl){
+      alert(`Für dieses Thema gibt es nur ${verfuegbar.length} Wörter. Wähle weniger Paare oder "Alle Themen".`);
+      return;
+    }
+    const gewaehlt = shuffle(verfuegbar).slice(0, anzahl);
+    karten = shuffle(gewaehlt.flatMap((w,i)=>[
+      { text:w.en, paarId:i, art:"en" },
+      { text:w.de, paarId:i, art:"de" }
+    ]));
+    offen = [];
+    gefundenePaare = 0;
+    versuche = 0;
+    sperre = false;
+
+    $("setup").hidden = true;
+    $("spiel").hidden = false;
+    $("gesamt").textContent = anzahl;
+    $("gefunden").textContent = "0";
+    $("versuche").textContent = "0";
+    $("status").innerHTML = "";
+
+    const spalten = anzahl <= 6 ? 4 : (anzahl <= 8 ? 4 : 5);
+    $("board").style.gridTemplateColumns = `repeat(${spalten}, 1fr)`;
+    renderBoard();
+  }
+
+  function renderBoard(){
+    const board = $("board");
+    board.innerHTML = "";
+    karten.forEach((k,i)=>{
+      const el = document.createElement("div");
+      el.className = "karte";
+      el.dataset.i = i;
+      el.addEventListener("click", ()=> kartenKlick(i));
+      board.appendChild(el);
+    });
+  }
+
+  function kartenKlick(i){
+    if(sperre) return;
+    const el = $("board").children[i];
+    if(el.classList.contains("offen") || el.classList.contains("gefunden")) return;
+    if(offen.length>=2) return;
+
+    el.classList.add("offen");
+    el.textContent = karten[i].text;
+    offen.push(i);
+
+    if(offen.length===2){
+      versuche++;
+      $("versuche").textContent = versuche;
+      const [a,b] = offen;
+      if(karten[a].paarId===karten[b].paarId){
+        gefundenePaare++;
+        $("gefunden").textContent = gefundenePaare;
+        [a,b].forEach(idx=>{
+          const e=$("board").children[idx];
+          e.classList.add("gefunden");
+        });
+        offen = [];
+        if(gefundenePaare === karten.length/2){
+          $("status").innerHTML = `<strong class="ok">Geschafft! ${versuche} Versuche gebraucht. 🎉</strong>`;
+        }
+      } else {
+        sperre = true;
+        [a,b].forEach(idx=>$("board").children[idx].classList.add("falsch"));
+        setTimeout(()=>{
+          [a,b].forEach(idx=>{
+            const e=$("board").children[idx];
+            e.classList.remove("offen","falsch");
+            e.textContent = "";
+          });
+          offen = [];
+          sperre = false;
+        }, 900);
+      }
+    }
+  }
+
+  $("starten").addEventListener("click", starteSpiel);
+  $("neuesSpiel").addEventListener("click", ()=>{
+    $("spiel").hidden = true;
+    $("setup").hidden = false;
+  });
+</script>
+</body>
+</html>

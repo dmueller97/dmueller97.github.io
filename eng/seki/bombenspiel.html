@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Englisches Bombenspiel – Klasse 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FDFDF8; --grid: #DCE7F2; --ink: #1F3A68; --ink-soft: #5A6F92;
+    --marker: #FFE45C; --red: #C8322B; --green: #2E7D4F; --tile: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Andika", "Comic Sans MS", system-ui, sans-serif;
+    color: var(--ink); background-color: var(--paper);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px; min-height: 100vh; line-height: 1.5;
+  }
+  main { max-width: 640px; margin: 0 auto; padding: 32px 20px 48px; }
+  h1 { font-size: 2.2rem; line-height: 1.1; margin: 0 0 4px; }
+  .intro { margin: 0 0 20px; color: var(--ink-soft); font-size: 1.05rem; }
+  .sheet { background: var(--paper); border: 2px solid var(--ink); border-radius: 6px; padding: 24px; box-shadow: 5px 5px 0 var(--ink); margin-bottom: 20px; }
+  .setup { display:flex; flex-direction:column; gap:14px; }
+  .setup-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  .setup label { font-weight:700; }
+  select, input[type=text], input[type=number] { font: inherit; font-size: 1.05rem; padding: 7px 10px; border: 2px solid var(--ink); border-radius: 6px; background: var(--tile); }
+  #spielerNamen { display:flex; flex-direction:column; gap:8px; }
+  #spielerNamen input { width:100%; }
+  .btn { font: inherit; font-size: 1.1rem; font-weight: 700; color: var(--paper); background: var(--ink); border: 2px solid var(--ink); border-radius: 8px; padding: 9px 20px; cursor: pointer; }
+  .btn:hover { background: #2B4E8A; }
+  .btn.secondary { background: var(--paper); color: var(--ink); }
+  .btn.secondary:hover { background: #FFF8CC; }
+
+  .bombe { text-align:center; margin: 10px 0 20px; }
+  .bombe .icon { font-size: 4.5rem; transition: transform .1s; }
+  .bombe .icon.tick { animation: puls .5s infinite; }
+  @keyframes puls { 0%,100%{transform:scale(1);} 50%{transform:scale(1.12);} }
+  @media (prefers-reduced-motion: reduce) { .bombe .icon.tick { animation:none; } }
+  .bombe .thema { font-size:1.3rem; font-weight:700; margin-top:6px; }
+  .bombe .traeger { color: var(--ink-soft); font-size:1.1rem; }
+
+  .balken { height:14px; border:2px solid var(--ink); border-radius:8px; overflow:hidden; margin: 10px auto; max-width:340px; background:var(--tile); }
+  .balken-innen { height:100%; background: var(--green); transition: width .2s linear; }
+
+  .wortEingabe { display:flex; gap:10px; justify-content:center; margin: 14px 0; }
+  .wortEingabe input { flex:1; max-width:280px; }
+
+  .status { text-align:center; margin:10px 0; font-size:1.2rem; min-height:1.6em; }
+  .status strong.no { color: var(--red); }
+
+  #punktetafel { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:16px; }
+  .spielerkarte { border:2px solid var(--ink); border-radius:8px; padding:6px 12px; }
+
+  [hidden] { display:none !important; }
+  @media (max-width:480px){ h1{font-size:1.8rem;} .sheet{padding:16px;} .bombe .icon{font-size:3.4rem;} }
+</style>
+</head>
+<body>
+<a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
+<main>
+  <h1>Englisches Bombenspiel</h1>
+  <p class="intro">Reihum ein passendes englisches Wort zum Thema nennen und weitergeben, bevor die Bombe hochgeht. Wer die Bombe in der Hand hält, wenn sie explodiert, bekommt einen Punkt.</p>
+
+  <section class="sheet setup" id="setup">
+    <div class="setup-row">
+      <label for="thema">Thema</label>
+      <select id="thema">
+        <option value="">Zufällig wechselnd</option>
+      </select>
+    </div>
+    <div class="setup-row">
+      <label for="anzahlSpieler">Anzahl Spieler</label>
+      <select id="anzahlSpieler">
+        <option value="2">2</option>
+        <option value="3" selected>3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+    </div>
+    <div id="spielerNamen"></div>
+    <div class="setup-row">
+      <button class="btn" id="starten">Bombe scharf machen</button>
+    </div>
+  </section>
+
+  <section class="sheet" id="spiel" hidden>
+    <div class="bombe">
+      <div class="icon" id="bombeIcon">💣</div>
+      <div class="thema">Thema: <span id="themaAnzeige"></span></div>
+      <div class="traeger">Am Zug: <b id="traegerAnzeige"></b></div>
+    </div>
+    <div class="balken"><div class="balken-innen" id="balkenInnen"></div></div>
+
+    <div class="wortEingabe">
+      <input type="text" id="wortEingabe" autocomplete="off" placeholder="englisches Wort zum Thema …" maxlength="30">
+      <button class="btn" id="weitergeben">Weitergeben</button>
+    </div>
+
+    <p class="status" id="status"></p>
+    <div id="punktetafel"></div>
+
+    <div class="setup-row" style="justify-content:center;margin-top:14px">
+      <button class="btn secondary" id="neueRunde" type="button" hidden>Nächste Bombe</button>
+      <button class="btn secondary" id="neuesSpiel" type="button">Neues Spiel</button>
+    </div>
+  </section>
+</main>
+
+<script src="vokabeln-data.js"></script>
+<script>
+  "use strict";
+  const $ = id => document.getElementById(id);
+
+  Object.entries(THEMEN).forEach(([id,name])=>{
+    const o=document.createElement("option"); o.value=id; o.textContent=name;
+    $("thema").appendChild(o);
+  });
+
+  const anzahlSelect = $("anzahlSpieler");
+  function renderNamensfelder(){
+    const n = Number(anzahlSelect.value);
+    const wrap = $("spielerNamen");
+    wrap.innerHTML = "";
+    for(let i=0;i<n;i++){
+      const input = document.createElement("input");
+      input.type = "text";
+      input.id = "spielerName"+i;
+      input.maxLength = 16;
+      input.placeholder = "Spieler "+(i+1);
+      input.value = "Spieler "+(i+1);
+      wrap.appendChild(input);
+    }
+  }
+  anzahlSelect.addEventListener("change", renderNamensfelder);
+  renderNamensfelder();
+
+  let spieler = [];   // { name, punkte }
+  let traegerIndex = 0;
+  let timerId = null;
+  let restMs = 0;
+  let gesamtMs = 0;
+  let thema = "";
+  let laeuft = false;
+
+  function escapeHtml(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  function starteSpiel(){
+    const n = Number(anzahlSelect.value);
+    spieler = [];
+    for(let i=0;i<n;i++){
+      const val = $("spielerName"+i).value.trim();
+      spieler.push({ name: val || ("Spieler "+(i+1)), punkte:0 });
+    }
+    traegerIndex = 0;
+    $("setup").hidden = true;
+    $("spiel").hidden = false;
+    $("neueRunde").hidden = true;
+    renderPunktetafel();
+    neueBombe();
+  }
+
+  function zufallsThema(){
+    if($("thema").value) return $("thema").value;
+    const keys = Object.keys(THEMEN);
+    return keys[Math.floor(Math.random()*keys.length)];
+  }
+
+  function neueBombe(){
+    thema = zufallsThema();
+    $("themaAnzeige").textContent = THEMEN[thema];
+    gesamtMs = (8 + Math.random()*17) * 1000; // 8–25 Sekunden
+    restMs = gesamtMs;
+    $("wortEingabe").value = "";
+    $("status").innerHTML = "";
+    $("neueRunde").hidden = true;
+    aktualisiereTraeger();
+    laeuft = true;
+    tickAudioZaehler = 0;
+    tick();
+  }
+
+  function aktualisiereTraeger(){
+    $("traegerAnzeige").textContent = spieler[traegerIndex].name;
+    $("wortEingabe").focus();
+  }
+
+  let tickAudioZaehler = 0;
+  function piep(hoch){
+    try{
+      const ctx = piep.ctx || (piep.ctx = new (window.AudioContext||window.webkitAudioContext)());
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.value = hoch ? 880 : 440;
+      gain.gain.value = 0.06;
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(); osc.stop(ctx.currentTime + 0.08);
+    }catch(err){}
+  }
+
+  function tick(){
+    if(!laeuft) return;
+    const schritt = 100;
+    restMs -= schritt;
+    const anteil = Math.max(0, restMs/gesamtMs);
+    $("balkenInnen").style.width = (anteil*100)+"%";
+    $("bombeIcon").classList.toggle("tick", anteil < 0.4);
+
+    tickAudioZaehler += schritt;
+    const tickIntervall = anteil < 0.15 ? 200 : (anteil < 0.4 ? 400 : 800);
+    if(tickAudioZaehler >= tickIntervall){ tickAudioZaehler = 0; piep(anteil<0.15); }
+
+    if(restMs <= 0){
+      explodiere();
+      return;
+    }
+    timerId = setTimeout(tick, schritt);
+  }
+
+  function explodiere(){
+    laeuft = false;
+    $("bombeIcon").textContent = "💥";
+    $("bombeIcon").classList.remove("tick");
+    $("balkenInnen").style.width = "0%";
+    spieler[traegerIndex].punkte++;
+    $("status").innerHTML = `<strong class="no">💥 Bumm! ${escapeHtml(spieler[traegerIndex].name)} bekommt einen Punkt.</strong>`;
+    $("neueRunde").hidden = false;
+    renderPunktetafel();
+  }
+
+  function weitergeben(){
+    if(!laeuft) return;
+    const wort = $("wortEingabe").value.trim();
+    if(!wort) { $("wortEingabe").focus(); return; }
+    traegerIndex = (traegerIndex+1) % spieler.length;
+    $("wortEingabe").value = "";
+    aktualisiereTraeger();
+  }
+
+  function renderPunktetafel(){
+    const el = $("punktetafel");
+    el.innerHTML = "";
+    spieler.forEach(s=>{
+      const karte = document.createElement("div");
+      karte.className = "spielerkarte";
+      karte.textContent = `${s.name}: ${s.punkte} 💥`;
+      el.appendChild(karte);
+    });
+  }
+
+  $("weitergeben").addEventListener("click", weitergeben);
+  $("wortEingabe").addEventListener("keydown", e=>{ if(e.key==="Enter") weitergeben(); });
+  $("starten").addEventListener("click", starteSpiel);
+  $("neueRunde").addEventListener("click", ()=>{
+    $("bombeIcon").textContent = "💣";
+    traegerIndex = (traegerIndex+1) % spieler.length;
+    neueBombe();
+  });
+  $("neuesSpiel").addEventListener("click", ()=>{
+    laeuft = false;
+    clearTimeout(timerId);
+    $("spiel").hidden = true;
+    $("setup").hidden = false;
+    $("bombeIcon").textContent = "💣";
+  });
+</script>
+</body>
+</html>
