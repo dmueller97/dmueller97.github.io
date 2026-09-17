@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Personal pronouns & forms of be – Klasse 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FDFDF8; --grid: #DCE7F2; --ink: #1F3A68; --ink-soft: #5A6F92;
+    --marker: #FFE45C; --red: #C8322B; --green: #2E7D4F; --tile: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Andika", "Comic Sans MS", system-ui, sans-serif;
+    color: var(--ink); background-color: var(--paper);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px; min-height: 100vh; line-height: 1.55;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 20px 60px; }
+  h1 { font-size: 2.1rem; line-height: 1.1; margin: 0 0 4px; }
+  h2 { font-size: 1.5rem; margin: 0 0 10px; }
+  h3 { font-size: 1.15rem; margin: 18px 0 8px; }
+  .intro { margin: 0 0 24px; color: var(--ink-soft); font-size: 1.05rem; max-width: 62ch; }
+  .sheet { background: var(--paper); border: 2px solid var(--ink); border-radius: 6px; padding: 22px 22px 20px; box-shadow: 5px 5px 0 var(--ink); margin-bottom: 22px; }
+
+  table { width:100%; border-collapse: collapse; margin: 6px 0 4px; font-size: .98rem; }
+  th, td { text-align:left; padding: 7px 8px; border-bottom: 1px solid var(--grid); }
+  th { color: var(--ink-soft); font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; }
+  td.en { font-weight: 700; }
+  tr:last-child td { border-bottom: none; }
+
+  .beispiel { background: var(--marker); border-radius: 6px; padding: 2px 6px; font-weight:700; }
+  ul.beispiele { margin: 8px 0 4px; padding-left: 20px; }
+  ul.beispiele li { margin-bottom: 6px; }
+
+  .merksatz { border: 2px dashed var(--ink); border-radius: 8px; padding: 12px 14px; margin: 14px 0; background: #FFF8E1; }
+  .merksatz b { color: var(--ink); }
+
+  .zwei-spalten { display:grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 560px) { .zwei-spalten { grid-template-columns: 1fr; } }
+
+  /* Übungsspiel */
+  .progress { display: grid; grid-template-columns: repeat(16, 1fr); gap: 4px; margin-bottom: 16px; list-style: none; padding: 0; }
+  .progress li { height: 12px; border: 2px solid var(--ink); border-radius: 3px; background: var(--paper); }
+  .progress li.current { background: var(--marker); }
+  .progress li.right { background: var(--green); border-color: var(--green); }
+  .progress li.wrong { background: var(--red); border-color: var(--red); }
+
+  .meta { display: flex; justify-content: space-between; align-items: baseline; font-size: 1rem; color: var(--ink-soft); margin-bottom: 10px; }
+  .type { font-weight: 700; color: var(--ink); border-bottom: 3px solid var(--marker); }
+  .sentence { font-size: 1.5rem; line-height: 1.6; margin: 0 0 20px; min-height: 3em; }
+  .sentence .speaker { color: var(--ink-soft); }
+  .gap { display: inline-block; min-width: 3.4em; text-align: center; border-bottom: 3px dashed var(--ink); padding: 0 6px; font-weight: 700; }
+  .gap.filled-right { border-bottom-style: solid; background: linear-gradient(transparent 20%, var(--marker) 20%, var(--marker) 90%, transparent 90%); }
+  .gap.filled-wrong { border-bottom: 3px solid var(--red); color: var(--red); }
+
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .tile { font: inherit; font-size: 1.3rem; font-weight: 700; color: var(--ink); background: var(--tile); border: 2px solid var(--ink); border-radius: 8px; padding: 11px 4px; cursor: pointer; box-shadow: 0 4px 0 var(--ink); transition: transform .08s, box-shadow .08s; }
+  .tile:hover:not(:disabled) { background: #FFF8CC; }
+  .tile:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+  .tile:disabled { cursor: default; opacity: .45; }
+  .tile.is-right { background: var(--green); border-color: var(--green); color: #fff; opacity: 1; box-shadow: 0 4px 0 #1C5234; }
+  .tile.is-wrong { background: var(--red); border-color: var(--red); color: #fff; opacity: 1; box-shadow: 0 4px 0 #86211C; }
+
+  .feedback { min-height: 3em; margin: 16px 0 0; font-size: 1.1rem; }
+  .feedback strong.ok { color: var(--green); }
+  .feedback strong.no { color: var(--red); }
+  .feedback .tip { display: block; color: var(--ink-soft); font-size: 1rem; margin-top: 2px; }
+
+  .actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+  .btn { font: inherit; font-size: 1.15rem; font-weight: 700; color: var(--paper); background: var(--ink); border: 2px solid var(--ink); border-radius: 8px; padding: 9px 20px; cursor: pointer; }
+  .btn:hover { background: #2B4E8A; }
+  .btn[hidden] { display: none; }
+
+  .score { font-size: 3rem; font-weight: 700; line-height: 1; margin: 4px 0 8px; }
+  .verdict { font-size: 1.2rem; margin: 0 0 18px; }
+  .review { list-style: none; padding: 0; margin: 0 0 18px; }
+  .review li { border-left: 4px solid var(--red); padding: 6px 12px; margin-bottom: 8px; background: #FFF; font-size: 1.05rem; }
+  .review .yours { color: var(--red); text-decoration: line-through; }
+  .review .correct { font-weight: 700; }
+
+  @keyframes stamp { 0% { transform: scale(1.3); } 100% { transform: scale(1); } }
+  .gap.pop { animation: stamp .2s ease-out; }
+  @media (prefers-reduced-motion: reduce) { .gap.pop { animation: none; } .tile { transition: none; } }
+
+  [hidden] { display:none !important; }
+  @media (max-width: 480px) {
+    h1 { font-size: 1.7rem; }
+    .sheet { padding: 16px; }
+    .sentence { font-size: 1.25rem; }
+    .tile { font-size: 1.05rem; }
+    .score { font-size: 2.4rem; }
+  }
+</style>
+</head>
+<body>
+<a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
+<main>
+  <h1>Personal pronouns &amp; forms of be</h1>
+  <p class="intro">Wer bin ich, wer bist du — und wie sag ich das auf Englisch? Hier lernst du die Personalpronomen und die passenden Formen von <i>be</i>, dazu die Kurzformen wie <span class="beispiel">he isn't</span>. Am Ende kannst du alles in einem kleinen Spiel üben.</p>
+
+  <section class="sheet">
+    <h2>1. Personal pronouns — wer ist gemeint?</h2>
+    <p>Personalpronomen ersetzen einen Namen oder eine Sache, damit du nicht immer denselben Namen wiederholen musst.</p>
+    <table>
+      <tr><th>Englisch</th><th>Deutsch</th><th>Beispiel</th></tr>
+      <tr><td class="en">I</td><td>ich</td><td><span class="beispiel">I</span> am in class 5b.</td></tr>
+      <tr><td class="en">you</td><td>du / ihr</td><td><span class="beispiel">You</span> are my best friend.</td></tr>
+      <tr><td class="en">he</td><td>er</td><td>Tom is ten. <span class="beispiel">He</span> is my classmate.</td></tr>
+      <tr><td class="en">she</td><td>sie (1 Person)</td><td>Mia is eleven. <span class="beispiel">She</span> is in my team.</td></tr>
+      <tr><td class="en">it</td><td>es / er / sie (Sache, Tier)</td><td>My dog is small. <span class="beispiel">It</span> is brown.</td></tr>
+      <tr><td class="en">we</td><td>wir</td><td><span class="beispiel">We</span> are in the same class.</td></tr>
+      <tr><td class="en">they</td><td>sie (mehrere)</td><td>Tom and Mia are friends. <span class="beispiel">They</span> are funny.</td></tr>
+    </table>
+    <div class="merksatz">
+      <b>Merke:</b> Ein Name (Tom, Mia, my dog, my parents …) wird durch <i>he</i>, <i>she</i>, <i>it</i> oder <i>they</i> ersetzt — nie durch <i>you</i>. <i>You</i> ist nur für die Person, mit der du gerade sprichst.
+    </div>
+  </section>
+
+  <section class="sheet">
+    <h2>2. Forms of be — bin, bist, ist …</h2>
+    <p><i>be</i> ist eines der wichtigsten Verben im Englischen. Es hat drei Formen: <b>am</b>, <b>is</b> und <b>are</b>.</p>
+    <table>
+      <tr><th>Pronomen</th><th>Form</th><th>Beispiel</th></tr>
+      <tr><td class="en">I</td><td>am</td><td>I <span class="beispiel">am</span> eleven years old.</td></tr>
+      <tr><td class="en">you</td><td>are</td><td>You <span class="beispiel">are</span> in my class.</td></tr>
+      <tr><td class="en">he / she / it</td><td>is</td><td>She <span class="beispiel">is</span> at school today.</td></tr>
+      <tr><td class="en">we / you / they</td><td>are</td><td>We <span class="beispiel">are</span> at the football pitch.</td></tr>
+    </table>
+    <div class="merksatz">
+      <b>Eselsbrücke:</b> Nur <i>I</i> bekommt <b>am</b>. Bei <i>he/she/it</i> — also bei genau einer Sache oder Person (außer <i>I</i> und <i>you</i>) — steht immer <b>is</b>. Alles, was "mehrere" oder <i>you</i> bedeutet, bekommt <b>are</b>.
+    </div>
+  </section>
+
+  <section class="sheet">
+    <h2>3. Kurzformen — he's, we're, isn't …</h2>
+    <p>Im gesprochenen Englisch und in lockeren Texten (Chats, Dialoge, Geschichten) werden Pronomen und <i>be</i> meistens zusammengezogen.</p>
+
+    <div class="zwei-spalten">
+      <div>
+        <h3>Bejahte Kurzformen</h3>
+        <table>
+          <tr><th>Lang</th><th>Kurz</th></tr>
+          <tr><td class="en">I am</td><td><b>I'm</b></td></tr>
+          <tr><td class="en">you are</td><td><b>you're</b></td></tr>
+          <tr><td class="en">he is</td><td><b>he's</b></td></tr>
+          <tr><td class="en">she is</td><td><b>she's</b></td></tr>
+          <tr><td class="en">it is</td><td><b>it's</b></td></tr>
+          <tr><td class="en">we are</td><td><b>we're</b></td></tr>
+          <tr><td class="en">they are</td><td><b>they're</b></td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>Verneinte Kurzformen</h3>
+        <table>
+          <tr><th>Lang</th><th>Kurz</th></tr>
+          <tr><td class="en">I am not</td><td><b>I'm not</b></td></tr>
+          <tr><td class="en">you are not</td><td><b>you aren't</b></td></tr>
+          <tr><td class="en">he is not</td><td><b>he isn't</b></td></tr>
+          <tr><td class="en">she is not</td><td><b>she isn't</b></td></tr>
+          <tr><td class="en">it is not</td><td><b>it isn't</b></td></tr>
+          <tr><td class="en">we are not</td><td><b>we aren't</b></td></tr>
+          <tr><td class="en">they are not</td><td><b>they aren't</b></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="merksatz">
+      <b>Wichtig bei der Verneinung — zwei Wege zum gleichen Ziel:</b><br>
+      <span class="beispiel">He isn't</span> hungry. &nbsp;=&nbsp; <span class="beispiel">He's not</span> hungry.<br>
+      Beide Sätze bedeuten genau dasselbe! Du kannst entweder <b>is/are + n't</b> zusammenziehen (<i>isn't</i>, <i>aren't</i>) oder das Pronomen mit <i>be</i> verkürzen und <b>not</b> danach ausschreiben (<i>he's not</i>, <i>we're not</i>). Nur bei <i>I</i> gibt es keine zweite Möglichkeit — es heißt immer <b>I'm not</b>, niemals "amn't" oder "I amn't".
+    </div>
+
+    <ul class="beispiele">
+      <li><b>Tom isn't</b> at home. He's at the sports club.</li>
+      <li><b>We aren't</b> late — the lesson starts at nine.</li>
+      <li><b>It isn't</b> my pencil. It's Mia's pencil.</li>
+      <li><b>I'm not</b> from London. I'm from Chemnitz.</li>
+    </ul>
+  </section>
+
+  <section class="sheet">
+    <h2>4. Kurze Antworten</h2>
+    <p>Auf Ja/Nein-Fragen antwortest du auf Englisch nie nur mit "yes" oder "no" allein — du wiederholst Pronomen und <i>be</i>-Form.</p>
+    <ul class="beispiele">
+      <li>Are you eleven? — <b>Yes, I am.</b> / <b>No, I'm not.</b></li>
+      <li>Is she your sister? — <b>Yes, she is.</b> / <b>No, she isn't.</b></li>
+      <li>Are they your friends? — <b>Yes, they are.</b> / <b>No, they aren't.</b></li>
+    </ul>
+    <div class="merksatz">
+      In der kurzen <b>Ja</b>-Antwort steht <i>be</i> immer ausgeschrieben (<i>Yes, I am.</i> — nicht "Yes, I'm."). Nur bei <b>Nein</b>-Antworten darfst du die Kurzform verwenden (<i>No, I'm not.</i> / <i>No, she isn't.</i>).
+    </div>
+  </section>
+
+  <section class="sheet">
+    <h2>5. Übungsspiel</h2>
+    <p style="color:var(--ink-soft); margin-top:-4px">Wähle das richtige Pronomen oder die richtige Form von <i>be</i> — auch mit Kurzformen und Verneinung.</p>
+
+    <ol class="progress" id="progress" aria-label="Fortschritt"></ol>
+
+    <div id="quiz" aria-live="polite">
+      <div class="meta">
+        <span class="type" id="type"></span>
+        <span id="counter"></span>
+      </div>
+      <p class="sentence" id="sentence"></p>
+      <div class="tiles" id="tiles"></div>
+      <p class="feedback" id="feedback"></p>
+      <div class="actions">
+        <button class="btn" id="next" hidden>Weiter</button>
+      </div>
+    </div>
+
+    <div id="result" hidden aria-live="polite">
+      <p class="score" id="score"></p>
+      <p class="verdict" id="verdict"></p>
+      <ul class="review" id="review"></ul>
+      <div class="actions">
+        <button class="btn" id="restart">Nochmal üben</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  "use strict";
+  const $ = id => document.getElementById(id);
+
+  // ___ markiert die Lücke. tiles überschreibt die Standard-Auswahl für diese Frage.
+  const QUESTIONS = [
+    { type:"Pronomen",  lines:["___ is my best friend. Her name is Mia."]                 , answer:"She",     tiles:["He","She","It","They"],
+      tip:"Mia ist ein Mädchen → she." },
+    { type:"Pronomen",  lines:["Look at my dog! ___ is very small."]                       , answer:"It",      tiles:["He","She","It","We"],
+      tip:"Ein Tier/eine Sache → it." },
+    { type:"Pronomen",  lines:["Tom and I are in the football team. ___ train on Fridays."], answer:"We",      tiles:["You","We","They","It"],
+      tip:"Tom und ich (ich bin dabei) → we." },
+    { type:"Pronomen",  lines:["Lisa and Ben are twins. ___ are both ten."]                 , answer:"They",    tiles:["We","You","They","He"],
+      tip:"Mehrere Personen, nicht ich/du → they." },
+
+    { type:"Aussage",   lines:["I ___ in class 5b."]                                       , answer:"am",      tiles:["am","is","are","'m"],
+      tip:"Zu I gehört immer am." },
+    { type:"Aussage",   lines:["My teacher ___ very nice."]                                , answer:"is",      tiles:["am","is","are","isn't"],
+      tip:"My teacher = he/she → is." },
+    { type:"Aussage",   lines:["We ___ at the sports club today."]                         , answer:"are",     tiles:["am","is","are","isn't"],
+      tip:"We → are." },
+
+    { type:"Kurzform",  lines:["___ from Chemnitz. My family lives here."]                 , answer:"I'm",     tiles:["I'm","I am not","He's","You're"],
+      tip:"I am → I'm." },
+    { type:"Kurzform",  lines:["___ ten years old. She's eleven."]                         , answer:"He's",    tiles:["He's","He isn't","She's","It's"],
+      tip:"he is → he's." },
+    { type:"Kurzform",  lines:["___ in the same class. Come and sit with us!"]             , answer:"We're",   tiles:["We're","We aren't","You're","They're"],
+      tip:"we are → we're." },
+
+    { type:"Verneinung",lines:["Tom ___ at home. He's at football training."]              , answer:"isn't",   tiles:["isn't","aren't","'m not","is"],
+      tip:"Tom = he → isn't." },
+    { type:"Verneinung",lines:["My pencil case ___ blue. It's red."]                       , answer:"isn't",   tiles:["isn't","aren't","'m not","are"],
+      tip:"my pencil case = it → isn't." },
+    { type:"Verneinung",lines:["We ___ late. The lesson starts at nine."]                  , answer:"aren't",  tiles:["isn't","aren't","'m not","is"],
+      tip:"we → aren't." },
+    { type:"Verneinung",lines:["I ___ from London. I'm from Chemnitz."]                    , answer:"'m not",  tiles:["isn't","aren't","'m not","amn't"],
+      tip:"Bei I heißt es immer I'm not — nie amn't." },
+    { type:"Verneinung",lines:["Emma and Lily ___ sisters. They're just friends."]         , answer:"aren't",  tiles:["isn't","aren't","'m not","is"],
+      tip:"Emma and Lily = they → aren't." },
+
+    { type:"Kurze Antwort", lines:["A: Are you in class 5b?","B: Yes, I ___."]             , answer:"am",      tiles:["am","'m","is","isn't"],
+      tip:"In der Ja-Antwort steht be immer ausgeschrieben: Yes, I am." },
+    { type:"Kurze Antwort", lines:["A: Is she your sister?","B: No, she ___. She's my friend."], answer:"isn't", tiles:["isn't","aren't","'m not","is"],
+      tip:"she → isn't." },
+    { type:"Kurze Antwort", lines:["A: Are they your classmates?","B: Yes, they ___."]     , answer:"are",     tiles:["are","'re","is","aren't"],
+      tip:"In der Ja-Antwort ausgeschrieben: Yes, they are." }
+  ];
+
+  let index = 0;
+  let results = [];
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function renderLine(line, gapHtml) {
+    let speaker = "";
+    let text = line;
+    const m = line.match(/^([AB]): (.*)$/);
+    if (m) { speaker = `<span class="speaker">${m[1]}:</span> `; text = m[2]; }
+    const parts = text.split("___").map(escapeHtml);
+    return `<span class="line">${speaker}${parts.join(gapHtml)}</span><br>`;
+  }
+
+  function buildProgress() {
+    $("progress").innerHTML = QUESTIONS.map((_, i) =>
+      `<li aria-label="Frage ${i + 1}"></li>`).join("");
+  }
+
+  function updateProgress() {
+    [...$("progress").children].forEach((li, i) => {
+      li.className = "";
+      if (results[i]) li.classList.add(results[i].correct ? "right" : "wrong");
+      else if (i === index) li.classList.add("current");
+    });
+  }
+
+  function showQuestion() {
+    const q = QUESTIONS[index];
+    $("type").textContent = q.type;
+    $("counter").textContent = `Frage ${index + 1} von ${QUESTIONS.length}`;
+    $("sentence").innerHTML = q.lines
+      .map(l => renderLine(l, l.includes("___") ? '<span class="gap" id="gap">&nbsp;</span>' : "___"))
+      .join("");
+    $("tiles").innerHTML = q.tiles.map(t =>
+      `<button class="tile" data-p="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join("");
+    $("feedback").innerHTML = "";
+    $("next").hidden = true;
+    updateProgress();
+    $("tiles").querySelector(".tile").focus({ preventScroll: true });
+  }
+
+  function answer(choice) {
+    const q = QUESTIONS[index];
+    const correct = choice === q.answer;
+    results[index] = { correct, choice };
+
+    $("tiles").querySelectorAll(".tile").forEach(t => {
+      t.disabled = true;
+      if (t.dataset.p === q.answer) t.classList.add("is-right");
+      else if (t.dataset.p === choice) t.classList.add("is-wrong");
+    });
+
+    const gap = $("gap");
+    if (gap) {
+      gap.textContent = q.answer;
+      gap.classList.add(correct ? "filled-right" : "filled-wrong", "pop");
+    }
+
+    $("feedback").innerHTML = correct
+      ? `<strong class="ok">Richtig!</strong><span class="tip">${escapeHtml(q.tip)}</span>`
+      : `<strong class="no">Nicht ganz. Richtig ist: ${escapeHtml(q.answer)}</strong><span class="tip">${escapeHtml(q.tip)}</span>`;
+
+    updateProgress();
+    $("next").textContent = index === QUESTIONS.length - 1 ? "Ergebnis zeigen" : "Weiter";
+    $("next").hidden = false;
+    $("next").focus({ preventScroll: true });
+  }
+
+  function showResult() {
+    const right = results.filter(r => r.correct).length;
+    $("quiz").hidden = true;
+    $("result").hidden = false;
+    $("score").textContent = `${right} von ${QUESTIONS.length}`;
+
+    let verdict;
+    if (right === QUESTIONS.length) verdict = "Super! Alles richtig.";
+    else if (right >= 14) verdict = "Sehr gut! Schau dir die Fehler noch einmal an.";
+    else if (right >= 10) verdict = "Gut gemacht! Übe die roten Sätze noch einmal.";
+    else verdict = "Übe noch einmal — schau dir vorher die Erklärung oben nochmal an.";
+    $("verdict").textContent = verdict;
+
+    $("review").innerHTML = QUESTIONS.map((q, i) => {
+      if (results[i].correct) return "";
+      const gapLine = q.lines.find(l => l.includes("___"));
+      const text = gapLine.replace(/^[AB]: /, "");
+      const parts = text.split("___").map(escapeHtml);
+      return `<li>${parts.join(
+        `<span class="yours">${escapeHtml(results[i].choice)}</span> <span class="correct">${escapeHtml(q.answer)}</span>`
+      )}</li>`;
+    }).join("");
+    $("restart").focus({ preventScroll: true });
+  }
+
+  function start() {
+    index = 0;
+    results = [];
+    $("result").hidden = true;
+    $("quiz").hidden = false;
+    buildProgress();
+    showQuestion();
+  }
+
+  $("tiles").addEventListener("click", e => {
+    const t = e.target.closest(".tile");
+    if (t && !t.disabled) answer(t.dataset.p);
+  });
+  $("next").addEventListener("click", () => {
+    if (index < QUESTIONS.length - 1) { index++; showQuestion(); }
+    else showResult();
+  });
+  $("restart").addEventListener("click", start);
+
+  start();
+</script>
+</body>
+</html>
