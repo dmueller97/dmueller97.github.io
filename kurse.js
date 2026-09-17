@@ -209,14 +209,14 @@ const MATERIAL = [
     stand:"2026-09", neu:true },
 
    { fach:"englisch", klasse:5, bereich:"grammatik-5",
-    titel:"Personal pronouns & forms of be — Lernseite",
+    titel:"Erklärung personal pronouns & forms of be",
     typ:"arbeitsblatt",
     url:"eng/seki/personal-pronouns-forms-of-be.html",
     info:"Erklärung mit schülernahen Beispielen (Freunde, Klasse, Haustiere), Tabellen zu Kurzformen wie he isn't/he's not, dazu ein interaktives Übungsspiel zum Üben zu Hause.",
     stand:"2026-09", neu:true},
 
    { fach:"englisch", klasse:5, bereich:"grammatik-5",
-    titel:"Unit 1 — personal pronouns",
+    titel:"personal pronouns",
     typ:"uebung",
     url:"eng/seki/personal-pronouns-quiz.html",
     info:"Übung zum Selbstlernen.",
