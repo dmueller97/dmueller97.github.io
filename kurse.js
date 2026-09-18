@@ -73,6 +73,7 @@ const LEHRPLAN = {
     ],
     10: [
       { id:"markdown-hefter",    name:"Markdown und digitaler Hefter", info:"Notizen strukturieren, Dokumentation aufbauen" },
+      { id:"latex",              name:"LaTeX",                  info:"Dokumente setzen: Gliederung, Formatierung, Listen, Tabellen, Bilder" },
       { id:"python-turtle",      name:"Python mit Turtle",      info:"Sequenzen, Funktionen, Schleifen, Parameter, Variablen" },
       { id:"python-grundlagen",  name:"Datentypen, Verzweigungen, Schleifen", info:"Textausgabe, Logik, While-Schleifen, Debugging" },
       { id:"sprachen-regex",     name:"Syntax, Semantik, reguläre Ausdrücke, Automaten", info:"Sprachen beschreiben und erkennen" },
@@ -262,6 +263,20 @@ const MATERIAL = [
     typ:"werkzeug",
     url:"eng/seki/bombenspiel.html",
     info:"Reihum ein englisches Wort zum Thema nennen und die tickende Bombe weitergeben, bevor sie explodiert. Für 2 bis 6 Spieler, Thema fest oder zufällig wechselnd.",
+    stand:"2026-09", neu:true},
+
+   { fach:"informatik", klasse:10, bereich:"sprachen-regex",
+    titel:"Formale Sprachen: Syntax und Semantik — Selbstlernkurs",
+    typ:"uebung",
+    url:"inf/seki/formale-sprachen.html",
+    info:"Alphabet, Wort und Sprache, Syntax gegen Semantik, Grammatiken und Ableitungen, BNF/EBNF und Syntaxbäume. Mit Ableitungs-Spiel, Ausdrucks-Labor, Aufgaben mit Lösungen und Selbsttest.",
+    stand:"2026-09", neu:true},
+
+   { fach:"informatik", klasse:10, bereich:"latex",
+    titel:"LaTeX — Selbstlernkurs",
+    typ:"uebung",
+    url:"inf/seki/latex.html",
+    info:"Grundlagen, Überschriften, Textformatierung, Listen, Tabellen und Bilder. Mit Live-Vorschau-Werkstatt, Tabellen-Generator, sechs Aufgaben mit Selbstkontrolle und Selbsttest.",
     stand:"2026-09", neu:true}
 
   /* Vorlagen zum Kopieren — Raute vor der Zeile entfernen und anpassen:

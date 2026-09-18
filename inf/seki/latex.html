@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LaTeX — Selbstlernkurs</title>
+<style>
+:root{
+  --bg:#0E1A1C; --panel:#142528; --panel2:#0F1F22; --line:#23393E; --line2:#2E4A50;
+  --ink:#DFEAEB; --ink2:#9FB6B9; --muted:#6F8A8F;
+  --brand:#2FB3A0; --hi:#FFC24B; --ok:#58C08C; --bad:#E4573D; --r:12px;
+}
+[data-theme="light"]{
+  --bg:#F2F4F3; --panel:#FFFFFF; --panel2:#F7F9F8; --line:#D8E0DF; --line2:#C2CFCE;
+  --ink:#14242A; --ink2:#4A6066; --muted:#7B8F94; --brand:#17897A; --hi:#C97A00;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;font-size:16px;line-height:1.6}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.mono,code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}
+code{background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:0 5px;font-size:.92em}
+
+header{position:sticky;top:0;z-index:30;background:var(--panel);border-bottom:1px solid var(--line);
+  padding:9px 16px 9px 130px;display:flex;align-items:center;gap:10px}
+header b{font-size:16px;flex:1;letter-spacing:-.2px}
+.btn{background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:9px 14px;min-height:42px}
+.btn:hover{border-color:var(--brand)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#06211E;font-weight:600}
+.btn.klein{padding:6px 11px;min-height:36px;font-size:14px}
+.btn.aktiv{border-color:var(--brand);background:rgba(47,179,160,.16)}
+.btn:disabled{opacity:.4;cursor:default}
+details.inhalt{border-bottom:1px solid var(--line);background:var(--panel)}
+details.inhalt summary{padding:10px 16px;cursor:pointer;color:var(--ink2);font-size:14.5px;list-style:none}
+details.inhalt summary::-webkit-details-marker{display:none}
+details.inhalt summary::before{content:"☰  "}
+details.inhalt ol{margin:0;padding:0 16px 12px 34px;font-size:14.5px}
+details.inhalt a{color:var(--ink2);text-decoration:none;display:block;padding:4px 0}
+
+main{max-width:740px;margin:0 auto;padding:20px 16px 70px}
+h1{font-size:26px;margin:0 0 6px;letter-spacing:-.5px;line-height:1.25}
+h2{font-size:20px;margin:42px 0 10px;scroll-margin-top:60px;line-height:1.3}
+h3{font-size:16.5px;margin:22px 0 7px}
+p{margin:0 0 13px}
+p.lead{color:var(--ink2);margin-bottom:22px}
+ul,ol.liste{margin:0 0 13px;padding-left:21px}
+li{margin-bottom:5px}
+.merk{border-left:3px solid var(--brand);background:var(--panel);border-radius:0 var(--r) var(--r) 0;padding:12px 15px;margin:16px 0}
+.merk b{color:var(--brand)}
+.warnung{border-left:3px solid var(--bad);background:var(--panel);border-radius:0 var(--r) var(--r) 0;padding:12px 15px;margin:16px 0}
+.warnung b{color:var(--bad)}
+.karte{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:16px 0}
+.karte > h4{margin:0 0 8px;font-size:14px;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em}
+
+table.info{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+table.info th,table.info td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.info th{background:var(--panel2);color:var(--ink2);font-weight:650;font-size:12.5px}
+.scroll{overflow-x:auto}
+
+pre.code{position:relative;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;
+  margin:10px 0;overflow-x:auto;font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:13.5px;line-height:1.55;tab-size:2}
+.try{display:block;margin:-4px 0 12px}
+select,input[type=number]{background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:8px 10px;min-height:40px;font-size:15px}
+input[type=text]{background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:8px 10px;min-height:40px;font-size:15px}
+.zeile{display:flex;gap:10px 14px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.zeile label{font-size:13.5px;color:var(--ink2);display:flex;align-items:center;gap:6px}
+
+/* Werkstatt */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tabs .btn{font-size:14px;padding:6px 11px;min-height:36px}
+.tabs .btn.fertig::after{content:" ✓";color:var(--ok);font-weight:700}
+.auftrag{background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:11px 13px;margin-bottom:10px;font-size:15px}
+textarea.editor{width:100%;min-height:270px;background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:10px 12px;
+  font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:14px;line-height:1.55;tab-size:2;resize:vertical;color:var(--ink)}
+.lerr{margin:8px 0;padding:0;list-style:none;font-size:14px}
+.lerr li{border-left:3px solid var(--bad);background:rgba(228,87,61,.10);padding:5px 10px;margin-bottom:5px;border-radius:0 8px 8px 0}
+.lerr li b{color:var(--bad);font-family:ui-monospace,monospace}
+.lerr.ok{color:var(--ok);font-size:14px}
+.vorschau-kopf{font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px}
+.status{min-height:1.6em;margin:8px 0;font-size:15px}
+.status.ok{color:var(--ok)} .status.bad{color:var(--bad)}
+.hinweis{font-size:13px;color:var(--muted);margin:6px 0 0}
+
+/* Papier-Vorschau */
+.paper{background:#fff;color:#111;border-radius:6px;padding:24px 28px;font-family:"Latin Modern Roman","CMU Serif","Computer Modern",Georgia,"Times New Roman",serif;
+  font-size:15.5px;line-height:1.5;box-shadow:0 2px 14px rgba(0,0,0,.30);min-height:70px;overflow-x:auto}
+.paper p{margin:0 0 .8em;text-align:justify;hyphens:auto}
+.paper code{background:none;border:0;padding:0;font-size:.95em}
+.paper .ttl{margin-bottom:1.6em}
+.paper .ttl h1{font-size:1.9em;text-align:center;margin:0 0 .3em;font-weight:600;letter-spacing:0}
+.paper .au,.paper .dt{text-align:center;font-size:1.1em}
+.paper h2.s1{font-size:1.4em;margin:1.1em 0 .5em;font-weight:700}
+.paper h3.s2{font-size:1.18em;margin:1em 0 .4em;font-weight:700}
+.paper h4.s3{font-size:1em;margin:.9em 0 .3em;font-weight:700}
+.paper .sn{display:inline-block;min-width:1.9em}
+.paper ul,.paper ol{margin:.2em 0 .8em;padding-left:2em}
+.paper li{margin:.15em 0}
+.paper li p{margin:0}
+.paper dl{margin:.2em 0 .8em}.paper dt{font-weight:700}.paper dd{margin:0 0 .3em 2em}
+.paper .ctr{text-align:center}.paper .ctr p{text-align:center}
+.paper table.lt{border-collapse:collapse;margin:.5em 0;font-size:.98em}
+.paper .ctr table.lt{margin:.5em auto}
+.paper table.lt td{padding:.18em .8em;vertical-align:top}
+.paper td.bl{border-left:1px solid #111}.paper td.br{border-right:1px solid #111}
+.paper tr.rt>td{border-top:1px solid #111}.paper tr.rt2>td{border-top:2px solid #111}
+.paper tr.rb>td{border-bottom:1px solid #111}.paper tr.rb2>td{border-bottom:2px solid #111}
+.paper td.al{text-align:left}.paper td.ac{text-align:center}.paper td.ar{text-align:right}
+.paper figure.fl{margin:.7em 0}
+.paper .cap{text-align:center;font-size:.95em;margin:.45em 0 .5em}
+.paper .img{background:#e9eef1;border:1px dashed #93a0a9;aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:#4f5f69;font:12.5px system-ui,sans-serif;margin:.3em 0;text-align:center;padding:4px;overflow:hidden}
+.paper .ctr .img{margin:.3em auto}
+.paper .toc{margin:0 0 1.2em}.paper .toc h3{font-size:1.25em;margin:0 0 .4em}
+.paper .toc div{margin:.1em 0}
+.paper .math{font-family:"Latin Modern Math",Georgia,serif}
+.paper .tiny{font-size:.6em}.paper .scriptsize{font-size:.7em}.paper .footnotesize{font-size:.8em}.paper .small{font-size:.9em}
+.paper .large{font-size:1.2em}.paper .Large{font-size:1.45em}.paper .LARGE{font-size:1.75em}.paper .huge{font-size:2.1em}.paper .Huge{font-size:2.5em}
+.paper .sc{font-variant:small-caps}
+.paper .logo{white-space:nowrap}
+
+/* Fragen */
+.frage{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:13px;margin-bottom:11px}
+.frage .q{font-weight:600;margin:0 0 9px}
+.opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line2);
+  border-radius:10px;padding:10px 13px;margin-bottom:7px;font-size:15px;min-height:44px}
+.opt:hover:not(:disabled){border-color:var(--brand)}
+.opt:disabled{cursor:default}
+.opt.richtig{border-color:var(--ok);background:rgba(88,192,140,.14)}
+.opt.falsch{border-color:var(--bad);background:rgba(228,87,61,.13)}
+.rueck{font-size:14px;color:var(--ink2);margin-top:8px}
+.punkte{font-size:18px;font-weight:700;color:var(--hi)}
+details.loesung{margin-top:11px;border-top:1px solid var(--line);padding-top:9px}
+details.loesung summary{cursor:pointer;color:var(--brand);font-size:14px;font-weight:600;list-style:none}
+details.loesung summary::-webkit-details-marker{display:none}
+details.loesung summary::before{content:"▸ "}
+details.loesung[open] summary::before{content:"▾ "}
+details.loesung .inh{margin-top:9px;font-size:14.5px;color:var(--ink2)}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;padding:14px 16px;text-align:center}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body data-theme="dark">
+<a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
+
+<header><b>LaTeX — Selbstlernkurs</b><button class="btn klein" id="theme">Hell</button></header>
+<details class="inhalt"><summary>Inhalt</summary><ol id="toc"></ol></details>
+
+<main>
+<h1>LaTeX: Dokumente beschreiben statt anklicken</h1>
+<p class="lead">Facharbeit, Bericht, Mathe-Arbeitsblatt oder später die Bachelorarbeit: In Wissenschaft und Technik werden Texte
+häufig mit LaTeX gesetzt. Du schreibst nicht, „wie es aussehen soll“, sondern <em>was</em> ein Textteil ist — Überschrift, Liste,
+Tabelle — und LaTeX übernimmt den sauberen Satz. In diesem Kurs lernst du die Grundlagen und schreibst in einer
+Werkstatt mit Live-Vorschau deine ersten Dokumente.</p>
+
+<div class="merk"><b>So arbeitest du:</b> Lies die Abschnitte 1 bis 6. Unter den Beispielen findest du jeweils die Schaltfläche
+„In der Werkstatt ausprobieren“ — dort kannst du den Code verändern und siehst sofort die Vorschau. In Abschnitt 7 warten sechs
+Aufgaben mit Selbstkontrolle, am Ende ein Selbsttest.</div>
+
+<div class="warnung"><b>Wichtig zur Vorschau:</b> Die Werkstatt auf dieser Seite ist eine <em>vereinfachte Nachbildung</em> von LaTeX.
+Sie kennt die Befehle dieses Kurses und meldet Fehler ähnlich wie echtes LaTeX — sie ersetzt aber keinen echten Compiler.
+Für deine eigenen Dokumente nutzt du ein echtes System (siehe Abschnitt 1).</div>
+
+<!-- ================================================================= -->
+<h2 id="s1">1. Grundlagen</h2>
+<h3>Was ist LaTeX?</h3>
+<p>LaTeX (sprich: „Lah-tech“) ist ein <b>Textsatzsystem</b>. Du schreibst eine normale Textdatei mit der Endung <code>.tex</code> — den
+<b>Quelltext</b>. Ein Programm, der <b>Compiler</b>, macht daraus ein fertiges <b>PDF</b>. Diesen Vorgang nennt man <em>kompilieren</em>.</p>
+<table class="info">
+  <tr><th></th><th>Textverarbeitung (z. B. Word)</th><th>LaTeX</th></tr>
+  <tr><td>Arbeitsweise</td><td>Du siehst beim Tippen sofort das Ergebnis</td><td>Du schreibst Quelltext, dann wird kompiliert</td></tr>
+  <tr><td>Formatierung</td><td>Du gestaltest Stelle für Stelle von Hand</td><td>Du beschreibst die Struktur, LaTeX gestaltet einheitlich</td></tr>
+  <tr><td>Stärken</td><td>Schnell, vertraut</td><td>Saubere Gliederung, Formeln, Verzeichnisse, gleichbleibende Qualität</td></tr>
+</table>
+<p><b>Womit arbeitest du?</b> Am einfachsten im Browser mit einem Online-Editor wie <em>Overleaf</em>: nichts installieren, ein Klick auf
+„Recompile“ zeigt das PDF. Alternativ installierst du eine TeX-Distribution (TeX Live oder MiKTeX) und einen Editor (z. B. TeXstudio).</p>
+
+<h3>Das kleinste Dokument</h3>
+<pre class="code" data-try>\documentclass{article}
+\usepackage[ngerman]{babel}
+
+\begin{document}
+Hallo Welt! Das ist mein erstes LaTeX-Dokument.
+\end{document}</pre>
+<table class="info">
+  <tr><th>Zeile</th><th>Bedeutung</th></tr>
+  <tr><td><code>\documentclass{article}</code></td><td>Grundtyp des Dokuments. <code>article</code> = kurzer Text (Artikel, Arbeitsblatt). Größere Werke: <code>report</code> oder <code>book</code>.</td></tr>
+  <tr><td><code>\usepackage[ngerman]{babel}</code></td><td>Lädt ein Zusatzpaket. <em>babel</em> mit <code>ngerman</code> sorgt für deutsche Silbentrennung und deutsche Bezeichnungen („Abbildung“, „Inhaltsverzeichnis“).</td></tr>
+  <tr><td><code>\begin{document}</code> … <code>\end{document}</code></td><td>Hier steht dein eigentlicher Text. Alles davor heißt <b>Präambel</b>: Einstellungen, Pakete.</td></tr>
+</table>
+
+<h3>Befehle, Umgebungen, Kommentare</h3>
+<ul>
+  <li><b>Befehle</b> beginnen mit einem Backslash: <code>\befehl[Option]{Argument}</code>, z. B. <code>\textbf{fett}</code>.</li>
+  <li><b>Umgebungen</b> umschließen einen Bereich: <code>\begin{name}</code> … <code>\end{name}</code>. Jedes <code>\begin</code> braucht sein <code>\end</code>.</li>
+  <li><b>Kommentare</b> beginnen mit <code>%</code> — der Rest der Zeile wird ignoriert. Ideal für Notizen an dich selbst.</li>
+  <li>Mehrere Leerzeichen oder ein einfacher Zeilenumbruch im Quelltext wirken wie <em>ein</em> Leerzeichen. Eine <b>Leerzeile</b> beginnt einen neuen <b>Absatz</b>.</li>
+  <li><code>\\</code> erzwingt einen Zeilenumbruch. Benutze ihn sparsam — für Abstände sind Absätze richtig.</li>
+</ul>
+
+<h3>Sonderzeichen</h3>
+<p>Einige Zeichen haben in LaTeX eine besondere Aufgabe (z. B. leitet <code>%</code> einen Kommentar ein). Willst du sie <em>drucken</em>,
+schreibst du einen Backslash davor:</p>
+<div class="scroll"><table class="info">
+  <tr><th>Du willst</th><th>%</th><th>&amp;</th><th>$</th><th>#</th><th>_</th><th>{ }</th></tr>
+  <tr><td>Du schreibst</td><td><code>\%</code></td><td><code>\&amp;</code></td><td><code>\$</code></td><td><code>\#</code></td><td><code>\_</code></td><td><code>\{ \}</code></td></tr>
+</table></div>
+<pre class="code" data-try>Rabatt: 50\% auf alles \&amp; 5\$ Versand, Datei\_name, Gruppe \#3</pre>
+
+<div class="merk"><b>Fehlermeldungen lesen:</b> Wenn etwas nicht klappt, nennt der Compiler die <em>Zeile</em> und einen Grund.
+Die häufigste Meldung <code>Undefined control sequence</code> heißt: „Diesen Befehl kenne ich nicht“ — Tippfehler oder ein
+<code>\usepackage</code> fehlt. Behebe Fehler immer <b>von oben nach unten</b>: Ein früher Fehler löst oft weitere Folgefehler aus.</div>
+
+<!-- ================================================================= -->
+<h2 id="s2">2. Überschriften und Gliederung</h2>
+<p>Mit den Gliederungsbefehlen legst du die Struktur fest. LaTeX nummeriert automatisch und macht die Schriftgröße passend:</p>
+<table class="info">
+  <tr><th>Befehl</th><th>Ebene</th></tr>
+  <tr><td><code>\section{…}</code></td><td>Abschnitt (1, 2, 3 …)</td></tr>
+  <tr><td><code>\subsection{…}</code></td><td>Unterabschnitt (1.1, 1.2 …)</td></tr>
+  <tr><td><code>\subsubsection{…}</code></td><td>Unter-Unterabschnitt (1.1.1 …)</td></tr>
+</table>
+<pre class="code" data-try>\section{Mein Hobby}
+Ich programmiere gern.
+\subsection{Python}
+Meine erste Sprache war Python.
+\subsection{Webseiten}
+Ich baue kleine Seiten mit HTML.
+\section*{Ohne Nummer}
+Ein Stern nach dem Befehl schaltet die Nummerierung aus.</pre>
+
+<h3>Titel, Autor, Datum, Inhaltsverzeichnis</h3>
+<p>Titelangaben gehören in die Präambel, <code>\maketitle</code> setzt den Titel dann an die Stelle im Text. Ein Inhaltsverzeichnis erzeugt
+<code>\tableofcontents</code>:</p>
+<pre class="code" data-try>\documentclass{article}
+\usepackage[ngerman]{babel}
+\title{Meine Facharbeit}
+\author{Alex Beispiel}
+\date{18. September 2026}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Einleitung}
+Worum es geht.
+\section{Hauptteil}
+\subsection{Grundlagen}
+Die Basis.
+\end{document}</pre>
+<div class="merk"><b>Gut zu wissen:</b> Das Inhaltsverzeichnis füllt LaTeX erst nach <em>zwei</em> Kompiliervorgängen richtig —
+beim ersten Durchlauf merkt es sich die Überschriften. Overleaf erledigt das automatisch. <code>\chapter</code> gibt es nur bei
+<code>report</code> und <code>book</code>, nicht bei <code>article</code>.</div>
+
+<!-- ================================================================= -->
+<h2 id="s3">3. Textformatierung</h2>
+<table class="info">
+  <tr><th>Wirkung</th><th>Befehl</th></tr>
+  <tr><td><b>fett</b></td><td><code>\textbf{Text}</code></td></tr>
+  <tr><td><i>kursiv</i></td><td><code>\textit{Text}</code> oder <code>\emph{Text}</code> (Betonung)</td></tr>
+  <tr><td><u>unterstrichen</u></td><td><code>\underline{Text}</code></td></tr>
+  <tr><td><span class="mono">Schreibmaschine</span></td><td><code>\texttt{Text}</code> (für Code und Dateinamen)</td></tr>
+</table>
+<pre class="code" data-try>Das ist \textbf{fett}, das ist \textit{kursiv} und das ist \underline{unterstrichen}.
+Beides zusammen: \textbf{\textit{fett und kursiv}}.
+Dateiname: \texttt{brief\_final.tex}
+
+Ein neuer Absatz beginnt nach einer Leerzeile.</pre>
+<p>Die <b>Schriftgröße</b> änderst du mit einem Schalter <em>innerhalb geschweifter Klammern</em>, damit er nur dort wirkt:</p>
+<pre class="code" data-try>Normaler Text, {\large größer}, {\Large noch größer}, {\small kleiner}.</pre>
+<p>Die Reihenfolge der Größen von klein nach groß: <code>\tiny</code> · <code>\footnotesize</code> · <code>\small</code> ·
+<code>\normalsize</code> · <code>\large</code> · <code>\Large</code> · <code>\LARGE</code> · <code>\huge</code> · <code>\Huge</code>.</p>
+<div class="merk"><b>Typografie-Tipps:</b> Anführungszeichen setzt du mit zwei Graves und zwei Apostrophen: <code>``Text''</code> — ein gerades
+<code>"</code> sieht in LaTeX nicht schön aus. Ein Gedankenstrich ist <code>--</code>. Und: Benutze <code>\textbf</code> &amp; Co. für einzelne
+Wörter — für Überschriften gibt es <code>\section</code>.</div>
+
+<!-- ================================================================= -->
+<h2 id="s4">4. Listen</h2>
+<p>Drei Listenarten stehen zur Verfügung. Jeder Punkt beginnt mit <code>\item</code>:</p>
+<table class="info">
+  <tr><th>Umgebung</th><th>Ergebnis</th></tr>
+  <tr><td><code>itemize</code></td><td>Aufzählung mit Punkten (<em>unnummeriert</em>)</td></tr>
+  <tr><td><code>enumerate</code></td><td>Nummerierte Liste</td></tr>
+  <tr><td><code>description</code></td><td>Begriff und Erklärung: <code>\item[Begriff] Erklärung</code></td></tr>
+</table>
+<pre class="code" data-try>Einkaufsliste:
+\begin{itemize}
+  \item Brot
+  \item Obst
+  \begin{itemize}
+    \item Äpfel
+    \item Bananen
+  \end{itemize}
+  \item Milch
+\end{itemize}
+
+Reihenfolge beim Backen:
+\begin{enumerate}
+  \item Zutaten wiegen
+  \item Teig kneten
+  \item Backen
+\end{enumerate}
+
+\begin{description}
+  \item[LaTeX] ein Textsatzsystem
+  \item[PDF] das Ergebnis des Kompilierens
+\end{description}</pre>
+<div class="merk"><b>Merke:</b> Listen lassen sich bis zu vier Ebenen tief <b>verschachteln</b>. Die Symbole bzw. Nummern wechseln
+dabei automatisch. Zwischen <code>\begin</code> und dem ersten <code>\item</code> darf kein Text stehen — sonst meldet LaTeX einen Fehler.</div>
+
+<!-- ================================================================= -->
+<h2 id="s5">5. Tabellen</h2>
+<h3>Aufbau einer Tabelle</h3>
+<p>Tabellen setzt du mit der Umgebung <code>tabular</code>. Hinter <code>\begin{tabular}</code> steht die <b>Spaltenangabe</b>:</p>
+<table class="info">
+  <tr><th>Zeichen</th><th>Bedeutung</th></tr>
+  <tr><td><code>l</code> · <code>c</code> · <code>r</code></td><td>Eine Spalte, linksbündig (left), zentriert (center) oder rechtsbündig (right)</td></tr>
+  <tr><td><code>p{3cm}</code></td><td>Spalte fester Breite mit automatischem Zeilenumbruch (für langen Text)</td></tr>
+  <tr><td><code>|</code></td><td>Senkrechte Linie zwischen (oder um) die Spalten</td></tr>
+</table>
+<p>Im Inneren gilt: <code>&amp;</code> trennt die <b>Zellen</b>, <code>\\</code> beendet die <b>Zeile</b>, <code>\hline</code> zeichnet eine waagrechte Linie.</p>
+<pre class="code" data-try>\begin{tabular}{|l|c|r|}
+  \hline
+  \textbf{Fach} &amp; \textbf{Note} &amp; \textbf{Punkte} \\
+  \hline
+  Informatik &amp; 1 &amp; 15 \\
+  Englisch &amp; 2 &amp; 12 \\
+  \hline
+\end{tabular}</pre>
+<div class="merk"><b>Merkregel:</b> Bei <i>n</i> Spalten braucht jede Zeile höchstens <i>n − 1</i> Zeichen <code>&amp;</code>.
+Hat eine Zeile zu viele, bricht LaTeX mit „Extra alignment tab“ ab. Vergiss auch das <code>\\</code> am Zeilenende nicht (die letzte Zeile darf es weglassen).</div>
+
+<h3>Zellen verbinden und schöner setzen</h3>
+<ul>
+  <li><code>\multicolumn{2}{c}{Text}</code> verbindet zwei Spalten zu einer Zelle, zentriert.</li>
+  <li>Das Paket <code>booktabs</code> liefert professionelle Linien: <code>\toprule</code>, <code>\midrule</code>, <code>\bottomrule</code> — ohne senkrechte Striche wirken Tabellen ruhiger.</li>
+  <li>Mit der <code>table</code>-Umgebung und <code>\caption{…}</code> bekommt die Tabelle eine nummerierte Beschriftung („Tabelle 1: …“).</li>
+</ul>
+<pre class="code" data-try>\begin{table}[h]
+  \centering
+  \begin{tabular}{lcr}
+    \toprule
+    \textbf{Gerät} &amp; \textbf{Anzahl} &amp; \textbf{Preis} \\
+    \midrule
+    Laptop &amp; 2 &amp; 899 \\
+    Maus &amp; 5 &amp; 19 \\
+    \multicolumn{3}{c}{Alle Preise in Euro} \\
+    \bottomrule
+  \end{tabular}
+  \caption{Anschaffungen der Informatik-AG}
+\end{table}</pre>
+
+<div class="karte">
+  <h4>Tabellen-Generator</h4>
+  <p style="margin-bottom:10px">Stelle deine Tabelle ein — der Generator schreibt den LaTeX-Code und zeigt die Vorschau.</p>
+  <div class="zeile">
+    <label>Spalten <input type="number" id="tgSp" min="1" max="6" value="3" style="width:70px"></label>
+    <label>Zeilen <input type="number" id="tgZe" min="1" max="8" value="3" style="width:70px"></label>
+    <label>Ausrichtung <select id="tgAl"><option value="l">links</option><option value="c" selected>zentriert</option><option value="r">rechts</option></select></label>
+    <label>Linien <select id="tgRahmen"><option value="voll">Gitter (\hline, |)</option><option value="book">booktabs</option><option value="keine">keine</option></select></label>
+  </div>
+  <div class="zeile">
+    <label><input type="checkbox" id="tgKopf" checked> Kopfzeile fett</label>
+    <label><input type="checkbox" id="tgCap"> mit Beschriftung (table + caption)</label>
+  </div>
+  <pre class="code" id="tgCode" style="margin-top:0"></pre>
+  <div class="vorschau-kopf">Vorschau</div>
+  <div class="paper" id="tgVor"></div>
+  <p style="margin-top:10px;margin-bottom:0"><button class="btn klein" id="tgWerk">In der Werkstatt öffnen</button></p>
+</div>
+
+<!-- ================================================================= -->
+<h2 id="s6">6. Bilder einfügen</h2>
+<p>Für Bilder brauchst du das Paket <code>graphicx</code> in der Präambel. Danach fügt <code>\includegraphics</code> die Datei ein:</p>
+<pre class="code" data-try>\documentclass{article}
+\usepackage[ngerman]{babel}
+\usepackage{graphicx}
+
+\begin{document}
+\includegraphics[width=0.5\textwidth]{katze.jpg}
+\end{document}</pre>
+<table class="info">
+  <tr><th>Option</th><th>Wirkung</th></tr>
+  <tr><td><code>width=0.5\textwidth</code></td><td>Breite = halbe Textbreite (Seitenverhältnis bleibt erhalten)</td></tr>
+  <tr><td><code>width=6cm</code></td><td>Feste Breite in Zentimetern</td></tr>
+  <tr><td><code>scale=0.5</code></td><td>Auf die Hälfte der Originalgröße verkleinern</td></tr>
+</table>
+<h3>Mit Beschriftung: die figure-Umgebung</h3>
+<p>Willst du eine Bildunterschrift mit automatischer Nummer, setzt du das Bild in eine <code>figure</code>-Umgebung. <code>\centering</code> zentriert den Inhalt,
+<code>\caption</code> erzeugt die Beschriftung („Abbildung 1: …“). Die Angabe <code>[h]</code> bedeutet: „möglichst genau hier“.</p>
+<pre class="code" data-try>\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.5\textwidth]{katze.jpg}
+  \caption{Meine Katze Luna}
+\end{figure}</pre>
+<div class="merk"><b>Praxis-Tipps:</b>
+<ul style="margin:6px 0 0">
+<li>Erlaubte Formate: <b>PNG</b>, <b>JPG</b> und <b>PDF</b>. GIF oder BMP kennt LaTeX nicht — vorher umwandeln.</li>
+<li>In Overleaf lädst du das Bild zuerst über <em>Upload</em> in dein Projekt hoch. Der Dateiname im Befehl muss genau stimmen (Groß-/Kleinschreibung!).</li>
+<li>Nimm Dateinamen ohne Leerzeichen und Umlaute: <code>katze_luna.jpg</code>. Liegt das Bild in einem Ordner: <code>{bilder/katze.jpg}</code>.</li>
+<li>In dieser Werkstatt siehst du statt des Bildes einen grauen Platzhalter mit dem Dateinamen und der eingestellten Breite.</li>
+</ul></div>
+
+<!-- ================================================================= -->
+<h2 id="s7">7. Werkstatt</h2>
+<p>Hier schreibst du LaTeX selbst. Links oben wählst du eine Aufgabe; in der <b>Vorschau</b> siehst du sofort, was dein Quelltext ergibt,
+und Fehlermeldungen erscheinen mit Zeilennummer. Bei den Aufgaben zeigt dir die zweite Vorschau das <b>Ziel</b> — baue es nach und klicke auf
+„Prüfen“.</p>
+<div class="karte" id="werkstatt">
+  <div class="tabs" id="wsTabs"></div>
+  <div class="auftrag" id="wsAuftrag"></div>
+  <textarea class="editor" id="wsEditor" spellcheck="false" aria-label="LaTeX-Quelltext"></textarea>
+  <ul class="lerr" id="wsFehler"></ul>
+  <div class="zeile" style="margin-top:6px">
+    <button class="btn primary" id="wsPruefen">Prüfen</button>
+    <button class="btn klein" id="wsReset">Zurücksetzen</button>
+  </div>
+  <p class="status" id="wsStatus"></p>
+  <div class="vorschau-kopf">Deine Vorschau</div>
+  <div class="paper" id="wsVor"></div>
+  <div id="wsZielBox">
+    <div class="vorschau-kopf">Ziel</div>
+    <div class="paper" id="wsZiel"></div>
+    <details class="loesung"><summary>Musterlösung anzeigen</summary><div class="inh">
+      <pre class="code" id="wsLoesung"></pre>
+      <button class="btn klein" id="wsLoesungUebernehmen">Musterlösung in den Editor übernehmen</button></div></details>
+  </div>
+  <p class="hinweis">Vereinfachte Nachbildung: Aussehen und Zeilenumbrüche können von echtem LaTeX abweichen.</p>
+</div>
+
+<!-- ================================================================= -->
+<h2 id="s8">8. Selbsttest</h2>
+<p>Zehn Fragen zum ganzen Kurs. Nach jeder Antwort siehst du die Begründung.</p>
+<div id="test"></div>
+<div id="testErg" class="karte" hidden></div>
+
+<h2 id="s9">9. Spickzettel</h2>
+<div class="scroll"><table class="info">
+  <tr><th>Aufgabe</th><th>Code</th></tr>
+  <tr><td>Dokumentrahmen</td><td><code>\documentclass{article}</code> … <code>\begin{document}</code> … <code>\end{document}</code></td></tr>
+  <tr><td>Paket laden</td><td><code>\usepackage{graphicx}</code></td></tr>
+  <tr><td>Überschriften</td><td><code>\section{…}</code> <code>\subsection{…}</code> <code>\subsubsection{…}</code></td></tr>
+  <tr><td>Titelblock</td><td><code>\title{…}</code> <code>\author{…}</code> <code>\date{…}</code> <code>\maketitle</code></td></tr>
+  <tr><td>Fett / kursiv / unterstrichen</td><td><code>\textbf{…}</code> <code>\textit{…}</code> <code>\underline{…}</code></td></tr>
+  <tr><td>Aufzählung / Nummerierung</td><td><code>itemize</code> / <code>enumerate</code> mit <code>\item</code></td></tr>
+  <tr><td>Tabelle</td><td><code>\begin{tabular}{|l|c|r|}</code> · <code>&amp;</code> Zelle · <code>\\</code> Zeile · <code>\hline</code></td></tr>
+  <tr><td>Bild</td><td><code>\includegraphics[width=0.5\textwidth]{datei.jpg}</code></td></tr>
+  <tr><td>Beschriftung</td><td><code>\caption{…}</code> in <code>figure</code> oder <code>table</code></td></tr>
+  <tr><td>Sonderzeichen</td><td><code>\% \&amp; \$ \# \_ \{ \}</code></td></tr>
+</table></div>
+</main>
+<footer>Selbstlernkurs Informatik · Klasse 10 · LaTeX</footer>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+/* ---------- Kopf ---------- */
+(function(){
+  const ol=$("#toc");
+  $$("h2[id]").forEach(h=>{ const li=document.createElement("li");
+    li.innerHTML=`<a href="#${h.id}">${h.textContent.replace(/^\d+\.\s*/,"")}</a>`; ol.appendChild(li); });
+  $("details.inhalt").addEventListener("click",e=>{ if(e.target.tagName==="A") $("details.inhalt").open=false; });
+  $("#theme").addEventListener("click",()=>{
+    const d=document.body.dataset.theme==="dark"?"light":"dark";
+    document.body.dataset.theme=d; $("#theme").textContent=d==="dark"?"Hell":"Dunkel";
+    try{ localStorage.setItem("lx.theme",d); }catch(e){}
+  });
+  try{ const t=localStorage.getItem("lx.theme");
+    if(t){ document.body.dataset.theme=t; $("#theme").textContent=t==="dark"?"Hell":"Dunkel"; } }catch(e){}
+})();
+
+/* =====================================================================
+   Mini-LaTeX: vereinfachte Nachbildung für die Befehle dieses Kurses
+   ===================================================================== */
+function latex(src){
+  const errors=[], n=src.length; let i=0;
+  const meta={title:null,author:null,date:null}, pkgs=new Set();
+  let deutsch=false, hatClass=false;
+  const lineAt=p=>src.slice(0,Math.max(0,Math.min(p,n))).split("\n").length;
+  const err=(m,p)=>errors.push({m,l:lineAt(p==null?i:p)});
+
+  const SECS=Object.assign(Object.create(null),{section:1,subsection:2,subsubsection:3});
+  const FMT=new Set(["textbf","textit","emph","underline","texttt","textsc"]);
+  const DECL=new Set(["tiny","scriptsize","footnotesize","small","normalsize","large","Large","LARGE","huge","Huge","bfseries","itshape","ttfamily","centering"]);
+  const NOOP0=new Set(["noindent","newpage","clearpage","relax","bigskip","medskip","smallskip"]);
+  const NOOP1=new Set(["vspace","hspace","label","pagestyle","thispagestyle","pagenumbering"]);
+
+  const skipSp=()=>{ while(i<n&&(src[i]===" "||src[i]==="\t")) i++; };
+  const skipWs=()=>{ while(i<n&&/\s/.test(src[i])) i++; };
+  function rawGroup(){
+    skipWs();
+    if(src[i]!=="{"){ err("Ein Argument in { } fehlt hier",i); return ""; }
+    let depth=0; const start=i+1;
+    for(let j=i;j<n;j++){
+      const c=src[j];
+      if(c==="\\"){ j++; continue; }
+      if(c==="{") depth++;
+      else if(c==="}"){ depth--; if(depth===0){ const s=src.slice(start,j); i=j+1; return s; } }
+    }
+    err("Die schließende } fehlt",i); i=n; return "";
+  }
+  function optArg(){
+    skipSp();
+    if(src[i]==="["){
+      const j=src.indexOf("]",i);
+      if(j<0){ err("Die schließende ] fehlt",i); i=n; return null; }
+      const s=src.slice(i+1,j); i=j+1; return s;
+    }
+    return null;
+  }
+  function argNodes(){
+    skipWs();
+    if(src[i]==="{"){ i++; return parseSeq({group:true}).nodes; }
+    err("Ein Argument in { } fehlt hier",i); return [];
+  }
+  function parseSpec(spec,pos){
+    const aligns=[], bars=[false]; let k=0;
+    while(k<spec.length){
+      const c=spec[k];
+      if(c==="|"){ bars[aligns.length]=true; k++; }
+      else if("lcr".includes(c)){ aligns.push(c); bars.push(false); k++; }
+      else if(c==="p"||c==="m"||c==="b"){ aligns.push("l"); bars.push(false); k++; if(spec[k]==="{"){ const j=spec.indexOf("}",k); k=j<0?spec.length:j+1; } }
+      else if(c==="@"||c==="!"||c===">"||c==="<"){ k++; if(spec[k]==="{"){ const j=spec.indexOf("}",k); k=j<0?spec.length:j+1; } }
+      else if(c===" "){ k++; }
+      else{ err(`Unbekannte Angabe „${c}“ in der Spaltenangabe {${spec}} — erlaubt sind l, c, r, p{…} und |`,pos); k++; }
+    }
+    return {aligns,bars,n:aligns.length};
+  }
+  const leer=nodes=>nodes.every(x=>(x.t==="text"&&!x.v.trim())||x.t==="par");
+
+  function parseSeq(ctx){
+    const nodes=[]; let buf="";
+    const flush=()=>{ if(buf){ nodes.push({t:"text",v:buf}); buf=""; } };
+    while(true){
+      if(i>=n){
+        flush();
+        if(ctx.group) err("Eine { wurde nie mit } geschlossen",n);
+        if(ctx.env) err(`\\begin{${ctx.env}} wird nie mit \\end{${ctx.env}} geschlossen`,ctx.pos);
+        return {nodes,stop:"eof"};
+      }
+      const c=src[i];
+      if(c==="%"){ while(i<n&&src[i]!=="\n") i++; continue; }
+      if(c==="{"){ flush(); i++; nodes.push({t:"group",c:parseSeq({group:true}).nodes}); continue; }
+      if(c==="}"){
+        if(ctx.group){ flush(); i++; return {nodes,stop:"close"}; }
+        err("Zu viele }: Es gibt keine offene { dazu",i); i++; continue;
+      }
+      if(c==="&"){
+        if(ctx.cell){ flush(); i++; return {nodes,stop:"amp"}; }
+        err("Das Zeichen & ist nur in Tabellen erlaubt — als Text schreibst du \\&",i); i++; continue;
+      }
+      if(c==="$"){
+        const j=src.indexOf("$",i+1);
+        if(j<0){ err("Mathe-Modus mit $ wird nie geschlossen (soll ein Dollarzeichen erscheinen: \\$)",i); i++; continue; }
+        flush(); nodes.push({t:"math",v:src.slice(i+1,j)}); i=j+1; continue;
+      }
+      if(c==="#"||c==="_"||c==="^"){
+        err(`Das Zeichen ${c} ist in LaTeX reserviert — ${c==="^"?"außerhalb von Formeln nicht erlaubt":"schreibe \\"+c}`,i); buf+=c; i++; continue;
+      }
+      if(c==="~"){ buf+="\u00a0"; i++; continue; }
+      if(c==="\n"){
+        let j=i+1; while(j<n&&(src[j]===" "||src[j]==="\t")) j++;
+        if(src[j]==="\n"){ flush(); nodes.push({t:"par"}); i=j; while(i<n&&/\s/.test(src[i])) i++; continue; }
+        buf+=" "; i++; continue;
+      }
+      if(c!=="\\"){ buf+=c; i++; continue; }
+
+      /* ---- Befehl ---- */
+      const startPos=i; i++;
+      if(i>=n){ err("Das Dokument endet mit einem einzelnen \\",startPos); continue; }
+      const d=src[i];
+      if(!/[a-zA-Z]/.test(d)){
+        i++;
+        if(d==="\\"){
+          flush();
+          if(ctx.cell){ if(src[i]==="*") i++; optArg(); return {nodes,stop:"row"}; }
+          nodes.push({t:"br"}); optArg(); continue;
+        }
+        if("%&$#_{}".includes(d)){ buf+=d; continue; }
+        if(d===" "){ buf+=" "; continue; }
+        if(d===","||d===";"||d===":"||d==="!"){ buf+="\u2009"; continue; }
+        if(d==="-"){ continue; }
+        err(`Unbekanntes Zeichen-Kommando \\${d}`,startPos); continue;
+      }
+      let j=i; while(j<n&&/[a-zA-Z]/.test(src[j])) j++;
+      const name=src.slice(i,j); i=j;
+      let star=false;
+      if(src[i]==="*"&&SECS[name]){ star=true; i++; }
+      const hadSpace=src[i]===" "||src[i]==="\t"; skipSp();
+      flush();
+
+      if(SECS[name]){ nodes.push({t:"sec",lvl:SECS[name],star,c:argNodes(),pos:startPos}); continue; }
+      if(FMT.has(name)){ nodes.push({t:"fmt",k:name,c:argNodes()}); continue; }
+      if(DECL.has(name)){
+        const r=parseSeq(ctx);
+        nodes.push({t:"decl",k:name,c:r.nodes});
+        return {nodes,stop:r.stop};
+      }
+      if(NOOP0.has(name)) continue;
+      if(NOOP1.has(name)){ if(name==="vspace"||name==="hspace") optArg(); if(src[i]==="*") i++; rawGroup(); continue; }
+
+      switch(name){
+        case "documentclass": { optArg(); const k=rawGroup().trim(); hatClass=true;
+          if(!["article","report","book","scrartcl","scrreprt","scrbook"].includes(k)) err(`Die Dokumentklasse „${k}“ ist unbekannt — in diesem Kurs nutzt du article`,startPos);
+          break; }
+        case "usepackage": { const o=optArg()||""; rawGroup().split(",").map(s=>s.trim()).filter(Boolean).forEach(p=>{ pkgs.add(p); if(p==="babel"&&/german/.test(o)) deutsch=true; }); break; }
+        case "title": meta.title=argNodes(); break;
+        case "author": meta.author=argNodes(); break;
+        case "date": meta.date=argNodes(); break;
+        case "maketitle": nodes.push({t:"maketitle",pos:startPos}); break;
+        case "tableofcontents": nodes.push({t:"toc"}); break;
+        case "today": nodes.push({t:"today"}); if(hadSpace) nodes.push({t:"text",v:" "}); break;
+        case "LaTeX": case "TeX": if(src.startsWith("{}",i)) i+=2; nodes.push({t:"logo",v:name}); if(hadSpace) nodes.push({t:"text",v:" "}); break;
+        case "ldots": case "dots": if(src.startsWith("{}",i)) i+=2; nodes.push({t:"text",v:"…"+(hadSpace?" ":"")}); break;
+        case "textbackslash": if(src.startsWith("{}",i)) i+=2; nodes.push({t:"text",v:"\\"+(hadSpace?" ":"")}); break;
+        case "newline": nodes.push({t:"br"}); break;
+        case "par": nodes.push({t:"par"}); break;
+        case "hline": case "toprule": case "midrule": case "bottomrule":
+          if(name!=="hline"&&!pkgs.has("booktabs")) err(`\\${name} ist undefiniert — dafür fehlt \\usepackage{booktabs} in der Präambel`,startPos);
+          nodes.push({t:"rule",k:name}); break;
+        case "multicolumn": { const k=parseInt(rawGroup(),10)||1, spec=rawGroup(); nodes.push({t:"mcol",n:k,spec,c:argNodes()}); break; }
+        case "item": nodes.push({t:"item",label:optArg(),pos:startPos}); break;
+        case "caption": optArg(); nodes.push({t:"caption",c:argNodes(),pos:startPos}); break;
+        case "includegraphics": {
+          const opt=optArg()||"", file=rawGroup().trim();
+          if(!pkgs.has("graphicx")) err("\\includegraphics ist undefiniert — dafür fehlt \\usepackage{graphicx} in der Präambel",startPos);
+          nodes.push({t:"img",file,opt,pos:startPos}); break; }
+        case "begin": {
+          const env=rawGroup().trim(); if(!env) break;
+          if(env==="document"){
+            const r=parseSeq({env,pos:startPos}); nodes.push({t:"document",c:r.nodes}); break; }
+          if(env==="itemize"||env==="enumerate"||env==="description"){
+            const r=parseSeq({env,pos:startPos}); nodes.push({t:"list",k:env,pos:startPos,items:splitItems(r.nodes,startPos)}); break; }
+          if(env==="center"){ const r=parseSeq({env,pos:startPos}); nodes.push({t:"center",c:r.nodes}); break; }
+          if(env==="figure"||env==="table"){ optArg(); const r=parseSeq({env,pos:startPos}); nodes.push({t:"float",k:env,c:r.nodes}); break; }
+          if(env==="tabular"){ nodes.push(parseTabular(startPos)); break; }
+          err(`Die Umgebung „${env}“ ist unbekannt (oder wird von dieser Vorschau nicht unterstützt)`,startPos);
+          nodes.push({t:"group",c:parseSeq({env,pos:startPos}).nodes}); break; }
+        case "end": {
+          const env=rawGroup().trim();
+          if(ctx.group){
+            err(`Eine { wurde nicht mit } geschlossen, bevor \\end{${env}} kommt`,startPos);
+            i=startPos; return {nodes,stop:"close"};
+          }
+          if(ctx.env){
+            if(ctx.env!==env) err(`\\begin{${ctx.env}} wurde mit \\end{${env}} beendet — die Namen passen nicht zusammen`,startPos);
+            flush(); return {nodes,stop:"end"};
+          }
+          err(`\\end{${env}} hat kein passendes \\begin{${env}}`,startPos); break; }
+        case "chapter": err("\\chapter ist undefiniert — es gibt \\chapter nur bei den Klassen report und book, nicht bei article",startPos); break;
+        default: err(`Undefined control sequence: \\${name} ist unbekannt — Tippfehler oder fehlt ein \\usepackage?`,startPos);
+      }
+    }
+  }
+
+  function splitItems(nodes,pos){
+    const items=[]; let cur=null, bad=false;
+    nodes.forEach(nd=>{
+      if(nd.t==="item"){ cur={label:nd.label,c:[]}; items.push(cur); }
+      else if(cur) cur.c.push(nd);
+      else if(!leer([nd])&&!bad){ bad=true; err("In einer Liste muss jeder Punkt mit \\item beginnen — vor dem ersten \\item darf kein Text stehen",pos); }
+    });
+    if(!items.length&&!bad) err("Die Liste ist leer — LaTeX erwartet mindestens einen \\item",pos);
+    return items;
+  }
+
+  function parseTabular(pos){
+    const spec=rawGroup(); const cols=parseSpec(spec,pos);
+    const raw=[]; let cur=[];
+    while(true){
+      const r=parseSeq({env:"tabular",cell:true,pos});
+      cur.push(r.nodes);
+      if(r.stop==="amp") continue;
+      raw.push(cur); cur=[];
+      if(r.stop==="row") continue;
+      break;
+    }
+    const seq=[];
+    raw.forEach(cells=>{
+      const first=cells[0], rules=[];
+      while(first.length&&(first[0].t==="rule"||(first[0].t==="text"&&!first[0].v.trim()))){
+        const x=first.shift(); if(x.t==="rule") rules.push(x.k);
+      }
+      rules.forEach(k=>seq.push({rule:k}));
+      const inhalt=cells.length>1||!leer(cells[0]);
+      if(inhalt){
+        const last=cells[cells.length-1], endRules=[];
+        while(last.length&&(last[last.length-1].t==="rule"||(last[last.length-1].t==="text"&&!last[last.length-1].v.trim()))){
+          const x=last.pop(); if(x.t==="rule") endRules.unshift(x.k);
+        }
+        const zahl=cells.reduce((s,c)=>s+((c.length===1&&c[0].t==="mcol")?c[0].n:1),0);
+        if(zahl>cols.n) err(`Zu viele Spalten in einer Zeile: ${zahl} Zellen, aber die Spaltenangabe {${spec}} legt nur ${cols.n} Spalten fest (Extra alignment tab)`,pos);
+        seq.push({row:cells});
+        endRules.forEach(k=>seq.push({rule:k}));
+      }
+    });
+    return {t:"tabular",cols,seq};
+  }
+
+  /* ---------------- Parsen ---------------- */
+  const top=parseSeq({top:true}).nodes;
+  const docNode=top.find(x=>x.t==="document");
+  const body=docNode?docNode.c:top;
+  if(!docNode) err("\\begin{document} fehlt — jedes LaTeX-Dokument braucht \\begin{document} … \\end{document}",0);
+  else{
+    if(!hatClass) err("\\documentclass{…} fehlt in der ersten Zeile des Dokuments",0);
+    const vor=top.slice(0,top.indexOf(docNode)).find(x=>!leer([x]));
+    if(vor) err("Vor \\begin{document} steht Text — Text darf erst nach \\begin{document} beginnen",0);
+  }
+
+  /* ---------------- Rendern ---------------- */
+  const DE=deutsch;
+  const heute=()=>new Date().toLocaleDateString(DE?"de-DE":"en-US",{day:"numeric",month:"long",year:"numeric"});
+  const typo=t=>t.replace(/[ \t]+/g," ").replace(/``/g,"\u201C").replace(/''/g,"\u201D").replace(/---/g,"\u2014").replace(/--/g,"\u2013");
+  const st={count:{figure:0,table:0},float:null,ld:0};
+  const secs=[]; let c1=0,c2=0,c3=0;
+  (function nummer(nodes){
+    nodes.forEach(nd=>{
+      if(nd.t==="sec"){
+        if(nd.star){ nd.num=""; }
+        else if(nd.lvl===1){ c1++; c2=0; c3=0; nd.num=`${c1}`; }
+        else if(nd.lvl===2){ c2++; c3=0; nd.num=`${c1}.${c2}`; }
+        else{ c3++; nd.num=`${c1}.${c2}.${c3}`; }
+        secs.push(nd);
+      } else if(Array.isArray(nd.c)) nummer(nd.c);
+    });
+  })(body);
+
+  function inline(nodes){
+    return nodes.map(nd=>{
+      switch(nd.t){
+        case "text": return esc(typo(nd.v));
+        case "group": return inline(nd.c);
+        case "fmt": { const s=inline(nd.c);
+          return nd.k==="textbf"?`<b>${s}</b>`:(nd.k==="textit"||nd.k==="emph")?`<i>${s}</i>`:nd.k==="underline"?`<u>${s}</u>`:nd.k==="texttt"?`<code>${s}</code>`:`<span class="sc">${s}</span>`; }
+        case "br": return "<br>";
+        case "par": return "<br><br>";
+        case "math": return `<i class="math">${esc(nd.v)}</i>`;
+        case "logo": return nd.v==="LaTeX"?`<span class="logo">LaTeX</span>`:`<span class="logo">TeX</span>`;
+        case "today": return esc(heute());
+        case "decl": { const k=nd.k;
+          if(k==="bfseries") return `<b>${inline(nd.c)}</b>`;
+          if(k==="itshape") return `<i>${inline(nd.c)}</i>`;
+          if(k==="ttfamily") return `<code>${inline(nd.c)}</code>`;
+          return `<span class="${k}">${inline(nd.c)}</span>`; }
+        default: return "";
+      }
+    }).join("");
+  }
+
+  function blocks(nodes){
+    let out="", buf=[];
+    const flush=()=>{ const h=inline(buf); buf=[]; if(h.replace(/<br>|&nbsp;|\u00a0|\s/g,"")) out+=`<p>${h.replace(/^(<br>)+|(<br>)+$/g,"").trim()}</p>`; };
+    nodes.forEach(nd=>{
+      switch(nd.t){
+        case "par": flush(); break;
+        case "sec": flush(); out+=`<h${nd.lvl+1} class="s${nd.lvl}"><span class="sn">${esc(nd.num)}</span>${inline(nd.c)}</h${nd.lvl+1}>`; break;
+        case "list": flush(); out+=listHtml(nd); break;
+        case "center": flush(); out+=`<div class="ctr">${blocks(nd.c)}</div>`; break;
+        case "decl": if(nd.k==="centering"){ flush(); out+=`<div class="ctr">${blocks(nd.c)}</div>`; } else buf.push(nd); break;
+        case "tabular": flush(); out+=tabHtml(nd); break;
+        case "float": flush(); out+=floatHtml(nd); break;
+        case "img": flush(); out+=imgHtml(nd); break;
+        case "maketitle": flush(); out+=titleHtml(nd); break;
+        case "toc": flush(); out+=tocHtml(); break;
+        case "caption":
+          flush();
+          if(!st.float){ err("\\caption steht außerhalb einer figure- oder table-Umgebung — dort ist keine Beschriftung möglich",nd.pos); break; }
+          st.count[st.float]++;
+          out+=`<div class="cap"><b>${DE?(st.float==="figure"?"Abbildung":"Tabelle"):(st.float==="figure"?"Figure":"Table")} ${st.count[st.float]}:</b> ${inline(nd.c)}</div>`; break;
+        default: buf.push(nd);
+      }
+    });
+    flush(); return out;
+  }
+
+  function listHtml(nd){
+    st.ld++;
+    const depth=st.ld;
+    if(depth>4) err("Listen lassen sich nur bis zu vier Ebenen tief verschachteln (Too deeply nested)",nd.pos);
+    let h;
+    if(nd.k==="description") h="<dl>"+nd.items.map(it=>`<dt>${esc(it.label||"")}</dt><dd>${blocks(it.c)}</dd>`).join("")+"</dl>";
+    else{
+      const typ=nd.k==="enumerate"?["decimal","lower-alpha","lower-roman","upper-alpha"][Math.min(depth,4)-1]:['disc','"\u2013  "','"\u2217  "','"\u00b7  "'][Math.min(depth,4)-1];
+      const tag=nd.k==="enumerate"?"ol":"ul";
+      h=`<${tag} style="list-style-type:${typ.replace(/"/g,"&quot;")}">`+nd.items.map(it=>`<li>${blocks(it.c)}</li>`).join("")+`</${tag}>`;
+    }
+    st.ld--; return h;
+  }
+
+  function tabHtml(nd){
+    const {cols,seq}=nd; let pending=[], html="";
+    const rows=[];
+    seq.forEach(s=>{ if(s.rule) pending.push(s.rule); else{ rows.push({cells:s.row,before:pending}); pending=[]; } });
+    const after=pending;
+    rows.forEach((r,ri)=>{
+      const b=r.before, cls=[];
+      if(b.includes("toprule")) cls.push("rt2"); else if(b.length) cls.push("rt");
+      if(ri===rows.length-1&&after.length) cls.push(after.includes("bottomrule")?"rb2":"rb");
+      let k=0, tds="";
+      r.cells.forEach(cell=>{
+        const m=cell.length===1&&cell[0].t==="mcol"?cell[0]:null;
+        const span=m?m.n:1;
+        const al=m?((m.spec.match(/[lcr]/)||["l"])[0]):(cols.aligns[k]||"l");
+        const bl=m?/^\s*\|/.test(m.spec):cols.bars[k], br=(k+span>=cols.n)&&(m?/\|\s*$/.test(m.spec):cols.bars[cols.n]);
+        tds+=`<td class="a${al}${bl?" bl":""}${br?" br":""}"${span>1?` colspan="${span}"`:""}>${inline(m?m.c:cell).trim()}</td>`;
+        k+=span;
+      });
+      html+=`<tr${cls.length?` class="${cls.join(" ")}"`:""}>${tds}</tr>`;
+    });
+    return `<table class="lt"><tbody>${html}</tbody></table>`;
+  }
+
+  function floatHtml(nd){
+    const alt=st.float; st.float=nd.k;
+    const h=blocks(nd.c);
+    st.float=alt;
+    return `<figure class="fl">${h}</figure>`;
+  }
+
+  function imgHtml(nd){
+    const o=nd.opt; let w=null;
+    let m=/width\s*=\s*([0-9.]*)\s*\\(?:textwidth|linewidth|columnwidth)/.exec(o);
+    if(m) w=(m[1]===""?1:parseFloat(m[1]))*100;
+    else if((m=/width\s*=\s*([0-9.]+)\s*(cm|mm|pt|in)/.exec(o))){ const v=parseFloat(m[1]); w={cm:v/16,mm:v/160,pt:v/455,in:v*2.54/16}[m[2]]*100; }
+    else if((m=/scale\s*=\s*([0-9.]+)/.exec(o))) w=parseFloat(m[1])*60;
+    if(w==null) w=60;
+    w=Math.max(6,Math.min(100,Math.round(w)));
+    if(!/\.(png|jpe?g|pdf)$/i.test(nd.file)&&/\.[a-z0-9]+$/i.test(nd.file)) err(`Unbekanntes Grafikformat: pdfLaTeX kann nur PNG, JPG und PDF einbinden (${nd.file})`,nd.pos);
+    if(!nd.file) err("Der Dateiname in \\includegraphics{…} fehlt",nd.pos);
+    return `<div class="img" style="width:${w}%"><svg width="34" height="26" viewBox="0 0 34 26" aria-hidden="true"><rect x="1" y="1" width="32" height="24" rx="3" fill="none" stroke="#7c8b95" stroke-width="2"/><circle cx="10" cy="9" r="3" fill="#7c8b95"/><path d="M3 23l9-9 6 6 5-5 8 8z" fill="#7c8b95"/></svg><span>${esc(nd.file)}</span><span>Breite ${w}&nbsp;%</span></div>`;
+  }
+
+  function titleHtml(nd){
+    if(!meta.title){ err("LaTeX Error: No \\title given — vor \\maketitle muss \\title{…} in der Präambel stehen",nd.pos); return ""; }
+    const dat=meta.date===null?esc(heute()):inline(meta.date);
+    return `<div class="ttl"><h1>${inline(meta.title)}</h1>${meta.author?`<div class="au">${inline(meta.author)}</div>`:""}${dat?`<div class="dt">${dat}</div>`:""}</div>`;
+  }
+
+  function tocHtml(){
+    return `<div class="toc"><h3>${DE?"Inhaltsverzeichnis":"Contents"}</h3>`+secs.filter(s=>!s.star).map(s=>`<div style="padding-left:${(s.lvl-1)*1.4}em">${esc(s.num)} &nbsp;${inline(s.c)}</div>`).join("")+`</div>`;
+  }
+
+  const html=blocks(body);
+  errors.sort((a,b)=>a.l-b.l);
+  return {html,errors};
+}
+
+/* Vergleich: gleiche Wirkung = gleiche Vorschau (Schreibweise der Formatierung egal) */
+function kanon(html){
+  const d=document.createElement("div"); d.innerHTML=html;
+  const tok=[];
+  (function walk(node,st){
+    node.childNodes.forEach(ch=>{
+      if(ch.nodeType===3){ const t=ch.textContent.replace(/\s+/g," "); if(t) tok.push({r:t,s:st}); return; }
+      if(ch.nodeType!==1) return;
+      const tag=ch.tagName.toLowerCase();
+      let s=st; const add=x=>{ if(!s.split(" ").includes(x)) s=(s+" "+x).split(" ").filter(Boolean).sort().join(" "); };
+      if(tag==="b"||tag==="strong") add("b");
+      else if(tag==="i"||tag==="em") add("i");
+      else if(tag==="u") add("u");
+      else if(tag==="code") add("t");
+      else if(tag==="span"&&ch.className&&!/^(sn|logo)$/.test(ch.className)) add("."+ch.className);
+      const inl=["b","strong","i","em","u","code","span","svg","path","rect","circle"].includes(tag);
+      if(tag==="svg"){ return; }
+      if(inl){ walk(ch,s); return; }
+      const attrs=["class","style","colspan"].map(a=>ch.getAttribute(a)?` ${a}="${ch.getAttribute(a)}"`:"").join("");
+      tok.push({b:`<${tag}${attrs}>`}); walk(ch,s); tok.push({b:`</${tag}>`});
+    });
+  })(d,"");
+  const out=[];
+  tok.forEach(t=>{
+    const l=out[out.length-1];
+    if(t.r!==undefined&&l&&l.r!==undefined&&l.s===t.s) l.r+=t.r; else out.push({...t});
+  });
+  return out.map((t,i)=>{
+    if(t.b) return t.b;
+    let r=t.r; const p=out[i-1], nx=out[i+1];
+    if(!p||p.b) r=r.replace(/^\s+/,"");
+    if(!nx||nx.b) r=r.replace(/\s+$/,"");
+    return r?`{${t.s}|${r}}`:"";
+  }).join("");
+}
+
+/* ---------- Standard-Rahmen und "Ausprobieren"-Schaltflächen ---------- */
+const RAHMEN=b=>`\\documentclass{article}\n\\usepackage[ngerman]{babel}\n\\usepackage{graphicx}\n\\usepackage{booktabs}\n\n\\begin{document}\n${b}\n\\end{document}`;
+function inWerkstatt(code){
+  const voll=/\\documentclass/.test(code)?code:RAHMEN(code);
+  ladeAufgabe("frei"); $("#wsEditor").value=voll; werkAktualisieren();
+  $("#werkstatt").scrollIntoView({behavior:"smooth",block:"start"});
+}
+$$("pre.code[data-try]").forEach(pre=>{
+  const b=document.createElement("button"); b.className="btn klein try"; b.textContent="In der Werkstatt ausprobieren";
+  b.addEventListener("click",()=>inWerkstatt(pre.textContent));
+  pre.after(b);
+});
+
+/* ---------- Tabellen-Generator ---------- */
+function tabGen(){
+  const sp=Math.max(1,Math.min(6,+$("#tgSp").value||1)), ze=Math.max(1,Math.min(8,+$("#tgZe").value||1));
+  const al=$("#tgAl").value, rahmen=$("#tgRahmen").value, kopf=$("#tgKopf").checked, cap=$("#tgCap").checked;
+  const bar=rahmen==="voll"?"|":"";
+  const spec=bar+Array(sp).fill(al).join(bar)+bar;
+  const pre=cap?"  ":"", L=[];
+  const z=t=>L.push(pre+"  "+t);
+  const oben=()=>{ if(rahmen==="voll") z("\\hline"); if(rahmen==="book") z("\\toprule"); };
+  const mitte=()=>{ if(rahmen==="voll") z("\\hline"); if(rahmen==="book") z("\\midrule"); };
+  const unten=()=>{ if(rahmen==="voll") z("\\hline"); if(rahmen==="book") z("\\bottomrule"); };
+  L.push(pre+`\\begin{tabular}{${spec}}`);
+  oben();
+  z(Array.from({length:sp},(_,c)=>kopf?`\\textbf{Kopf ${c+1}}`:`Kopf ${c+1}`).join(" & ")+" \\\\");
+  mitte();
+  for(let r=1;r<=ze;r++) z(Array.from({length:sp},(_,c)=>`Zelle ${r}.${c+1}`).join(" & ")+" \\\\");
+  unten();
+  L.push(pre+"\\end{tabular}");
+  let code=L.join("\n");
+  if(cap) code=`\\begin{table}[h]\n  \\centering\n${code}\n  \\caption{Beschriftung der Tabelle}\n\\end{table}`;
+  $("#tgCode").textContent=code;
+  $("#tgVor").innerHTML=latex(RAHMEN(code)).html;
+}
+["#tgSp","#tgZe","#tgAl","#tgRahmen","#tgKopf","#tgCap"].forEach(s=>$(s).addEventListener("input",tabGen));
+$("#tgWerk").addEventListener("click",()=>inWerkstatt($("#tgCode").textContent));
+tabGen();
+
+/* ---------- Werkstatt ---------- */
+const AUFGABEN=[
+  {id:"frei",name:"Freies Experimentieren",auftrag:"Schreibe und probiere, was du willst. Hier siehst du auch Fehlermeldungen wie beim echten Compiler. Tipp: Baue absichtlich Fehler ein — z. B. ein fehlendes <code>\\end{…}</code> oder einen Tippfehler im Befehl.",
+   start:RAHMEN("\\section{Mein erstes Dokument}\nHallo \\textbf{Welt}!\n"),ziel:null},
+  {id:"a1",name:"1 · Sonderzeichen",
+   auftrag:"Ergänze in den Rahmen <b>genau diesen Text</b> (ein Absatz): <i>Sale: 50% off &amp; 20% more for 5$!</i> — Die Sonderzeichen müssen mit einem Backslash geschützt werden.",
+   start:"\\documentclass{article}\n\\begin{document}\n\n% Schreibe hier deinen Text\n\n\\end{document}",
+   ziel:"\\documentclass{article}\n\\begin{document}\nSale: 50\\% off \\& 20\\% more for 5\\$!\n\\end{document}"},
+  {id:"a2",name:"2 · Überschriften",
+   auftrag:"Baue das Dokument nach: Titel, Autor und Datum stehen in der Präambel (vor <code>\\begin{document}</code>), dann folgen Titelblatt und die Abschnitte. Achte auf die Nummerierung (1, 1.1, 2).",
+   start:"\\documentclass{article}\n\\usepackage[ngerman]{babel}\n\n\\begin{document}\n\n\\end{document}",
+   ziel:"\\documentclass{article}\n\\usepackage[ngerman]{babel}\n\\title{Mein Steckbrief}\n\\author{Alex Beispiel}\n\\date{18. September 2026}\n\n\\begin{document}\n\\maketitle\n\\section{Über mich}\nIch gehe in die Klasse 10.\n\\subsection{Hobbys}\nIch programmiere und spiele Fußball.\n\\section{Schule}\nMein Lieblingsfach ist Informatik.\n\\end{document}"},
+  {id:"a3",name:"3 · Textformatierung",
+   auftrag:"Setze den Text mit den richtigen Formatierungen. Es gibt zwei Absätze — der zweite beginnt nach einer Leerzeile.",
+   start:"\\documentclass{article}\n\\begin{document}\n\n\\end{document}",
+   ziel:"\\documentclass{article}\n\\begin{document}\nDas ist \\textbf{fett}, das ist \\textit{kursiv} und das ist \\underline{unterstrichen}.\nBeides zusammen: \\textbf{\\textit{fett und kursiv}}.\n\nEin neuer Absatz beginnt nach einer Leerzeile.\n\\end{document}"},
+  {id:"a4",name:"4 · Listen",
+   auftrag:"Erzeuge eine verschachtelte Aufzählung (Einkaufsliste mit Unterpunkten) und darunter eine nummerierte Liste.",
+   start:"\\documentclass{article}\n\\begin{document}\n\n\\end{document}",
+   ziel:"\\documentclass{article}\n\\begin{document}\nEinkaufsliste:\n\\begin{itemize}\n  \\item Brot\n  \\item Obst\n  \\begin{itemize}\n    \\item Äpfel\n    \\item Bananen\n  \\end{itemize}\n  \\item Milch\n\\end{itemize}\nReihenfolge beim Backen:\n\\begin{enumerate}\n  \\item Zutaten wiegen\n  \\item Teig kneten\n  \\item Backen\n\\end{enumerate}\n\\end{document}"},
+  {id:"a5",name:"5 · Tabelle",
+   auftrag:"Baue die Tabelle nach: drei Spalten (links, zentriert, rechts), senkrechte Linien, waagrechte Linien oben, unter der Kopfzeile und unten. Die Kopfzeile ist fett.",
+   start:"\\documentclass{article}\n\\begin{document}\n\n\\end{document}",
+   ziel:"\\documentclass{article}\n\\begin{document}\n\\begin{tabular}{|l|c|r|}\n  \\hline\n  \\textbf{Fach} & \\textbf{Note} & \\textbf{Punkte} \\\\\n  \\hline\n  Informatik & 1 & 15 \\\\\n  Englisch & 2 & 12 \\\\\n  \\hline\n\\end{tabular}\n\\end{document}"},
+  {id:"a6",name:"6 · Bild",
+   auftrag:"Füge das Bild <code>katze.jpg</code> in halber Textbreite ein, zentriert und mit der Beschriftung „Meine Katze Luna“. Achte darauf, alle nötigen Pakete zu laden — die Fehlermeldungen helfen dir.",
+   start:"\\documentclass{article}\n\\usepackage[ngerman]{babel}\n\n\\begin{document}\n\n\\end{document}",
+   ziel:"\\documentclass{article}\n\\usepackage[ngerman]{babel}\n\\usepackage{graphicx}\n\n\\begin{document}\n\\begin{figure}[h]\n  \\centering\n  \\includegraphics[width=0.5\\textwidth]{katze.jpg}\n  \\caption{Meine Katze Luna}\n\\end{figure}\n\\end{document}"}
+];
+let aktuell=AUFGABEN[0], erledigt={};
+try{ erledigt=JSON.parse(localStorage.getItem("lx.erledigt")||"{}"); }catch(e){}
+const speicher={};
+function tabsRender(){
+  $("#wsTabs").innerHTML="";
+  AUFGABEN.forEach(a=>{
+    const b=document.createElement("button"); b.className="btn"+(a===aktuell?" aktiv":"")+(erledigt[a.id]?" fertig":""); b.textContent=a.name;
+    b.addEventListener("click",()=>{ speicher[aktuell.id]=$("#wsEditor").value; ladeAufgabe(a.id); });
+    $("#wsTabs").appendChild(b);
+  });
+}
+function ladeAufgabe(id,frisch){
+  if(aktuell&&aktuell.id!==id) speicher[aktuell.id]=$("#wsEditor").value;
+  aktuell=AUFGABEN.find(a=>a.id===id);
+  $("#wsAuftrag").innerHTML=aktuell.auftrag;
+  $("#wsEditor").value=(!frisch&&speicher[id]!=null)?speicher[id]:aktuell.start;
+  $("#wsStatus").textContent=""; $("#wsStatus").className="status";
+  $("#wsZielBox").hidden=!aktuell.ziel; $("#wsPruefen").hidden=!aktuell.ziel;
+  if(aktuell.ziel){ $("#wsZiel").innerHTML=latex(aktuell.ziel).html; $("#wsLoesung").textContent=aktuell.ziel; }
+  tabsRender(); werkAktualisieren();
+}
+function werkAktualisieren(){
+  const r=latex($("#wsEditor").value);
+  $("#wsVor").innerHTML=r.html||'<span style="color:#888">(noch keine Ausgabe)</span>';
+  const ul=$("#wsFehler");
+  if(r.errors.length){ ul.className="lerr"; ul.innerHTML=r.errors.map(e=>`<li><b>Zeile ${e.l}:</b> ${esc(e.m)}</li>`).join(""); }
+  else{ ul.className="lerr ok"; ul.innerHTML="<li style='border:0;background:none;padding:0'>✓ Keine Fehler beim Kompilieren</li>"; }
+  return r;
+}
+$("#wsEditor").addEventListener("input",()=>{ $("#wsStatus").textContent=""; werkAktualisieren(); });
+$("#wsReset").addEventListener("click",()=>{ delete speicher[aktuell.id]; ladeAufgabe(aktuell.id,true); });
+$("#wsLoesungUebernehmen").addEventListener("click",()=>{ $("#wsEditor").value=aktuell.ziel; werkAktualisieren(); });
+$("#wsPruefen").addEventListener("click",()=>{
+  const r=werkAktualisieren(), s=$("#wsStatus");
+  if(r.errors.length){ s.className="status bad"; s.textContent="Im Quelltext sind noch Fehler — behebe sie zuerst (von oben nach unten)."; return; }
+  const ziel=latex(aktuell.ziel);
+  if(kanon(r.html)===kanon(ziel.html)){
+    s.className="status ok"; s.textContent="Richtig! Deine Vorschau stimmt mit dem Ziel überein.";
+    erledigt[aktuell.id]=true; try{ localStorage.setItem("lx.erledigt",JSON.stringify(erledigt)); }catch(e){}
+    tabsRender();
+  } else { s.className="status bad"; s.textContent="Noch nicht ganz: Deine Vorschau unterscheidet sich vom Ziel. Vergleiche Text, Gliederung und Formatierung genau."; }
+});
+ladeAufgabe("frei",true);
+
+/* ---------- Selbsttest ---------- */
+const TEST=[
+  {q:"Welche Endung hat eine LaTeX-Quelltextdatei?",o:[".pdf",".tex",".docx",".txt (nur so)"],a:1,w:"Der Quelltext liegt in einer .tex-Datei; der Compiler erzeugt daraus das PDF."},
+  {q:"Was passiert beim Kompilieren?",o:["Der Quelltext wird gelöscht","Aus dem Quelltext wird ein fertiges PDF erzeugt","Das Dokument wird gedruckt","Der Text wird übersetzt"],a:1,w:"Kompilieren = aus Quelltext das Dokument (PDF) setzen."},
+  {q:"Wie schreibst du ein Prozentzeichen, das im Text erscheint?",o:["%","\\%","/%","%%"],a:1,w:"Ein einfaches % leitet einen Kommentar ein. Mit Backslash — \\% — wird es gedruckt."},
+  {q:"Welcher Befehl erzeugt eine nummerierte Überschrift zweiter Ebene (z. B. 1.1)?",o:["\\section{…}","\\subsection{…}","\\textbf{…}","\\title{…}"],a:1,w:"\\section = Ebene 1, \\subsection = Ebene 2, \\subsubsection = Ebene 3."},
+  {q:"Wie machst du ein Wort fett?",o:["\\bold{Wort}","\\textbf{Wort}","\\fett{Wort}","*Wort*"],a:1,w:"\\textbf{…} setzt Text fett (bold face)."},
+  {q:"Welche Umgebung erzeugt eine <em>nummerierte</em> Liste?",o:["itemize","enumerate","description","table"],a:1,w:"enumerate nummeriert, itemize nutzt Aufzählungspunkte."},
+  {q:"Eine Tabelle hat die Spaltenangabe <code>{|l|c|r|}</code>. Wie viele Spalten hat sie, und wie viele &amp; braucht eine volle Zeile?",o:["3 Spalten, 3 &amp;","3 Spalten, 2 &amp;","4 Spalten, 3 &amp;","2 Spalten, 1 &amp;"],a:1,w:"Die drei Buchstaben l, c, r sind drei Spalten; die senkrechten Linien zählen nicht. Zwischen drei Zellen stehen zwei &."},
+  {q:"Welches Paket brauchst du für <code>\\includegraphics</code>?",o:["babel","booktabs","graphicx","amsmath"],a:2,w:"graphicx stellt \\includegraphics bereit. Ohne das Paket meldet LaTeX „Undefined control sequence“."},
+  {q:"Was bedeutet die Fehlermeldung „Undefined control sequence“?",o:["Der Text ist zu lang","Ein Befehl ist unbekannt — Tippfehler oder ein Paket fehlt","Das Bild ist zu groß","Es fehlt ein Absatz"],a:1,w:"LaTeX kennt den genannten Befehl nicht. Prüfe die Schreibweise und die geladenen Pakete."},
+  {q:"Wozu dient <code>\\caption{…}</code> in einer figure- oder table-Umgebung?",o:["Es färbt das Bild ein","Es erzeugt eine Beschriftung mit automatischer Nummer","Es zentriert die Tabelle","Es lädt die Datei"],a:1,w:"\\caption liefert „Abbildung n: …“ bzw. „Tabelle n: …“ mit fortlaufender Nummer."}
+];
+(function(){
+  const box=$("#test"); let richtig=0, fertig=0;
+  TEST.forEach((f,idx)=>{
+    const d=document.createElement("div"); d.className="frage";
+    d.innerHTML=`<p class="q">${idx+1}. ${f.q}</p>`+f.o.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join("")+`<p class="rueck" hidden></p>`;
+    d.addEventListener("click",e=>{
+      const b=e.target.closest(".opt"); if(!b||b.disabled) return;
+      const ok=+b.dataset.i===f.a; if(ok) richtig++; fertig++;
+      d.querySelectorAll(".opt").forEach(o=>{ o.disabled=true; if(+o.dataset.i===f.a) o.classList.add("richtig"); else if(o===b) o.classList.add("falsch"); });
+      const r=d.querySelector(".rueck"); r.hidden=false; r.textContent=(ok?"Richtig. ":"Nicht ganz. ")+f.w;
+      if(fertig===TEST.length){
+        const e2=$("#testErg"); e2.hidden=false;
+        e2.innerHTML=`<p class="punkte" style="margin:0 0 6px">${richtig} von ${TEST.length} richtig</p><p style="margin:0">${richtig===TEST.length?"Ausgezeichnet — du kannst mit LaTeX loslegen!":richtig>=7?"Gut! Schau dir die rot markierten Fragen noch einmal an.":"Lies die Abschnitte noch einmal und übe in der Werkstatt — dann versuche den Test erneut (Seite neu laden)."}</p>`;
+      }
+    });
+    box.appendChild(d);
+  });
+})();
+</script>
+</body>
+</html>

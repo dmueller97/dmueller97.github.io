@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Formale Sprachen — Syntax und Semantik</title>
+<style>
+:root{
+  --bg:#0E1A1C; --panel:#142528; --panel2:#0F1F22; --line:#23393E; --line2:#2E4A50;
+  --ink:#DFEAEB; --ink2:#9FB6B9; --muted:#6F8A8F;
+  --brand:#2FB3A0; --hi:#FFC24B; --ok:#58C08C; --bad:#E4573D; --r:12px;
+}
+[data-theme="light"]{
+  --bg:#F2F4F3; --panel:#FFFFFF; --panel2:#F7F9F8; --line:#D8E0DF; --line2:#C2CFCE;
+  --ink:#14242A; --ink2:#4A6066; --muted:#7B8F94; --brand:#17897A; --hi:#C97A00;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;font-size:16px;line-height:1.6}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.mono,code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}
+code{background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:0 5px;font-size:.92em}
+
+header{position:sticky;top:0;z-index:30;background:var(--panel);border-bottom:1px solid var(--line);
+  padding:9px 16px 9px 130px;display:flex;align-items:center;gap:10px}
+header b{font-size:16px;flex:1;letter-spacing:-.2px}
+.btn{background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:9px 14px;min-height:42px}
+.btn:hover{border-color:var(--brand)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#06211E;font-weight:600}
+.btn.klein{padding:6px 11px;min-height:36px;font-size:14px}
+.btn:disabled{opacity:.4;cursor:default}
+details.inhalt{border-bottom:1px solid var(--line);background:var(--panel)}
+details.inhalt summary{padding:10px 16px;cursor:pointer;color:var(--ink2);font-size:14.5px;list-style:none}
+details.inhalt summary::-webkit-details-marker{display:none}
+details.inhalt summary::before{content:"☰  "}
+details.inhalt ol{margin:0;padding:0 16px 12px 34px;font-size:14.5px}
+details.inhalt a{color:var(--ink2);text-decoration:none;display:block;padding:4px 0}
+
+main{max-width:740px;margin:0 auto;padding:20px 16px 70px}
+h1{font-size:26px;margin:0 0 6px;letter-spacing:-.5px;line-height:1.25}
+h2{font-size:20px;margin:42px 0 10px;scroll-margin-top:60px;line-height:1.3}
+h3{font-size:16.5px;margin:22px 0 7px}
+p{margin:0 0 13px}
+p.lead{color:var(--ink2);margin-bottom:22px}
+ul,ol.liste{margin:0 0 13px;padding-left:21px}
+li{margin-bottom:5px}
+.merk{border-left:3px solid var(--brand);background:var(--panel);border-radius:0 var(--r) var(--r) 0;padding:12px 15px;margin:16px 0}
+.merk b{color:var(--brand)}
+.warnung{border-left:3px solid var(--bad);background:var(--panel);border-radius:0 var(--r) var(--r) 0;padding:12px 15px;margin:16px 0}
+.warnung b{color:var(--bad)}
+.karte{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:16px 0}
+.karte > h4{margin:0 0 8px;font-size:14px;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em}
+
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left}
+th{background:var(--panel2);color:var(--ink2);font-weight:650;font-size:12.5px}
+.scroll{overflow-x:auto}
+
+input[type=text],select{background:var(--panel2);border:1px solid var(--line2);border-radius:10px;
+  padding:9px 12px;min-height:42px;font-size:16px}
+input[type=text]{width:100%;font-family:ui-monospace,monospace}
+.zeile{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.zeile label{font-size:13px;color:var(--muted)}
+.fehler{color:var(--bad);font-size:14px;margin:4px 0 0}
+
+pre.baum,pre.code{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;
+  margin:10px 0;overflow-x:auto;font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:14px;line-height:1.55}
+.wortliste{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.wortliste span{background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:2px 9px;
+  font-family:ui-monospace,monospace;font-size:14px}
+
+/* Ableitung */
+.ableitung{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 13px;margin:10px 0;
+  font-family:ui-monospace,monospace;font-size:15px;line-height:1.9}
+.ableitung .pfeil{color:var(--muted)}
+.ableitung .nt{color:var(--hi);font-weight:700}
+.ableitung .ziel{color:var(--brand);font-weight:700}
+.regeln{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.regeln .btn{font-family:ui-monospace,monospace;font-size:14.5px}
+.status{min-height:1.6em;margin:6px 0;font-size:15px}
+.status.ok{color:var(--ok)} .status.bad{color:var(--bad)}
+
+/* Fragen */
+.frage{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:13px;margin-bottom:11px}
+.frage .q{font-weight:600;margin:0 0 9px}
+.frage .q .mono{font-weight:400}
+.opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line2);
+  border-radius:10px;padding:10px 13px;margin-bottom:7px;font-size:15px;min-height:44px}
+.opt:hover:not(:disabled){border-color:var(--brand)}
+.opt:disabled{cursor:default}
+.opt.richtig{border-color:var(--ok);background:rgba(88,192,140,.14)}
+.opt.falsch{border-color:var(--bad);background:rgba(228,87,61,.13)}
+.dreier{display:flex;gap:8px;flex-wrap:wrap}
+.dreier .opt{width:auto;flex:1 1 150px;text-align:center;margin:0}
+.rueck{font-size:14px;color:var(--ink2);margin-top:8px}
+.punkte{font-size:18px;font-weight:700;color:var(--hi)}
+
+details.loesung{margin-top:11px;border-top:1px solid var(--line);padding-top:9px}
+details.loesung summary{cursor:pointer;color:var(--brand);font-size:14px;font-weight:600;list-style:none}
+details.loesung summary::-webkit-details-marker{display:none}
+details.loesung summary::before{content:"▸ "}
+details.loesung[open] summary::before{content:"▾ "}
+details.loesung .inh{margin-top:9px;font-size:14.5px;color:var(--ink2)}
+.aufgabe{border:1px solid var(--line2);border-radius:var(--r);padding:14px;margin:18px 0;background:var(--panel2)}
+.aufgabe .kopf{font-weight:650;color:var(--hi);font-size:12.5px;margin-bottom:6px}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;padding:14px 16px;text-align:center}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body data-theme="dark">
+<a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
+
+<header><b>Formale Sprachen — Syntax und Semantik</b><button class="btn klein" id="theme">Hell</button></header>
+<details class="inhalt"><summary>Inhalt</summary><ol id="toc"></ol></details>
+
+<main>
+<h1>Formale Sprachen: Wie Regeln eine Sprache festlegen</h1>
+<p class="lead">Ein Computer versteht kein „ungefähr so gemeint“. Damit er Programme lesen kann, muss genau festgelegt sein,
+welche Zeichenfolgen erlaubt sind (<b>Syntax</b>) und was sie bedeuten (<b>Semantik</b>). In diesem Selbstlernkurs
+lernst du, wie man eine Sprache mit Regeln beschreibt — und du probierst es an Übungen zum Mitmachen aus.</p>
+
+<div class="merk"><b>So arbeitest du:</b> Lies jeden Abschnitt, probiere die Werkzeuge aus und löse die Aufgaben.
+Lösungen klappst du erst auf, wenn du selbst einen Versuch hattest. Am Ende wartet ein Selbsttest.</div>
+
+<!-- ================================================================= -->
+<h2 id="s1">1. Alphabet, Wort, Sprache</h2>
+<p>Bevor wir über Regeln sprechen, brauchen wir drei Begriffe:</p>
+<ul>
+  <li>Ein <b>Alphabet</b> Σ („Sigma“) ist eine endliche Menge von Zeichen. Beispiele: Σ = {0, 1} oder Σ = {a, b, c}.</li>
+  <li>Ein <b>Wort</b> ist eine endliche Folge von Zeichen aus dem Alphabet, z. B. <code>0110</code>. Das <b>leere Wort</b> ε hat keine Zeichen.</li>
+  <li>Eine <b>formale Sprache</b> ist eine Menge von Wörtern über einem Alphabet. Sie kann endlich oder unendlich sein.</li>
+</ul>
+<div class="merk"><b>Wichtig:</b> Auch eine Programmiersprache ist eine formale Sprache — die Menge aller Zeichenfolgen, die ein
+gültiges Programm ergeben. Und der Python-Interpreter ist der Prüfer, der entscheidet, ob ein Wort dazugehört.</div>
+
+<div class="karte">
+  <h4>Wörter-Werkstatt</h4>
+  <p style="margin-bottom:10px">Wähle ein Alphabet und eine Wortlänge — die Werkstatt zeigt dir <i>alle</i> Wörter dieser Länge.</p>
+  <div class="zeile">
+    <label>Alphabet Σ <select id="wwAlph"><option value="01">{0, 1}</option><option value="ab">{a, b}</option><option value="abc">{a, b, c}</option></select></label>
+    <label>Länge n <select id="wwLen"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+  </div>
+  <div id="wwAus"></div>
+</div>
+<p>Beobachtung: Bei <i>k</i> Zeichen im Alphabet gibt es genau <b><i>k</i><sup>n</sup></b> Wörter der Länge <i>n</i>.
+Die Menge <em>aller</em> Wörter beliebiger Länge schreibt man Σ* — sie ist unendlich groß. Eine Sprache ist immer eine
+<em>Teilmenge</em> von Σ*.</p>
+
+<!-- ================================================================= -->
+<h2 id="s2">2. Syntax und Semantik</h2>
+<p>Zwei Fragen muss man bei jedem Satz, jedem Programm, jeder Formel unterscheiden:</p>
+<table>
+  <tr><th>Syntax</th><th>Semantik</th></tr>
+  <tr><td>Die <b>Form</b>: Sind die Zeichen nach den Regeln richtig zusammengesetzt?</td><td>Die <b>Bedeutung</b>: Was bewirkt oder sagt das Ganze — und ergibt es Sinn?</td></tr>
+  <tr><td><code>print("Hallo"</code> — Klammer fehlt</td><td><code>x = 5 / 0</code> — Form ist richtig, aber die Rechnung geht nicht</td></tr>
+</table>
+<p>Ein berühmtes Beispiel aus der Sprachwissenschaft: <i>„Farblose grüne Ideen schlafen wütend.“</i> Der Satz ist
+grammatisch einwandfrei gebaut (Adjektive, Nomen, Verb, Adverb) — aber er hat keinen Sinn. Syntax stimmt, Semantik nicht.</p>
+<div class="warnung"><b>Merke:</b> Ein Programm kann syntaktisch fehlerfrei sein und trotzdem etwas Falsches tun.
+Den Syntaxfehler findet der Interpreter sofort. Den Semantikfehler findest du erst beim Testen.</div>
+
+<h3>Sortiere: Syntaxfehler, Semantikfehler oder alles in Ordnung?</h3>
+<div id="sortier"></div>
+<p id="sortierErg" class="status"></p>
+
+<!-- ================================================================= -->
+<h2 id="s3">3. Grammatiken: Regeln, die Wörter erzeugen</h2>
+<p>Statt alle Wörter einer Sprache aufzuzählen (bei unendlichen Sprachen unmöglich), beschreibt man sie durch eine
+<b>Grammatik</b>. Sie besteht aus vier Teilen:</p>
+<table>
+  <tr><th>Bestandteil</th><th>Bedeutung</th><th>Beispiel</th></tr>
+  <tr><td><b>Terminalsymbole</b></td><td>Zeichen des Alphabets — sie stehen am Ende im fertigen Wort</td><td><code>a</code>, <code>b</code></td></tr>
+  <tr><td><b>Nichtterminale</b></td><td>Platzhalter, die noch ersetzt werden müssen (meist Großbuchstaben)</td><td><code>S</code></td></tr>
+  <tr><td><b>Produktionsregeln</b></td><td>Ersetzungsvorschriften <code>links → rechts</code></td><td><code>S → aSb</code></td></tr>
+  <tr><td><b>Startsymbol</b></td><td>Hier beginnt jede Ableitung</td><td><code>S</code></td></tr>
+</table>
+<p>Ein Wort <b>gehört zur Sprache</b>, wenn man es aus dem Startsymbol durch wiederholtes Anwenden der Regeln
+<b>ableiten</b> kann. Den Ableitungsschritt schreibt man mit einem Doppelpfeil ⇒.</p>
+<div class="karte">
+  <h4>Beispiel</h4>
+  <p style="margin-bottom:6px">Grammatik mit den Regeln <code>S → aSb</code> und <code>S → ab</code>:</p>
+  <div class="ableitung">S <span class="pfeil">⇒</span> aSb <span class="pfeil">⇒</span> aaSbb <span class="pfeil">⇒</span> aaabbb</div>
+  <p style="margin:0">Zuerst zweimal die erste Regel, dann zum Schluss die zweite. Die erzeugte Sprache ist
+  {ab, aabb, aaabbb, …} — immer erst n-mal <code>a</code>, dann n-mal <code>b</code>.</p>
+</div>
+
+<h3>Leite das Wort selbst ab</h3>
+<p>Du siehst immer das <em>am weitesten links stehende</em> Nichtterminal. Wähle die Regel, mit der du es ersetzen willst.
+Ziel ist das angegebene Wort. Gerät man in eine Sackgasse, kannst du einen Schritt zurückgehen.</p>
+<div class="karte">
+  <div class="zeile"><label>Aufgabe <select id="abGram"></select></label></div>
+  <p id="abInfo" style="color:var(--ink2);margin-bottom:6px"></p>
+  <div id="abFolge" class="ableitung"></div>
+  <div id="abRegeln" class="regeln"></div>
+  <p id="abStatus" class="status"></p>
+  <div class="zeile"><button class="btn klein" id="abZurueck">Schritt zurück</button><button class="btn klein" id="abNeu">Neu beginnen</button></div>
+</div>
+
+<h3>Grammatik und Bedeutung: der Satz-Generator</h3>
+<p>Eine Grammatik kann auch Sätze erzeugen. Diese hier kennt fünf Nomen und fünf Verben — und wählt zufällig aus:</p>
+<pre class="code">Satz  →  NP Verb NP
+NP    →  die Katze | die Lehrerin | die Tafel | das Buch | das Handy
+Verb  →  sieht | mag | repariert | isst | programmiert</pre>
+<div class="karte">
+  <div class="zeile"><button class="btn primary" id="sgNeu">Satz erzeugen</button><button class="btn klein" id="sgLeer">Liste leeren</button></div>
+  <div id="sgListe"></div>
+</div>
+<div class="merk"><b>Beobachtung:</b> Jeder erzeugte Satz ist <em>syntaktisch</em> korrekt — er lässt sich aus der Grammatik ableiten.
+Aber „Das Handy isst die Tafel“ ist <em>semantisch</em> Unsinn. Die Grammatik kennt nur Form, keine Bedeutung.</div>
+
+<!-- ================================================================= -->
+<h2 id="s4">4. Backus-Naur-Form (BNF)</h2>
+<p>Für Programmiersprachen schreibt man Grammatiken in einer einheitlichen Schreibweise auf, der <b>Backus-Naur-Form</b>.
+Sie ist die Sprache, in der Sprachen beschrieben werden:</p>
+<table>
+  <tr><th>Zeichen</th><th>Bedeutung</th></tr>
+  <tr><td><code>&lt;Name&gt;</code></td><td>Nichtterminal (in spitzen Klammern)</td></tr>
+  <tr><td><code>::=</code></td><td>„wird definiert als“ (entspricht dem Pfeil →)</td></tr>
+  <tr><td><code>|</code></td><td>„oder“ — mehrere Möglichkeiten für dieselbe linke Seite</td></tr>
+  <tr><td><code>"x"</code> bzw. ohne Klammern</td><td>Terminalsymbol, wörtlich zu schreiben</td></tr>
+</table>
+<p>Beispiel: natürliche Zahlen. Eine Zahl besteht aus mindestens einer Ziffer — entweder <em>einer</em> Ziffer oder einer Ziffer,
+gefolgt von einer weiteren Zahl (das ist die Wiederholung durch <b>Rekursion</b>):</p>
+<pre class="code">&lt;Zahl&gt;   ::= &lt;Ziffer&gt; | &lt;Ziffer&gt; &lt;Zahl&gt;
+&lt;Ziffer&gt; ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9</pre>
+<p>Und der Name einer Variablen in Python (Buchstabe zuerst, danach Buchstaben oder Ziffern):</p>
+<pre class="code">&lt;Name&gt;      ::= &lt;Buchstabe&gt; | &lt;Buchstabe&gt; &lt;Rest&gt;
+&lt;Rest&gt;      ::= &lt;Zeichen&gt; | &lt;Zeichen&gt; &lt;Rest&gt;
+&lt;Zeichen&gt;   ::= &lt;Buchstabe&gt; | &lt;Ziffer&gt;
+&lt;Buchstabe&gt; ::= a | b | c | … | z</pre>
+<div class="merk"><b>EBNF-Kurzschreibweise:</b> Damit man nicht für jede Wiederholung eine rekursive Regel braucht, erweitert die
+<em>EBNF</em> die BNF: <code>{ … }</code> heißt „beliebig oft (auch null Mal)“, <code>[ … ]</code> heißt „optional“.
+Dann genügt: <code>&lt;Name&gt; ::= &lt;Buchstabe&gt; { &lt;Buchstabe&gt; | &lt;Ziffer&gt; }</code></div>
+
+<!-- ================================================================= -->
+<h2 id="s5">5. Der Syntaxbaum legt die Bedeutung fest</h2>
+<p>Bei einer Ableitung entsteht nebenbei ein <b>Syntaxbaum</b>: Er zeigt, wie das Wort aus den Regeln aufgebaut ist.
+Das ist mehr als eine Spielerei — bei Rechenausdrücken entscheidet der Baum über die <em>Bedeutung</em>.</p>
+<p>Was ergibt <code>3 + 4 * 5</code>? Punkt vor Strich — <b>23</b>. Aber warum weiß der Rechner das? Weil die Grammatik
+Multiplikation „tiefer“ im Baum einbaut, sodass sie zuerst ausgewertet wird:</p>
+<pre class="code">&lt;Ausdruck&gt; ::= &lt;Term&gt; { ("+" | "-") &lt;Term&gt; }
+&lt;Term&gt;     ::= &lt;Faktor&gt; { ("*" | "/") &lt;Faktor&gt; }
+&lt;Faktor&gt;   ::= &lt;Zahl&gt; | "(" &lt;Ausdruck&gt; ")" | "-" &lt;Faktor&gt;</pre>
+<p>Die Regeln sind so gebaut, dass <code>*</code> und <code>/</code> enger „binden“ als <code>+</code> und <code>-</code>.
+So legt die <em>Syntax</em> fest, welche <em>Semantik</em> herauskommt.</p>
+
+<div class="karte">
+  <h4>Ausdrucks-Labor</h4>
+  <p style="margin-bottom:8px">Tippe einen Rechenausdruck ein. Das Labor prüft ihn nach der Grammatik oben, zeichnet den Syntaxbaum
+  und berechnet den Wert.</p>
+  <input type="text" id="ausdruck" value="3 + 4 * 5" spellcheck="false" autocomplete="off" aria-label="Rechenausdruck">
+  <div class="zeile" style="margin-top:8px">
+    <button class="btn klein" data-bsp="3 + 4 * 5">3 + 4 * 5</button>
+    <button class="btn klein" data-bsp="(3 + 4) * 5">(3 + 4) * 5</button>
+    <button class="btn klein" data-bsp="10 - 4 - 3">10 - 4 - 3</button>
+    <button class="btn klein" data-bsp="3 + * 4">3 + * 4</button>
+    <button class="btn klein" data-bsp="2 * (3 + 4">2 * (3 + 4</button>
+    <button class="btn klein" data-bsp="8 / (4 - 4)">8 / (4 - 4)</button>
+  </div>
+  <div id="ausErg"></div>
+</div>
+<div class="merk"><b>Vergleiche:</b> <code>3 + 4 * 5</code> und <code>(3 + 4) * 5</code> haben dieselben Zeichen (bis auf die Klammern),
+aber einen anderen Baum — und damit einen anderen Wert. Bei <code>3 + * 4</code> gibt es gar keinen Baum: Syntaxfehler.
+Bei <code>8 / (4 - 4)</code> gibt es einen Baum, aber die Semantik scheitert: Teilen durch 0 ist nicht definiert.</div>
+
+<!-- ================================================================= -->
+<h2 id="s6">6. Aufgaben</h2>
+
+<div class="aufgabe"><div class="kopf">AUFGABE 1 · Wörter zählen</div>
+<p>Gegeben ist das Alphabet Σ = {a, b}. (a) Schreibe alle Wörter der Länge 2 auf. (b) Wie viele Wörter der Länge 5 gibt es?</p>
+<details class="loesung"><summary>Lösung anzeigen</summary><div class="inh">
+(a) aa, ab, ba, bb — das sind 2² = 4 Wörter.<br>(b) 2⁵ = 32 Wörter. Allgemein: |Σ|ⁿ.</div></details></div>
+
+<div class="aufgabe"><div class="kopf">AUFGABE 2 · Syntax oder Semantik?</div>
+<p>Entscheide bei jedem Beispiel, ob ein Syntax- oder Semantikfehler vorliegt: (a) <code>if x == 3 print(x)</code> (in Python)
+(b) <code>Den Hund die Katze jagt</code> (c) <code>Der Kühlschrank liest ein Buch.</code></p>
+<details class="loesung"><summary>Lösung anzeigen</summary><div class="inh">
+(a) Syntaxfehler: Es fehlt der Doppelpunkt nach der Bedingung.<br>
+(b) Syntaxfehler: Die Wortstellung passt nicht zu den Regeln des Satzbaus (und die Fälle stimmen nicht).<br>
+(c) Semantikfehler: Der Satz ist korrekt gebaut, aber ein Kühlschrank kann nichts lesen.</div></details></div>
+
+<div class="aufgabe"><div class="kopf">AUFGABE 3 · Grammatik entwerfen</div>
+<p>Entwirf eine Grammatik für alle nichtleeren Wörter über Σ = {0, 1}, die <b>mit einer 1 enden</b> (z. B. <code>1</code>, <code>01</code>, <code>1101</code>).</p>
+<details class="loesung"><summary>Lösung anzeigen</summary><div class="inh">
+<code>S → 0S | 1S | 1</code><br>
+Solange man will, hängt man beliebig viele 0 oder 1 vorn an (die ersten beiden Regeln). Mit der Regel <code>S → 1</code> beendet man
+die Ableitung — und das Wort endet garantiert mit einer 1.
+Ableitung von <code>1101</code>: S ⇒ 1S ⇒ 11S ⇒ 110S ⇒ 1101.</div></details></div>
+
+<div class="aufgabe"><div class="kopf">AUFGABE 4 · BNF schreiben</div>
+<p>Schreibe eine BNF für eine deutsche <b>Postleitzahl</b> (genau fünf Ziffern).</p>
+<details class="loesung"><summary>Lösung anzeigen</summary><div class="inh">
+<code>&lt;PLZ&gt; ::= &lt;Ziffer&gt;&lt;Ziffer&gt;&lt;Ziffer&gt;&lt;Ziffer&gt;&lt;Ziffer&gt;</code><br>
+<code>&lt;Ziffer&gt; ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9</code><br>
+Hier braucht man keine Rekursion, weil die Länge fest ist.</div></details></div>
+
+<div class="aufgabe"><div class="kopf">AUFGABE 5 · Syntaxbaum lesen</div>
+<p>Gib in das Ausdrucks-Labor <code>2 * 3 + 4 * 5</code> ein. Welche Teilrechnungen werden zuerst ausgeführt, und was ist das Ergebnis?</p>
+<details class="loesung"><summary>Lösung anzeigen</summary><div class="inh">
+Zuerst <code>2 * 3 = 6</code> und <code>4 * 5 = 20</code>, danach <code>6 + 20 = 26</code>. Beide Multiplikationen stehen im Baum <em>unterhalb</em> des Pluszeichens
+und werden deshalb vor der Addition berechnet.</div></details></div>
+
+<!-- ================================================================= -->
+<h2 id="s7">7. Selbsttest</h2>
+<p>Neun Fragen zum ganzen Kurs. Nach jeder Antwort siehst du sofort die Begründung.</p>
+<div id="test"></div>
+<div id="testErg" class="karte" hidden></div>
+
+<div class="merk"><b>Das Wichtigste in Kürze:</b>
+<ul style="margin:6px 0 0">
+<li>Eine <b>formale Sprache</b> ist eine Menge von Wörtern über einem Alphabet.</li>
+<li><b>Syntax</b> = erlaubte Form, <b>Semantik</b> = Bedeutung. Beides kann unabhängig voneinander falsch sein.</li>
+<li>Eine <b>Grammatik</b> (Terminale, Nichtterminale, Regeln, Startsymbol) erzeugt eine Sprache durch <b>Ableitung</b>.</li>
+<li>In der <b>BNF/EBNF</b> schreibt man Grammatiken einheitlich auf.</li>
+<li>Der <b>Syntaxbaum</b> zeigt den Aufbau und legt bei Ausdrücken die Auswertungsreihenfolge fest.</li>
+</ul></div>
+</main>
+<footer>Selbstlernkurs Informatik · Klasse 10 · Formale Sprachen</footer>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const mischen=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+/* ---------- Kopf ---------- */
+(function(){
+  const ol=$("#toc");
+  $$("h2[id]").forEach(h=>{ const li=document.createElement("li");
+    li.innerHTML=`<a href="#${h.id}">${h.textContent.replace(/^\d+\.\s*/,"")}</a>`; ol.appendChild(li); });
+  $("details.inhalt").addEventListener("click",e=>{ if(e.target.tagName==="A") $("details.inhalt").open=false; });
+  $("#theme").addEventListener("click",()=>{
+    const d=document.body.dataset.theme==="dark"?"light":"dark";
+    document.body.dataset.theme=d; $("#theme").textContent=d==="dark"?"Hell":"Dunkel";
+    try{ localStorage.setItem("fs.theme",d); }catch(e){}
+  });
+  try{ const t=localStorage.getItem("fs.theme");
+    if(t){ document.body.dataset.theme=t; $("#theme").textContent=t==="dark"?"Hell":"Dunkel"; } }catch(e){}
+})();
+
+/* ================= 1. Wörter-Werkstatt ================= */
+function woerterWerkstatt(){
+  const alph=$("#wwAlph").value.split(""), n=+$("#wwLen").value;
+  let liste=[""];
+  for(let i=0;i<n;i++) liste=liste.flatMap(w=>alph.map(a=>w+a));
+  const anzahl=Math.pow(alph.length,n);
+  $("#wwAus").innerHTML =
+    `<p style="margin:0 0 4px">${alph.length}<sup>${n}</sup> = <b>${anzahl}</b> ${anzahl===1?"Wort":"Wörter"}${n===0?" — nur das leere Wort ε":""}</p>`+
+    `<div class="wortliste">${liste.map(w=>`<span>${w===""?"ε":w}</span>`).join("")}</div>`;
+}
+$("#wwAlph").addEventListener("change",woerterWerkstatt);
+$("#wwLen").addEventListener("change",woerterWerkstatt);
+woerterWerkstatt();
+
+/* ================= 2. Sortierspiel ================= */
+const SORT=[
+  {t:'print("Hallo"',code:true,a:"syn",w:"Die schließende Klammer fehlt — Syntaxfehler."},
+  {t:"x = 5 / 0",code:true,a:"sem",w:"Die Form ist in Ordnung, aber Teilen durch 0 ist nicht definiert. Das ist ein Semantikfehler (Laufzeitfehler)."},
+  {t:'"Hallo" + 5',code:true,a:"sem",w:"Syntaktisch ein gültiger Ausdruck. Aber Text und Zahl lassen sich nicht addieren — Semantikfehler (Typfehler)."},
+  {t:"for i in range(3) print(i)",code:true,a:"syn",w:"Es fehlt der Doppelpunkt nach dem Schleifenkopf — Syntaxfehler."},
+  {t:"Der Tisch trinkt die Farbe.",a:"sem",w:"Der Satz ist grammatisch richtig gebaut, aber inhaltlich sinnlos — Semantikfehler."},
+  {t:"Ich gehe Schule in die.",a:"syn",w:"Die Wortstellung verletzt die Satzbau-Regeln — Syntaxfehler."},
+  {t:"x = 3 + 4",code:true,a:"ok",w:"Form und Bedeutung sind in Ordnung: x bekommt den Wert 7."},
+  {t:"Die Katze schläft auf dem Sofa.",a:"ok",w:"Sinnvoller, richtig gebauter Satz."}
+];
+(function(){
+  const box=$("#sortier"); let richtig=0, beantwortet=0;
+  mischen(SORT).forEach(k=>{
+    const d=document.createElement("div"); d.className="frage";
+    d.innerHTML=`<p class="q ${k.code?"mono":""}">${esc(k.t)}</p>
+      <div class="dreier"><button class="opt" data-a="syn">Syntaxfehler</button><button class="opt" data-a="sem">Semantikfehler</button><button class="opt" data-a="ok">alles in Ordnung</button></div>
+      <p class="rueck" hidden></p>`;
+    d.addEventListener("click",e=>{
+      const b=e.target.closest(".opt"); if(!b||b.disabled) return;
+      const ok=b.dataset.a===k.a; if(ok) richtig++; beantwortet++;
+      d.querySelectorAll(".opt").forEach(o=>{ o.disabled=true; if(o.dataset.a===k.a) o.classList.add("richtig"); else if(o===b) o.classList.add("falsch"); });
+      const r=d.querySelector(".rueck"); r.hidden=false; r.textContent=(ok?"Richtig. ":"Nicht ganz. ")+k.w;
+      if(beantwortet===SORT.length){ const s=$("#sortierErg"); s.className="status "+(richtig>=6?"ok":"bad"); s.textContent=`${richtig} von ${SORT.length} richtig.`; }
+    });
+    box.appendChild(d);
+  });
+})();
+
+/* ================= 3. Ableitungs-Spiel ================= */
+const GRAMS=[
+  {name:"G₁ — erst a, dann gleich viele b", start:"S", regeln:{S:[["a","S","b"],["a","b"]]},
+   ziel:["a","a","a","b","b","b"], info:"Regeln: S → aSb | ab. Leite das Wort aaabbb ab."},
+  {name:"G₂ — Binärzahlen", start:"Z", regeln:{Z:[["D","Z"],["D"]],D:[["0"],["1"]]},
+   ziel:["1","0","1","1"], info:"Regeln: Z → DZ | D und D → 0 | 1. Leite das Wort 1011 ab."},
+  {name:"G₃ — einfacher Satz", start:"S", regeln:{S:[["N","V","N"]],N:[["die Katze"],["das Buch"],["die Tafel"]],V:[["sieht"],["mag"]]},
+   ziel:["die Katze","mag","das Buch"], info:"Regeln: S → N V N, N → die Katze | das Buch | die Tafel, V → sieht | mag. Leite „die Katze mag das Buch“ ab."}
+];
+let abG=null, abForm=[], abVerlauf=[];
+function istNT(g,s){ return Object.prototype.hasOwnProperty.call(g.regeln,s); }
+function abZeige(form,g){ const einzeln=form.every(t=>t.length===1); return form.map(t=>istNT(g,t)?`<span class="nt">${esc(t)}</span>`:esc(t)).join(einzeln?"":" "); }
+function abSackgasse(form,g){
+  const i=form.findIndex(t=>istNT(g,t)), pref=i<0?form:form.slice(0,i);
+  if(pref.length>g.ziel.length) return true;
+  if(pref.some((t,k)=>t!==g.ziel[k])) return true;
+  if(i<0) return form.length!==g.ziel.length;
+  return form.filter(t=>!istNT(g,t)).length>g.ziel.length;
+}
+function abRender(){
+  const g=abG, form=abForm[abForm.length-1];
+  $("#abFolge").innerHTML=abForm.map(f=>abZeige(f,g)).join(' <span class="pfeil">⇒</span> ');
+  const i=form.findIndex(t=>istNT(g,t)), st=$("#abStatus"), rg=$("#abRegeln");
+  rg.innerHTML=""; $("#abZurueck").disabled=abForm.length<2;
+  if(i<0){
+    const ok=!abSackgasse(form,g);
+    st.className="status "+(ok?"ok":"bad");
+    st.textContent=ok?"Geschafft! Du hast das Wort abgeleitet.":"Das ist ein anderes Wort als das Ziel. Geh einen Schritt zurück.";
+    return;
+  }
+  if(abSackgasse(form,g)){ st.className="status bad"; st.textContent="Sackgasse: Von hier aus lässt sich das Zielwort nicht mehr erreichen. Geh einen Schritt zurück."; return; }
+  st.className="status"; st.textContent=`Nächstes Nichtterminal: ${form[i]} — wähle eine Regel.`;
+  g.regeln[form[i]].forEach(alt=>{
+    const b=document.createElement("button"); b.className="btn";
+    b.textContent=`${form[i]} → ${alt.every(t=>t.length===1)?alt.join(""):alt.join(" ")}`;
+    b.addEventListener("click",()=>{ abForm.push([...form.slice(0,i),...alt,...form.slice(i+1)]); abRender(); });
+    rg.appendChild(b);
+  });
+}
+function abStart(){ abG=GRAMS[+$("#abGram").value]; abForm=[[abG.start]]; $("#abInfo").textContent=abG.info; abRender(); }
+GRAMS.forEach((g,i)=>{ const o=document.createElement("option"); o.value=i; o.textContent=g.name; $("#abGram").appendChild(o); });
+$("#abGram").addEventListener("change",abStart);
+$("#abNeu").addEventListener("click",abStart);
+$("#abZurueck").addEventListener("click",()=>{ if(abForm.length>1){ abForm.pop(); abRender(); } });
+abStart();
+
+/* ================= Satz-Generator ================= */
+const NP=["die Katze","die Lehrerin","die Tafel","das Buch","das Handy"], VB=["sieht","mag","repariert","isst","programmiert"];
+const wahl=a=>a[Math.floor(Math.random()*a.length)];
+$("#sgNeu").addEventListener("click",()=>{
+  const a=wahl(NP), v=wahl(VB), b=wahl(NP);
+  const s=(a+" "+v+" "+b+".").replace(/^./,c=>c.toUpperCase());
+  const d=document.createElement("div"); d.className="ableitung";
+  d.innerHTML=`${esc(s)}<br><span class="pfeil" style="font-size:13px">Satz ⇒ NP Verb NP ⇒ ${esc(a)} Verb NP ⇒ ${esc(a)} ${esc(v)} NP ⇒ ${esc(a)} ${esc(v)} ${esc(b)}</span>`;
+  $("#sgListe").prepend(d);
+});
+$("#sgLeer").addEventListener("click",()=>{ $("#sgListe").innerHTML=""; });
+
+/* ================= 5. Ausdrucks-Labor ================= */
+function parseAusdruck(src){
+  const tok=[]; let i=0;
+  while(i<src.length){
+    const c=src[i];
+    if(/\s/.test(c)){ i++; continue; }
+    if(/[0-9.]/.test(c)){ let j=i; while(j<src.length&&/[0-9.]/.test(src[j])) j++; const v=src.slice(i,j);
+      if(!/^\d+(\.\d+)?$/.test(v)) throw {m:`„${v}“ ist keine gültige Zahl`,p:i};
+      tok.push({k:"num",v:parseFloat(v),p:i}); i=j; continue; }
+    if("+-*/()".includes(c)){ tok.push({k:c,p:i}); i++; continue; }
+    throw {m:`Das Zeichen „${c}“ gehört nicht zum Alphabet dieser Sprache`,p:i};
+  }
+  let n=0; const peek=()=>tok[n], ende=src.length;
+  const fehlt=(was)=>{ const t=peek(); throw {m:t?`Unerwartet: „${t.k==="num"?t.v:t.k}“ — erwartet wurde ${was}`:`Ausdruck unvollständig — erwartet wurde ${was}`,p:t?t.p:ende}; };
+  function ausdruck(){ let l=term(); while(peek()&&(peek().k==="+"||peek().k==="-")){ const op=tok[n++].k; l={t:"bin",op,l,r:term()}; } return l; }
+  function term(){ let l=faktor(); while(peek()&&(peek().k==="*"||peek().k==="/")){ const op=tok[n++].k; l={t:"bin",op,l,r:faktor()}; } return l; }
+  function faktor(){
+    const t=peek();
+    if(!t) fehlt("eine Zahl, „(“ oder „-“");
+    if(t.k==="num"){ n++; return {t:"num",v:t.v}; }
+    if(t.k==="-"){ n++; return {t:"neg",e:faktor()}; }
+    if(t.k==="("){ n++; const e=ausdruck(); if(!peek()||peek().k!==")") fehlt("„)“"); n++; return e; }
+    fehlt("eine Zahl, „(“ oder „-“");
+  }
+  if(!tok.length) throw {m:"Leere Eingabe",p:0};
+  const e=ausdruck();
+  if(n<tok.length) fehlt("„+“, „-“, „*“, „/“ oder das Ende");
+  return e;
+}
+function wert(e,schritte){
+  if(e.t==="num") return e.v;
+  if(e.t==="neg") return -wert(e.e,schritte);
+  const a=wert(e.l,schritte), b=wert(e.r,schritte);
+  if(e.op==="/"&&b===0) throw {sem:true,m:`${fmt(a)} / 0`};
+  const r=e.op==="+"?a+b:e.op==="-"?a-b:e.op==="*"?a*b:a/b;
+  schritte.push(`${fmt(a)} ${e.op} ${fmt(b)} = ${fmt(r)}`); return r;
+}
+const fmt=x=>String(Math.round(x*1e6)/1e6);
+function baumText(e,pre="",letzter=true,wurzel=true){
+  const label=e.t==="num"?fmt(e.v):e.t==="neg"?"− (Vorzeichen)":e.op;
+  const kinder=e.t==="bin"?[e.l,e.r]:e.t==="neg"?[e.e]:[];
+  let s=wurzel?label+"\n":pre+(letzter?"└─ ":"├─ ")+label+"\n";
+  const np=wurzel?"":pre+(letzter?"   ":"│  ");
+  kinder.forEach((k,i)=>{ s+=baumText(k,np,i===kinder.length-1,false); });
+  return s;
+}
+function ausdruckPruefen(){
+  const src=$("#ausdruck").value, out=$("#ausErg");
+  try{
+    const b=parseAusdruck(src); const sch=[];
+    let w, semFehler=null;
+    try{ w=wert(b,sch); }catch(x){ if(x.sem) semFehler=x; else throw x; }
+    let h=`<p class="status ok" style="margin:10px 0 4px">✓ Syntax in Ordnung — der Ausdruck lässt sich aus der Grammatik ableiten.</p>
+      <p style="margin:6px 0 2px;color:var(--ink2);font-size:14px">Syntaxbaum:</p><pre class="baum">${esc(baumText(b))}</pre>`;
+    if(semFehler) h+=`<p class="status bad">✗ Semantikfehler: Bei ${esc(semFehler.m)} ist das Ergebnis nicht definiert.</p>`;
+    else{
+      if(sch.length) h+=`<p style="margin:6px 0 2px;color:var(--ink2);font-size:14px">Auswertung von unten nach oben:</p><pre class="baum">${esc(sch.join("\n"))}</pre>`;
+      h+=`<p style="margin:6px 0 0">Wert: <span class="punkte">${fmt(w)}</span></p>`;
+    }
+    out.innerHTML=h;
+  }catch(x){
+    const marker=x.p!=null?`<pre class="baum">${esc(src)}\n${" ".repeat(x.p)}^</pre>`:"";
+    out.innerHTML=`<p class="status bad" style="margin:10px 0 4px">✗ Syntaxfehler: ${esc(x.m||"Ungültiger Ausdruck")}</p>${marker}`;
+  }
+}
+$("#ausdruck").addEventListener("input",ausdruckPruefen);
+$$("[data-bsp]").forEach(b=>b.addEventListener("click",()=>{ $("#ausdruck").value=b.dataset.bsp; ausdruckPruefen(); }));
+ausdruckPruefen();
+
+/* ================= 7. Selbsttest ================= */
+const TEST=[
+  {q:"Was ist eine formale Sprache?",o:["Eine Menge von Wörtern über einem Alphabet","Eine Fremdsprache mit Vokabelliste","Nur eine Programmiersprache wie Python","Ein einzelner Satz"],a:0,w:"Eine formale Sprache ist eine (endliche oder unendliche) Menge von Wörtern über einem Alphabet."},
+  {q:"Σ = {a, b}. Wie viele Wörter der Länge 3 gibt es?",o:["6","8","9","3"],a:1,w:"2 Zeichen, 3 Stellen: 2³ = 8 Wörter."},
+  {q:"Womit beschäftigt sich die Syntax?",o:["Mit dem Aufbau und der erlaubten Form","Mit der Bedeutung des Inhalts","Mit der Geschwindigkeit eines Programms","Mit dem Speicherplatz"],a:0,w:"Syntax = Form. Die Bedeutung gehört zur Semantik."},
+  {q:"<span class=\"mono\">x = 10 / 0</span> — was trifft zu?",o:["Syntaxfehler","Syntax richtig, Semantik problematisch","Beides in Ordnung","Beides falsch"],a:1,w:"Der Ausdruck ist korrekt gebaut, aber die Division durch 0 ist nicht definiert."},
+  {q:"Was sind Terminalsymbole?",o:["Platzhalter, die noch ersetzt werden","Zeichen, die im fertigen Wort stehen und nicht weiter ersetzt werden","Die Regeln einer Grammatik","Das Startsymbol"],a:1,w:"Terminale sind die „Endstücke“; Nichtterminale sind die Platzhalter."},
+  {q:"Regeln: <span class=\"mono\">S → aSb | ab</span>. Welches Wort gehört zur Sprache?",o:["aab","abab","aabb","ba"],a:2,w:"S ⇒ aSb ⇒ aabb. Die anderen Wörter lassen sich nicht ableiten."},
+  {q:"Was bedeutet <span class=\"mono\">::=</span> in der BNF?",o:["ist gleich (Vergleich)","wird definiert als","nicht","und"],a:1,w:"Das Zeichen trennt das Nichtterminal von seiner Definition — wie der Pfeil in einer Regel."},
+  {q:"Warum ist der Syntaxbaum von <span class=\"mono\">3 + 4 * 5</span> wichtig?",o:["Er macht den Ausdruck kürzer","Er legt fest, dass zuerst 4 * 5 berechnet wird","Er speichert das Ergebnis","Er prüft Rechtschreibung"],a:1,w:"Die Tiefe im Baum bestimmt die Auswertungsreihenfolge — hier wird die Bedeutung durch die Syntax festgelegt."},
+  {q:"Wann ist ein Wort syntaktisch korrekt?",o:["Wenn es sinnvoll klingt","Wenn es sich mit den Regeln der Grammatik ableiten lässt","Wenn es kurz ist","Wenn es nur Kleinbuchstaben enthält"],a:1,w:"Syntaktisch korrekt heißt: ableitbar. Ob es auch sinnvoll ist, betrifft die Semantik."}
+];
+(function(){
+  const box=$("#test"); let richtig=0, fertig=0;
+  TEST.forEach((f,idx)=>{
+    const d=document.createElement("div"); d.className="frage";
+    d.innerHTML=`<p class="q">${idx+1}. ${f.q}</p>`+f.o.map((o,i)=>`<button class="opt" data-i="${i}">${esc(o)}</button>`).join("")+`<p class="rueck" hidden></p>`;
+    d.addEventListener("click",e=>{
+      const b=e.target.closest(".opt"); if(!b||b.disabled) return;
+      const ok=+b.dataset.i===f.a; if(ok) richtig++; fertig++;
+      d.querySelectorAll(".opt").forEach(o=>{ o.disabled=true; if(+o.dataset.i===f.a) o.classList.add("richtig"); else if(o===b) o.classList.add("falsch"); });
+      const r=d.querySelector(".rueck"); r.hidden=false; r.textContent=(ok?"Richtig. ":"Nicht ganz. ")+f.w;
+      if(fertig===TEST.length){
+        const e2=$("#testErg"); e2.hidden=false;
+        e2.innerHTML=`<p class="punkte" style="margin:0 0 6px">${richtig} von ${TEST.length} richtig</p><p style="margin:0">${richtig===TEST.length?"Ausgezeichnet — du beherrschst die Grundlagen der formalen Sprachen.":richtig>=6?"Gut! Schau dir die rot markierten Fragen noch einmal an.":"Lies die Abschnitte noch einmal und probiere die Werkzeuge aus — dann versuche den Test erneut (Seite neu laden)."}</p>`;
+      }
+    });
+    box.appendChild(d);
+  });
+})();
+</script>
+</body>
+</html>
