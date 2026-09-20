@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Conditional type II Schritt für Schritt: interaktive Lernstrecke für Klasse 8 mit Erklärungen, Checkpoints und Übungen in drei Stufen.">
+<title>Conditional type II — Lernstrecke Klasse 8</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+<script>
+document.documentElement.classList.add("js");
+try{
+  var th=localStorage.getItem("ct2.theme");
+  if(th) document.documentElement.dataset.theme=th;
+  else if(window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.dataset.theme="dark";
+}catch(e){}
+</script>
+<style>
+:root{
+  --bg:#FFF8EE; --bg2:#FFEFD9; --surface:#FFFFFF; --surface2:#FFFBF5;
+  --ink:#1B2433; --ink2:#48566B; --muted:#7B8798; --line:#EADFCB;
+  --amber:#F2A93B; --amber-d:#A85F00; --amber-l:#FFF0D2;
+  --teal:#0E9F92; --teal-d:#0A7A70; --teal-l:#DCF5F1;
+  --coral:#EC6A4B; --coral-d:#BF4127; --coral-l:#FFE6DF;
+  --ok:#2A9D6B; --ok-l:#DDF5EA; --bad:#D6453D; --bad-l:#FDE3E1;
+  --shadow:0 1px 2px rgba(60,40,10,.06),0 10px 28px rgba(60,40,10,.09);
+  --r:22px;
+  --disp:"Outfit","Nunito",system-ui,sans-serif;
+  --body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#0E1622; --bg2:#121C2B; --surface:#172234; --surface2:#1B2739;
+  --ink:#EBF1F9; --ink2:#B7C3D5; --muted:#8895AA; --line:#28354B;
+  --amber:#F5B04A; --amber-d:#FFC978; --amber-l:rgba(245,176,74,.14);
+  --teal:#2BC4B5; --teal-d:#63E3D6; --teal-l:rgba(43,196,181,.15);
+  --coral:#F0866C; --coral-d:#FFA891; --coral-l:rgba(240,134,108,.16);
+  --ok:#4CC38A; --ok-l:rgba(76,195,138,.16); --bad:#F0736C; --bad-l:rgba(240,115,108,.16);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;font:400 1.03rem/1.65 var(--body);color:var(--ink);background:var(--bg);
+  background-image:radial-gradient(900px 500px at 100% 0,var(--bg2),transparent 60%);background-repeat:no-repeat}
+h1,h2,h3,h4{font-family:var(--disp);line-height:1.2;margin:0}
+p{margin:0 0 12px}
+b,strong{font-weight:800}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:8px}
+.ic{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none;vertical-align:-.2em}
+[hidden]{display:none!important}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;overflow:hidden;color:#fff;padding:92px 20px 70px;
+  background:linear-gradient(135deg,#F6B04A 0%,#EE7A4B 52%,#C9433A 100%)}
+.hero::before,.hero::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.13)}
+.hero::before{width:460px;height:460px;right:-150px;top:-170px}
+.hero::after{width:280px;height:280px;left:-100px;bottom:-140px}
+.hero-in{position:relative;max-width:860px;margin:0 auto}
+.eyebrow{display:inline-block;font:800 .78rem var(--disp);letter-spacing:.14em;text-transform:uppercase;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.2);margin-bottom:18px}
+.hero h1{font-weight:800;font-size:clamp(2.3rem,6.4vw,4.1rem);line-height:1.05;letter-spacing:-.5px}
+.rot{display:block;color:#FFF3C4;min-height:1.15em;transition:opacity .45s,transform .45s}
+.rot.out{opacity:0;transform:translateY(8px)}
+.hero p.sub{font-size:clamp(1.05rem,2.4vw,1.3rem);margin:18px 0 26px;max-width:38em;color:rgba(255,255,255,.94)}
+.pills{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px}
+.pills span{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.18);font-weight:700;font-size:.95rem}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:800 1rem var(--body);border-radius:999px;padding:11px 22px;border:2px solid transparent;text-decoration:none;transition:transform .12s,box-shadow .12s,background .12s}
+.btn:active{transform:translateY(2px)}
+.btn.primary{background:var(--amber);color:#3A2300;box-shadow:0 3px 0 var(--amber-d)}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.primary:active{box-shadow:0 1px 0 var(--amber-d)}
+.btn.white{background:#fff;color:#B24A1F;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.btn.line{background:transparent;color:#fff;border-color:rgba(255,255,255,.7)}
+.btn.line:hover{background:rgba(255,255,255,.14)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--amber)}
+.btn.sm{padding:7px 16px;font-size:.92rem}
+.btn:disabled{opacity:.45;cursor:default;box-shadow:none}
+
+/* ---------- Routen-Navigation ---------- */
+.route{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--line)}
+@supports (background:color-mix(in srgb,red 50%,blue)){.route{background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}}
+.route-in{display:flex;align-items:center;gap:10px;padding:8px 14px 8px 122px}
+.pill-row{display:flex;gap:6px;overflow-x:auto;flex:1;scrollbar-width:none;padding:2px}
+.pill-row::-webkit-scrollbar{display:none}
+.pill{display:flex;align-items:center;gap:8px;flex:none;text-decoration:none;font-weight:800;font-size:.9rem;padding:5px 12px 5px 6px;border-radius:999px;border:1.5px solid transparent;color:var(--ink2);transition:background .15s,border-color .15s}
+.pill .num{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--line);color:var(--ink2);font:800 .82rem var(--disp)}
+.pill:hover{border-color:var(--line)}
+.pill.on{background:var(--amber-l);color:var(--amber-d);border-color:var(--amber)}
+.pill.on .num{background:var(--amber);color:#3A2300}
+.pill.part .num{background:var(--teal-l);color:var(--teal-d)}
+.pill.done .num{background:var(--ok);color:#fff}
+.pill.done .num span{display:none}
+.pill .num .ic{display:none;width:14px;height:14px;stroke-width:3}
+.pill.done .num .ic{display:block}
+.route-tools{display:flex;gap:6px;flex:none}
+.tool{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink2);border-radius:999px;padding:6px 12px;font-weight:800;font-size:.85rem}
+.tool[aria-pressed="true"]{background:var(--teal-l);border-color:var(--teal);color:var(--teal-d)}
+.tool:hover{border-color:var(--amber)}
+.pbar{height:4px;background:var(--line)}
+.pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--amber),var(--coral));transition:width .5s}
+@media (max-width:1120px){.pill:not(.on):not(:hover){padding-right:6px}.pill:not(.on):not(:hover) .plbl{display:none}.tool .lbl{display:none}}
+@media (max-width:640px){.route-in{padding-left:112px}}
+
+/* ---------- Stationen / Karten ---------- */
+main{padding:36px 0 30px}
+.station{max-width:880px;margin:0 auto 34px;padding:0 16px;scroll-margin-top:74px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:28px}
+@media (max-width:560px){.card{padding:20px 16px}}
+.st-head{display:flex;gap:16px;align-items:center;margin-bottom:18px}
+.st-num{flex:none;width:56px;height:56px;border-radius:19px;background:linear-gradient(135deg,var(--amber),var(--coral));color:#fff;display:grid;place-items:center;font:800 1.6rem var(--disp);box-shadow:0 6px 16px rgba(238,106,75,.3)}
+.st-kick{font:800 .76rem var(--disp);letter-spacing:.14em;text-transform:uppercase;color:var(--amber-d)}
+.st-title{font-weight:800;font-size:clamp(1.5rem,3.6vw,2.05rem)}
+.card h3{font-weight:800;font-size:1.28rem;margin:26px 0 10px}
+.card h3:first-of-type{margin-top:6px}
+.lead{font-size:1.1rem;color:var(--ink2)}
+.js .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.js .reveal.in{opacity:1;transform:none}
+
+/* ---------- Bausteine der Erklärung ---------- */
+.ifc,.mc,.vb{border-radius:8px;padding:1px 7px;font-weight:700}
+.ifc{background:var(--teal-l);color:var(--teal-d)}
+.mc{background:var(--coral-l);color:var(--coral-d)}
+.vb{background:var(--amber-l);color:var(--amber-d)}
+.callout{display:flex;gap:12px;border-radius:16px;padding:14px 16px;margin:18px 0;border:1px solid transparent}
+.callout>.ic{width:24px;height:24px;margin-top:2px}
+.callout p:last-child{margin-bottom:0}
+.callout.tip{background:var(--amber-l);border-color:rgba(242,169,59,.4);color:var(--ink)}
+.callout.tip>.ic{color:var(--amber-d)}
+.callout.warn{background:var(--coral-l);border-color:rgba(236,106,75,.4)}
+.callout.warn>.ic{color:var(--coral-d)}
+.callout.ok{background:var(--teal-l);border-color:rgba(14,159,146,.4)}
+.callout.ok>.ic{color:var(--teal-d)}
+.ex{position:relative;margin:12px 0;padding:14px 16px 14px 22px;border-radius:16px;background:var(--surface2);border:1px solid var(--line)}
+.ex::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:5px;border-radius:5px;background:linear-gradient(var(--teal),var(--coral))}
+.ex .en{font:700 1.2rem/1.55 var(--body);margin:0}
+.ex .de{display:none;margin:8px 0 0;color:var(--ink2);font-style:italic}
+.ex.open .de,body.show-de .ex .de{display:block}
+.ex .de-btn{position:absolute;right:10px;top:10px;font:800 .72rem var(--disp);letter-spacing:.06em;border:1.5px solid var(--line);background:var(--surface);color:var(--muted);border-radius:8px;padding:2px 8px}
+.ex .de-btn:hover{color:var(--amber-d);border-color:var(--amber)}
+.ex .en{padding-right:48px}
+.formula{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;padding:26px 16px;border-radius:20px;background:var(--surface2);border:2px dashed var(--line);margin:16px 0}
+.formula .chip{font:800 clamp(1rem,2.6vw,1.3rem) var(--disp);padding:11px 18px;border-radius:14px;color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.14)}
+.chip.t{background:var(--teal)}.chip.c{background:var(--coral)}.chip.n{background:var(--ink2);box-shadow:none;padding:11px 12px}
+.formula .lab{flex-basis:100%;text-align:center;color:var(--muted);font-weight:700;font-size:.9rem;margin-top:4px}
+table.tbl{border-collapse:separate;border-spacing:0;width:100%;margin:14px 0;font-size:.98rem;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.tbl th,.tbl td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{background:var(--surface2);font:800 .82rem var(--disp);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.tbl tr:last-child td{border-bottom:0}
+.scroll{overflow-x:auto}
+.verbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:14px 0}
+.verb{padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface2)}
+.verb b{display:block;font:700 1rem var(--disp)}
+.verb span{color:var(--ink2);font-size:.95rem}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+@media (max-width:640px){.duo{grid-template-columns:1fr}}
+.dd{border-radius:16px;padding:14px 16px;border:1.5px solid var(--line);background:var(--surface2)}
+.dd h4{font-size:1rem;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.dd.no{border-color:rgba(214,69,61,.5);background:var(--bad-l)}
+.dd.no h4{color:var(--bad)}
+.dd.yes{border-color:rgba(42,157,107,.5);background:var(--ok-l)}
+.dd.yes h4{color:var(--ok)}
+.dd p{margin:0 0 6px;font-weight:700}
+.dd s{text-decoration-color:var(--bad);text-decoration-thickness:2px}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:18px 0}
+@media (max-width:700px){.compare{grid-template-columns:1fr}}
+.cmp{position:relative;border-radius:20px;padding:18px 18px 16px}
+.cmp .tag{display:inline-flex;align-items:center;gap:8px;font:800 .78rem var(--disp);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.cmp.real{background:var(--teal-l);border:2px solid var(--teal)}
+.cmp.real .tag{color:var(--teal-d)}
+.cmp.dream{background:var(--coral-l);border:2px dashed var(--coral)}
+.cmp.dream .tag{color:var(--coral-d)}
+.cmp.dream::after{content:"";position:absolute;left:26px;bottom:-16px;width:14px;height:14px;border-radius:50%;background:var(--coral-l);border:2px dashed var(--coral);box-shadow:-14px 14px 0 -4px var(--coral)}
+.cmp .big{font:700 1.2rem/1.45 var(--body);margin:0 0 6px}
+.cmp small{display:block;color:var(--ink2);font-size:.93rem}
+.uses{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+@media (max-width:760px){.uses{grid-template-columns:1fr}}
+.use{border:1px solid var(--line);border-radius:18px;padding:16px;background:var(--surface2)}
+.use .ico{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:var(--amber-l);color:var(--amber-d);margin-bottom:10px}
+.use .ico .ic{width:22px;height:22px}
+.use h4{font-size:1.02rem;margin-bottom:6px}
+.use p{font-size:.95rem;color:var(--ink2);margin:0 0 8px}
+.use em{display:block;font-style:normal;font-weight:700;color:var(--ink)}
+.steps3{counter-reset:s;list-style:none;padding:0;margin:14px 0}
+.steps3 li{counter-increment:s;position:relative;padding:12px 14px 12px 58px;margin-bottom:10px;border:1px solid var(--line);border-radius:16px;background:var(--surface2)}
+.steps3 li::before{content:counter(s);position:absolute;left:14px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:var(--amber);color:#3A2300;display:grid;place-items:center;font:800 1rem var(--disp)}
+
+/* ---------- Stepper ---------- */
+.js .stepper .step{display:none}
+.js .stepper .step.on{display:block;animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.stepnav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;padding-top:16px;border-top:1px dashed var(--line)}
+.dots{display:flex;gap:8px;align-items:center}
+.dots button{width:12px;height:12px;border-radius:50%;border:0;background:var(--line);padding:0;transition:transform .15s,background .15s}
+.dots button.on{background:var(--amber);transform:scale(1.35)}
+.dots button.seen{background:var(--teal)}
+.stepcount{font-weight:800;color:var(--muted);font-size:.9rem;white-space:nowrap}
+@media (max-width:520px){.stepnav{flex-wrap:wrap}.stepnav>div{order:-1;flex-basis:100%}.stepnav .btn{flex:1}}
+
+/* ---------- Aufgaben / Quiz ---------- */
+.unit{margin-top:26px;padding-top:6px}
+.unit-h{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 6px!important}
+.unit-h .tagu{font:800 .78rem var(--disp);background:var(--amber-l);color:var(--amber-d);border-radius:8px;padding:3px 9px;letter-spacing:.06em}
+.badge{font:800 .8rem var(--disp);background:var(--ok-l);color:var(--ok);border-radius:999px;padding:3px 11px;margin-left:auto}
+.unit-in{color:var(--ink2);margin-bottom:10px}
+.qcard{display:flex;gap:14px;padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--surface2);margin:12px 0;transition:border-color .2s,background .2s}
+.qcard.done-ok{border-color:rgba(42,157,107,.55)}
+.qcard.done-sol{border-color:rgba(242,169,59,.6)}
+.qn{flex:none;width:32px;height:32px;border-radius:50%;background:var(--amber-l);color:var(--amber-d);font:800 .95rem var(--disp);display:grid;place-items:center}
+.qbody{flex:1;min-width:0}
+.qtext{font-weight:700;margin:0 0 10px;font-size:1.06rem}
+.qopts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{font:700 1rem var(--body);padding:9px 16px;border-radius:14px;border:2px solid var(--line);background:var(--surface);transition:border-color .12s,background .12s,transform .12s;text-align:left}
+.opt:hover:not(:disabled){border-color:var(--amber);transform:translateY(-1px)}
+.opt:disabled{cursor:default}
+.opt.right{background:var(--ok-l);border-color:var(--ok);color:var(--ok)}
+.opt.wrong{background:var(--bad-l);border-color:var(--bad);color:var(--bad)}
+.opt.dim{opacity:.55}
+.qrow .opt{flex:1 1 200px;text-align:center}
+.tokline{display:flex;flex-wrap:wrap;gap:6px;font-size:1.12rem;font-weight:700}
+.tok{font:700 1.08rem var(--body);padding:5px 10px;border-radius:10px;border:2px solid transparent;background:transparent}
+.tok:hover:not(:disabled){background:var(--amber-l);border-color:var(--amber)}
+.tok.right{background:var(--ok-l);border-color:var(--ok);color:var(--ok)}
+.tok.wrong{background:var(--bad-l);border-color:var(--bad);color:var(--bad)}
+.qwhy{margin:10px 0 0;font-size:.96rem;color:var(--ink2)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.fb{margin-top:10px;font-size:.98rem;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:var(--ok-l);color:var(--ok);padding:9px 13px;font-weight:700}
+.fb.bad{background:var(--bad-l);padding:9px 13px}
+.fb.bad b.k{color:var(--bad)}
+.fb.info{background:var(--amber-l);padding:9px 13px}
+.fb .soft{display:block;font-weight:600;color:var(--ink2);margin-top:2px}
+.result{display:flex;align-items:center;gap:14px;margin-top:14px;padding:14px 16px;border-radius:18px;background:linear-gradient(135deg,var(--teal-l),var(--amber-l));border:1px solid var(--line);animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+.result .score{font:800 1.6rem var(--disp);color:var(--teal-d)}
+.result .msg{flex:1;color:var(--ink2);font-weight:700}
+@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:none;opacity:1}}
+.gaps{font-size:1.1rem;line-height:2.5;margin:0}
+input.gap,input.tin{font:700 1.05rem var(--body);color:var(--ink);background:var(--amber-l);border:0;border-bottom:3px solid var(--amber);border-radius:8px 8px 0 0;padding:4px 9px;margin:0 3px;min-width:5ch;text-align:center}
+input.tin{width:100%;text-align:left;margin:8px 0 0;padding:10px 12px;background:var(--surface);border:2px solid var(--line);border-bottom-width:3px;border-radius:12px}
+input.gap.ok,input.tin.ok{background:var(--ok-l);border-color:var(--ok)}
+input.gap.bad,input.tin.bad{background:var(--bad-l);border-color:var(--bad)}
+input.gap:focus,input.tin:focus{outline:none;border-color:var(--teal)}
+.pre,.post{font-weight:700}
+.compl{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;font-size:1.08rem}
+.compl input.tin{margin:0;flex:1 1 220px;width:auto}
+.given{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:4px}
+.given .tagb{font:800 .72rem var(--disp);letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:8px;background:var(--teal-l);color:var(--teal-d)}
+.pool,.line{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border-radius:14px;min-height:54px}
+.pool{background:var(--surface);border:1px solid var(--line)}
+.line{border:2px dashed var(--line);background:var(--surface);margin-bottom:8px}
+.line:empty::before{content:"Tippe auf die Wörter, um den Satz zu bauen …";color:var(--muted);font-weight:600}
+.wchip{font:700 1.02rem var(--body);padding:8px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface2);box-shadow:0 3px 0 var(--line);transition:transform .1s}
+.wchip:hover:not(:disabled){border-color:var(--amber);transform:translateY(-1px)}
+.wchip:disabled{opacity:.45;box-shadow:none;cursor:default}
+.line .wchip{background:var(--amber-l);border-color:var(--amber);box-shadow:0 3px 0 var(--amber)}
+.match{display:grid;gap:10px}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center}
+@media (max-width:640px){.mrow{grid-template-columns:1fr}}
+.mrow select{width:100%;font:700 1rem var(--body);padding:9px 12px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink)}
+.mrow select.ok{border-color:var(--ok);background:var(--ok-l)}
+.mrow select.bad{border-color:var(--bad);background:var(--bad-l)}
+.mrow .l{font-weight:800}
+.mopts{margin:0 0 10px;padding:12px 16px 12px 34px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-weight:700;list-style:upper-alpha}
+
+/* ---------- Übungen-Tabs ---------- */
+.seg{display:flex;gap:8px;margin:6px 0 18px;padding:6px;border-radius:18px;background:var(--surface2);border:1px solid var(--line)}
+.seg button{flex:1;border:0;background:transparent;border-radius:13px;padding:10px 8px;font-weight:800;color:var(--ink2);display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2}
+.seg button small{font-weight:700;font-size:.78rem;opacity:.85}
+.seg button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.seg button.g[aria-selected="true"]{border-bottom:3px solid var(--teal)}
+.seg button.h[aria-selected="true"]{border-bottom:3px solid var(--amber)}
+.seg button.o[aria-selected="true"]{border-bottom:3px solid var(--coral)}
+.ppanel{display:none}.ppanel.on{display:block;animation:fadeIn .35s}
+.lvl{display:inline-flex;gap:3px;vertical-align:middle;margin-left:4px}
+.lvl i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.lvl i.f{background:var(--amber)}
+
+/* ---------- Schreiben ---------- */
+.letter{border-left:5px solid var(--amber);background:var(--amber-l);border-radius:0 16px 16px 0;padding:14px 18px;margin:12px 0;font-style:italic}
+.starters{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.starters button{font-weight:700;font-size:.92rem;padding:6px 12px;border-radius:999px;border:1.5px dashed var(--amber);background:transparent;color:var(--amber-d)}
+.starters button:hover{background:var(--amber-l)}
+textarea.ta{width:100%;min-height:170px;border-radius:16px;border:2px solid var(--line);background:var(--surface);padding:14px 16px;font:600 1.05rem/1.6 var(--body);color:var(--ink);resize:vertical}
+textarea.ta:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 4px var(--amber-l)}
+.wmeta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;color:var(--muted);font-weight:700;font-size:.9rem;margin:6px 2px 10px}
+.fbl{list-style:none;margin:10px 0;padding:0}
+.fbl li{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border-radius:12px;margin-bottom:6px;font-size:.96rem}
+.fbl li .ic{margin-top:3px}
+.fbl li.ok{background:var(--ok-l)}.fbl li.ok .ic{color:var(--ok)}
+.fbl li.warn{background:var(--amber-l)}.fbl li.warn .ic{color:var(--amber-d)}
+.fbl .s{font-weight:700;display:block}
+.fbl .m{color:var(--ink2);display:block}
+.checks{margin:14px 0;padding:14px 16px;border-radius:16px;background:var(--surface2);border:1px solid var(--line)}
+.checks h4{font-size:1rem;margin-bottom:8px}
+.checks label{display:flex;gap:10px;align-items:flex-start;margin-bottom:6px;font-weight:600;cursor:pointer}
+.checks input{accent-color:var(--teal);width:18px;height:18px;margin-top:4px;flex:none}
+details.model{margin-top:12px;border:1px solid var(--line);border-radius:14px;padding:10px 14px;background:var(--surface2)}
+details.model summary{cursor:pointer;font-weight:800;color:var(--teal-d)}
+details.model p{margin:10px 0 0;white-space:pre-line}
+.meter{height:10px;border-radius:99px;background:var(--line);overflow:hidden;margin:6px 0 12px}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--ok));transition:width .4s}
+
+/* ---------- Abschluss ---------- */
+.trophy{display:none;align-items:center;gap:16px;padding:20px;border-radius:20px;color:#fff;background:linear-gradient(135deg,#F6B04A,#EE7A4B 55%,#C9433A);margin:6px 0 18px}
+.trophy.on{display:flex;animation:pop .6s cubic-bezier(.2,1.4,.4,1)}
+.trophy .ic{width:56px;height:56px;stroke-width:1.7}
+.trophy h3{margin:0 0 4px!important;font-size:1.4rem;color:#fff}
+.trophy p{margin:0;color:rgba(255,255,255,.95)}
+.sumgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
+@media (max-width:640px){.sumgrid{grid-template-columns:1fr}}
+.sumc{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--surface2)}
+.sumc small{font:800 .74rem var(--disp);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sumc b{display:block;font:800 1.5rem var(--disp)}
+.cheat{margin-top:22px}
+.foot{max-width:880px;margin:0 auto;padding:10px 16px 60px;color:var(--muted);text-align:center;font-size:.9rem}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}.js .reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18.2v.3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 8.5 4 4 0 0 1 17.5 18H7z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H10l-4 4v-4H4V5z"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5L2.5 9.4l6.6-.9L12 2.5z"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4v1a4 4 0 0 0 4 4M16 6h4v1a4 4 0 0 1-4 4M12 13v4M8 21h8M10 17h4"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20l1-4L16 5l3 3L8 19l-4 1zM14 7l3 3"/></symbol>
+</svg>
+
+<a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.9;">← Startseite</a>
+
+<header class="hero">
+  <div class="hero-in">
+    <span class="eyebrow">Englisch · Klasse 8 · Grammatik</span>
+    <h1>What would you do if <span class="rot" id="rot">you could fly?</span></h1>
+    <p class="sub">Conditional type II — so sprichst du über Träume, Wünsche und Gedankenspiele. Schritt für Schritt erklärt, ohne Vorwissen. Los geht's!</p>
+    <div class="pills">
+      <span><svg class="ic"><use href="#i-globe"/></svg>6 Stationen + Übungen</span>
+      <span><svg class="ic"><use href="#i-star"/></svg>ca. 45–60 Minuten</span>
+      <span><svg class="ic"><use href="#i-bulb"/></svg>kein Vorwissen nötig</span>
+    </div>
+    <div class="hero-cta">
+      <a class="btn white" href="#start">Lernstrecke starten <svg class="ic"><use href="#i-arrow"/></svg></a>
+      <a class="btn line" href="#s7">Direkt zu den Übungen</a>
+    </div>
+  </div>
+</header>
+
+<nav class="route" aria-label="Lernstrecke">
+  <div class="route-in">
+    <div class="pill-row" id="pills"></div>
+    <div class="route-tools">
+      <button class="tool" id="deTgl" aria-pressed="false" title="Deutsche Übersetzungen ein-/ausblenden"><span>DE</span><span class="lbl">Übersetzungen</span></button>
+      <button class="tool" id="themeTgl" aria-label="Design wechseln"><svg class="ic"><use id="themeIc" href="#i-moon"/></svg></button>
+    </div>
+  </div>
+  <div class="pbar" role="progressbar" aria-label="Gesamtfortschritt" aria-valuemin="0" aria-valuemax="100"><i id="pbar"></i></div>
+</nav>
+
+<main>
+
+<!-- =============================== START =============================== -->
+<section class="station" id="start">
+  <div class="card reveal">
+    <div class="st-head"><div class="st-num">?</div><div><div class="st-kick">Zum Einstieg</div><h2 class="st-title">Worum geht es überhaupt?</h2></div></div>
+    <p class="lead">Stell dir vor, du gewinnst eine Million Euro. Was würdest du tun? Im Deutschen sagst du vielleicht:</p>
+    <div class="ex" data-de="Wenn ich eine Million Euro gewinnen würde, würde ich ein riesiges Haus kaufen.">
+      <p class="en"><span class="ifc">If I won a million euros</span>, <span class="mc">I would buy a huge house</span>.</p>
+    </div>
+    <p>Du sprichst über etwas, das <b>wahrscheinlich nicht wirklich passiert</b> — ein <b>Gedankenspiel</b>. Für solche Sätze gibt es im Englischen eine feste Bauweise: das <b>conditional type II</b> (auch <i>second conditional</i> genannt). Genau das lernst du hier, Schritt für Schritt.</p>
+    <div class="callout tip"><svg class="ic"><use href="#i-bulb"/></svg><div>
+      <p><b>Farbcode auf dieser Seite:</b> <span class="ifc">türkis = if-Satz</span> (die Bedingung) und <span class="mc">rot = Hauptsatz</span> (die Folge). So erkennst du die zwei Teile immer sofort.</p>
+    </div></div>
+    <h3>So funktioniert die Lernstrecke</h3>
+    <ol class="steps3">
+      <li>Sechs <b>Stationen</b> bauen aufeinander auf. Jede endet mit einem <b>Checkpoint</b>, damit du siehst, ob du weitergehen kannst.</li>
+      <li>Danach folgen <b>Übungen in drei Stufen</b>: geschlossen (auswählen), halboffen (ergänzen) und offen (selbst schreiben).</li>
+      <li>Mit dem Schalter <b>DE</b> oben rechts blendest du deutsche Übersetzungen ein. Dein Fortschritt wird in diesem Browser gespeichert.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- =============================== STATION 1 =============================== -->
+<section class="station" id="s1">
+  <div class="card reveal">
+    <div class="st-head"><div class="st-num">1</div><div><div class="st-kick">Station 1 · Wiederholung</div><h2 class="st-title">Die drei Bausteine</h2></div></div>
+    <p class="lead">Bevor du das Neue lernst, brauchst du drei Werkzeuge. Vielleicht kennst du sie schon — dann sind sie schnell wiederholt.</p>
+
+    <div class="stepper" data-stepper>
+      <div class="step">
+        <h3>Baustein 1: Der simple past</h3>
+        <p>Bei regelmäßigen Verben hängst du <b>-ed</b> an (<i>play → played, live → lived, study → studied</i>). Viele häufige Verben sind aber <b>unregelmäßig</b>. Diese Formen solltest du sofort erkennen:</p>
+        <div class="verbs">
+          <div class="verb"><b>be</b><span>was / were</span></div>
+          <div class="verb"><b>have</b><span>had</span></div>
+          <div class="verb"><b>go</b><span>went</span></div>
+          <div class="verb"><b>see</b><span>saw</span></div>
+          <div class="verb"><b>buy</b><span>bought</span></div>
+          <div class="verb"><b>win</b><span>won</span></div>
+          <div class="verb"><b>take</b><span>took</span></div>
+          <div class="verb"><b>can</b><span>could</span></div>
+        </div>
+        <div class="callout tip"><svg class="ic"><use href="#i-bulb"/></svg><div><p><b>Achtung, Vorschau:</b> Später brauchst du diese Formen — aber sie bedeuten dort <b>nicht „gestern“</b>. Es ist nur die Form, die wir dafür nutzen. Warum das so ist, erfährst du in Station 3.</p></div></div>
+      </div>
+      <div class="step">
+        <h3>Baustein 2: would = „würde“</h3>
+        <p><b>would</b> ist ein Hilfsverb und bedeutet ungefähr <b>„würde“</b>. Danach steht immer der <b>Infinitiv ohne to</b>.</p>
+        <div class="ex" data-de="Ich würde gehen. Sie würde Pizza essen. Sie würden nicht helfen.">
+          <p class="en">I <span class="vb">would go</span>. She <span class="vb">would eat</span> pizza. They <span class="vb">wouldn't help</span>.</p>
+        </div>
+        <div class="scroll"><table class="tbl"><thead><tr><th>Form</th><th>Beispiel</th><th>Kurzform</th></tr></thead><tbody>
+          <tr><td>would</td><td>I would go</td><td>I'd go</td></tr>
+          <tr><td>would not</td><td>I would not go</td><td>I wouldn't go</td></tr>
+        </tbody></table></div>
+        <div class="duo">
+          <div class="dd no"><h4><svg class="ic"><use href="#i-x"/></svg>Falsch</h4><p><s>I would to go.</s></p><p><s>He would goes.</s></p><p><s>We would went.</s></p></div>
+          <div class="dd yes"><h4><svg class="ic"><use href="#i-check"/></svg>Richtig</h4><p>I would go.</p><p>He would go.</p><p>We would go.</p></div>
+        </div>
+      </div>
+      <div class="step">
+        <h3>Baustein 3: Der if-Satz</h3>
+        <p>Ein Bedingungssatz hat <b>zwei Teile</b>: den <span class="ifc">if-Satz</span> (Bedingung: <i>wenn …</i>) und den <span class="mc">Hauptsatz</span> (Folge). Vergleiche mit dem Deutschen: <i>Wenn …, dann …</i>.</p>
+        <div class="ex" data-de="Wenn du Hunger hast, kannst du einen Apfel essen.">
+          <p class="en"><span class="ifc">If you are hungry</span>, <span class="mc">you can eat an apple</span>.</p>
+        </div>
+        <p>Du kannst die Teile auch <b>tauschen</b>. Dann gilt eine wichtige Regel für das Komma:</p>
+        <div class="duo">
+          <div class="dd yes"><h4>if-Satz zuerst → Komma</h4><p><span class="ifc">If you are hungry</span><b>,</b> <span class="mc">you can eat an apple.</span></p></div>
+          <div class="dd yes"><h4>Hauptsatz zuerst → kein Komma</h4><p><span class="mc">You can eat an apple</span> <span class="ifc">if you are hungry.</span></p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="unit">
+      <h3 class="unit-h">Checkpoint 1 <span class="badge" data-badge="cp1" hidden></span></h3>
+      <p class="unit-in">Vier kurze Fragen zu den Bausteinen.</p>
+      <div data-mount="cp1"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================== STATION 2 =============================== -->
+<section class="station" id="s2">
+  <div class="card reveal">
+    <div class="st-head"><div class="st-num">2</div><div><div class="st-kick">Station 2 · Wiederholung</div><h2 class="st-title">Erst zurück zu Type I</h2></div></div>
+    <p class="lead">Es gibt schon einen bekannten „großen Bruder“: das conditional type I. Wenn du den kennst, verstehst du Type II viel leichter.</p>
+    <div class="formula">
+      <span class="chip t">If</span><span class="chip t">simple present</span><span class="chip n">,</span><span class="chip c">will</span><span class="chip c">Infinitiv</span>
+      <div class="lab">conditional type I</div>
+    </div>
+    <div class="ex" data-de="Wenn es morgen regnet, bleiben wir zu Hause.">
+      <p class="en"><span class="ifc">If it rains tomorrow</span>, <span class="mc">we will stay at home</span>.</p>
+    </div>
+    <div class="ex" data-de="Wenn du lernst, wirst du den Test bestehen.">
+      <p class="en"><span class="ifc">If you study</span>, <span class="mc">you will pass the test</span>.</p>
+    </div>
+    <div class="callout ok"><svg class="ic"><use href="#i-check"/></svg><div><p><b>Type I = realistisch.</b> Die Bedingung kann wirklich eintreten. Es kann morgen regnen, und du kannst lernen — alles ist möglich und wahrscheinlich.</p></div></div>
+    <div class="callout warn"><svg class="ic"><use href="#i-alert"/></svg><div><p><b>Typischer Fehler:</b> Nach <i>if</i> steht kein <i>will</i>! <s>If it will rain …</s> → <b>If it rains …</b></p></div></div>
+    <div class="unit">
+      <h3 class="unit-h">Checkpoint 2 <span class="badge" data-badge="cp2" hidden></span></h3>
+      <p class="unit-in">Drei Fragen zu Type I.</p>
+      <div data-mount="cp2"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================== STATION 3 =============================== -->
+<section class="station" id="s3">
+  <div class="card reveal">
+    <div class="st-head"><div class="st-num">3</div><div><div class="st-kick">Station 3 · Neu</div><h2 class="st-title">Die Idee: Gedankenspiele</h2></div></div>
+    <p class="lead">Manche Situationen sind <b>unwahrscheinlich, unmöglich oder nur ausgedacht</b>. Du hast keine Flügel. Du hast (wahrscheinlich) keine Million gewonnen. Über solche Situationen sprichst du mit dem <b>conditional type II</b>.</p>
+
+    <div class="compare">
+      <div class="cmp real">
+        <div class="tag"><svg class="ic"><use href="#i-globe"/></svg>Type I · Wirklichkeit</div>
+        <p class="big"><span class="ifc">If I have time tomorrow</span>, <span class="mc">I will call you.</span></p>
+        <small>Ich habe vielleicht wirklich Zeit — das kann passieren.</small>
+      </div>
+      <div class="cmp dream">
+        <div class="tag"><svg class="ic"><use href="#i-cloud"/></svg>Type II · Gedankenspiel</div>
+        <p class="big"><span class="ifc">If I had wings</span>, <span class="mc">I would fly to school.</span></p>
+        <small>Ich habe keine Flügel — es ist nur ausgedacht.</small>
+      </div>
+    </div>
+
+    <h3>Wann benutzt du Type II?</h3>
+    <div class="uses">
+      <div class="use"><div class="ico"><svg class="ic"><use href="#i-cloud"/></svg></div><h4>Ausgedachte Situationen</h4><p>Dinge, die es nicht gibt oder die nicht möglich sind.</p><em>If I could fly, I would visit Australia every weekend.</em></div>
+      <div class="use"><div class="ico"><svg class="ic"><use href="#i-star"/></svg></div><h4>Träume &amp; Unwahrscheinliches</h4><p>Dinge, die kaum passieren werden.</p><em>If I won the lottery, I would travel around the world.</em></div>
+      <div class="use"><div class="ico"><svg class="ic"><use href="#i-chat"/></svg></div><h4>Ratschläge</h4><p>Du sagst, was du an der Stelle des anderen tun würdest.</p><em>If I were you, I would talk to your teacher.</em></div>
+    </div>
+
+    <div class="callout tip"><svg class="ic"><use href="#i-bulb"/></svg><div>
+      <p><b>Warum steht da der simple past — es geht doch nicht um gestern?</b><br>
+      Der simple past zeigt hier <b>Abstand zur Wirklichkeit</b>. Gemeint ist die <b>Gegenwart oder Zukunft</b>, aber nur in Gedanken. Im Deutschen machst du das genauso: <i>Wenn ich Flügel <b>hätte</b>, <b>würde</b> ich fliegen.</i> Auch „hätte“ klingt nach Vergangenheit, ist es aber nicht.</p>
+    </div></div>
+
+    <div class="scroll"><table class="tbl"><thead><tr><th>Satz</th><th>Bedeutung</th></tr></thead><tbody>
+      <tr><td>Yesterday I <b>had</b> a dog.</td><td>Vergangenheit: Ich hatte wirklich einen Hund.</td></tr>
+      <tr><td>If I <b>had</b> a dog, I would …</td><td>Gedankenspiel: Ich habe <b>jetzt</b> keinen Hund, aber stell dir vor …</td></tr>
+    </tbody></table></div>
+
+    <div class="callout ok"><svg class="ic"><use href="#i-check"/></svg><div><p><b>Merkhilfe aus dem Deutschen:</b> <i>würde</i> = <b>would</b>, und das Verb im if-Satz (<i>hätte, wäre, ginge</i>) = <b>simple past</b> (<i>had, were, went</i>).</p></div></div>
+
+    <div class="unit">
+      <h3 class="unit-h">Checkpoint 3 · Wirklich oder ausgedacht? <span class="badge" data-badge="cp3" hidden></span></h3>
+      <p class="unit-in">Entscheide bei jedem Satz: Ist die Situation realistisch (Type I) oder ausgedacht (Type II)?</p>
+      <div data-mount="cp3"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================== STATION 4 =============================== -->
+<section class="station" id="s4">
+  <div class="card reveal">
+    <div class="st-head"><div class="st-num">4</div><div><div class="st-kick">Station 4 · Neu</div><h2 class="st-title">Die Formel</h2></div></div>
+    <p class="lead">Jetzt wird gebaut. Conditional type II hat eine feste Formel:</p>
+    <div class="formula">
+      <span class="chip t">If</span><span class="chip t">simple past</span><span class="chip n">,</span><span class="chip c">would</span><span class="chip c">Infinitiv</span>
+      <div class="lab">conditional type II</div>
+    </div>
+    <h3>So baust du einen Satz in drei Schritten</h3>
+    <ol class="steps3">
+      <li><b>If-Satz:</b> <span class="ifc">If</span> + Subjekt + <b>simple past</b> → <span class="ifc">If I had a dog</span></li>
+      <li><b>Komma</b> setzen, wenn der if-Satz vorn steht.</li>
+      <li><b>Hauptsatz:</b> Subjekt + <b>would</b> + Infinitiv → <span class="mc">I would walk it every day.</span></li>
+    </ol>
+    <div class="ex" data-de="Wenn ich einen Hund hätte, würde ich ihn jeden Tag ausführen.">
+      <p class="en"><span class="ifc">If I had a dog</span>, <span class="mc">I would walk it every day</span>.</p>
+    </div>
+    <h3>Reihenfolge tauschen</h3>
+    <p>Wie bei Type I darfst du die Teile vertauschen. Dann fällt das Komma weg:</p>
+    <div class="ex" data-de="Ich würde ihn jeden Tag ausführen, wenn ich einen Hund hätte.">
+      <p class="en"><span class="mc">I would walk it every day</span> <span class="ifc">if I had a dog</span>.</p>
+    </div>
+    <div class="duo">
+      <div class="dd no"><h4><svg class="ic"><use href="#i-x"/></svg>Kein would im if-Satz!</h4><p><s>If I would have a dog, I would walk it.</s></p></div>
+      <div class="dd yes"><h4><svg class="ic"><use href="#i-check"/></svg>So ist es richtig</h4><p>If I <b>had</b> a dog, I would walk it.</p></div>
+    </div>
+    <div class="callout tip"><svg class="ic"><use href="#i-bulb"/></svg><div><p><b>Eselsbrücke:</b> <i>would</i> und <i>if</i> sind keine Freunde — sie stehen <b>nie im selben Satzteil</b>. Im if-Satz wohnt der simple past, im Hauptsatz wohnt <i>would</i>.</p></div></div>
+
+    <div class="unit">
+      <h3 class="unit-h">Satzbaukasten <span class="badge" data-badge="bau4" hidden></span></h3>
+      <p class="unit-in">Tippe die Wörter in der richtigen Reihenfolge an. Satzzeichen musst du nicht mitbauen.</p>
+      <div data-mount="bau4"></div>
+    </div>
+    <div class="unit">
+      <h3 class="unit-h">Checkpoint 4 <span class="badge" data-badge="cp4" hidden></span></h3>
+      <div data-mount="cp4"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================== STATION 5 =============================== -->
+<section class="station" id="s5">
+  <div class="card reveal">
+    <div class="st-head"><div class="st-num">5</div><div><div class="st-kick">Station 5 · Feinschliff</div><h2 class="st-title">Die Feinheiten</h2></div></div>
+    <p class="lead">Jetzt kennst du die Grundform. Fünf Details machen dich zum Profi — eins nach dem anderen.</p>
+
+    <div class="stepper" data-stepper>
+      <div class="step">
+        <h3>1 · „If I were you …“</h3>
+        <p>Das Verb <b>be</b> hat im if-Satz eine Besonderheit: Für <b>alle Personen</b> nimmst du <b>were</b> — auch bei I, he, she und it.</p>
+        <div class="ex" data-de="Wenn ich du wäre, würde ich mit deinem Lehrer sprechen.">
+          <p class="en"><span class="ifc">If I were you</span>, <span class="mc">I would talk to your teacher</span>.</p>
+        </div>
+        <div class="ex" data-de="Wenn sie hier wäre, würde sie uns helfen.">
+          <p class="en"><span class="ifc">If she were here</span>, <span class="mc">she would help us</span>.</p>
+        </div>
+        <div class="callout tip"><svg class="ic"><use href="#i-bulb"/></svg><div><p>Im Alltag hörst du auch <i>If I was …</i>. Im Schulenglisch benutzt du aber <b>were</b>. Und <i>If I were you, I would …</i> ist der Klassiker für <b>Ratschläge</b>.</p></div></div>
+      </div>
+      <div class="step">
+        <h3>2 · Verneinung</h3>
+        <p>Im if-Satz verneinst du mit <b>didn't</b> (oder <b>weren't</b>), im Hauptsatz mit <b>wouldn't</b>.</p>
+        <div class="ex" data-de="Wenn ich keine Hausaufgaben hätte, würde ich ausgehen.">
+          <p class="en"><span class="ifc">If I didn't have homework</span>, <span class="mc">I would go out</span>.</p>
+        </div>
+        <div class="ex" data-de="Ich wäre nicht müde, wenn ich früher ins Bett ginge.">
+          <p class="en"><span class="mc">I wouldn't be tired</span> <span class="ifc">if I went to bed earlier</span>.</p>
+        </div>
+        <div class="scroll"><table class="tbl"><thead><tr><th>Wo?</th><th>Verneinung</th></tr></thead><tbody>
+          <tr><td>if-Satz</td><td>didn't + Infinitiv · weren't</td></tr>
+          <tr><td>Hauptsatz</td><td>wouldn't + Infinitiv</td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="step">
+        <h3>3 · could und might</h3>
+        <p>Statt <i>would</i> kannst du im Hauptsatz auch <b>could</b> (<i>könnte</i>) oder <b>might</b> (<i>vielleicht</i>) benutzen. Danach steht wieder der Infinitiv.</p>
+        <div class="ex" data-de="Wenn ich ein Auto hätte, könnte ich dich nach Hause fahren.">
+          <p class="en"><span class="ifc">If I had a car</span>, <span class="mc">I could drive you home</span>.</p>
+        </div>
+        <div class="ex" data-de="Wenn wir uns beeilten, würden wir vielleicht den Bus erwischen.">
+          <p class="en"><span class="ifc">If we hurried</span>, <span class="mc">we might catch the bus</span>.</p>
+        </div>
+        <div class="callout tip"><svg class="ic"><use href="#i-bulb"/></svg><div><p>Auch im if-Satz kann <b>could</b> stehen — als simple past von <i>can</i>: <i>If I <b>could</b> fly, I would …</i></p></div></div>
+      </div>
+      <div class="step">
+        <h3>4 · Fragen und Kurzantworten</h3>
+        <p>In Fragen rutscht <b>would</b> nach vorn. Die Frage nach dem <b>Was würdest du tun, wenn …?</b> ist ein echter Klassiker:</p>
+        <div class="ex" data-de="Was würdest du tun, wenn du einen Geist sehen würdest?">
+          <p class="en"><span class="mc">What would you do</span> <span class="ifc">if you saw a ghost</span>?</p>
+        </div>
+        <div class="ex" data-de="Würdest du es deinen Eltern sagen? – Ja, würde ich. / Nein, würde ich nicht.">
+          <p class="en"><span class="mc">Would you tell your parents</span>? – <b>Yes, I would.</b> / <b>No, I wouldn't.</b></p>
+        </div>
+        <div class="callout warn"><svg class="ic"><use href="#i-alert"/></svg><div><p>In der Kurzantwort steht <b>would</b> ausgeschrieben: <i>Yes, I would.</i> — nicht <s>Yes, I'd.</s> und nicht <s>Yes, I do.</s></p></div></div>
+      </div>
+      <div class="step">
+        <h3>5 · Kurzformen mit ’d</h3>
+        <p>Im Gespräch wird <b>would</b> oft zu <b>’d</b> verkürzt:</p>
+        <div class="scroll"><table class="tbl"><thead><tr><th>lang</th><th>kurz</th></tr></thead><tbody>
+          <tr><td>I would · you would · he would · she would</td><td>I'd · you'd · he'd · she'd</td></tr>
+          <tr><td>it would · we would · they would</td><td>it'd · we'd · they'd</td></tr>
+        </tbody></table></div>
+        <div class="ex" data-de="Wenn ich ein Fahrrad hätte, würde ich mit dem Rad zur Schule fahren.">
+          <p class="en"><span class="ifc">If I had a bike</span>, <span class="mc">I'd ride to school</span>.</p>
+        </div>
+        <div class="callout tip"><svg class="ic"><use href="#i-bulb"/></svg><div><p><b>’d</b> kann auch <i>had</i> bedeuten. In diesem Kapitel steht es aber im Hauptsatz und heißt immer <b>would</b>.</p></div></div>
+      </div>
+    </div>
+
+    <div class="unit">
+      <h3 class="unit-h">Checkpoint 5 <span class="badge" data-badge="cp5" hidden></span></h3>
+      <div data-mount="cp5"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================== STATION 6 =============================== -->
+<section class="station" id="s6">
+  <div class="card reveal">
+    <div class="st-head"><div class="st-num">6</div><div><div class="st-kick">Station 6 · Training</div><h2 class="st-title">Type I oder Type II?</h2></div></div>
+    <p class="lead">Jetzt kommt das Entscheidende: Du musst erkennen, <b>welche</b> Form du brauchst. Stell dir eine einzige Frage:</p>
+    <div class="compare">
+      <div class="cmp real">
+        <div class="tag">Kann das wirklich passieren?</div>
+        <p class="big"><b>Ja</b> → Type I</p>
+        <div class="formula" style="margin:8px 0 0;padding:14px 8px;border:0;background:transparent">
+          <span class="chip t" style="font-size:.95rem;padding:8px 12px">If + present</span><span class="chip c" style="font-size:.95rem;padding:8px 12px">will + Inf.</span>
+        </div>
+      </div>
+      <div class="cmp dream">
+        <div class="tag">Ist es ausgedacht oder sehr unwahrscheinlich?</div>
+        <p class="big"><b>Ja</b> → Type II</p>
+        <div class="formula" style="margin:8px 0 0;padding:14px 8px;border:0;background:transparent">
+          <span class="chip t" style="font-size:.95rem;padding:8px 12px">If + past</span><span class="chip c" style="font-size:.95rem;padding:8px 12px">would + Inf.</span>
+        </div>
+      </div>
+    </div>
+    <div class="scroll"><table class="tbl"><thead><tr><th></th><th>Type I</th><th>Type II</th></tr></thead><tbody>
+      <tr><td><b>Situation</b></td><td>realistisch, möglich</td><td>unwahrscheinlich, ausgedacht</td></tr>
+      <tr><td><b>if-Satz</b></td><td>simple present</td><td>simple past</td></tr>
+      <tr><td><b>Hauptsatz</b></td><td>will + Infinitiv</td><td>would + Infinitiv</td></tr>
+      <tr><td><b>Beispiel</b></td><td>If I have time, I will help you.</td><td>If I had time, I would help you.</td></tr>
+      <tr><td><b>Deutsch</b></td><td>Wenn ich Zeit habe, helfe ich dir.</td><td>Wenn ich Zeit hätte, würde ich dir helfen.</td></tr>
+    </tbody></table></div>
+
+    <div class="unit">
+      <h3 class="unit-h">Sortier-Spiel <span class="badge" data-badge="sort6" hidden></span></h3>
+      <p class="unit-in">Welcher Typ steckt in jedem Satz?</p>
+      <div data-mount="sort6"></div>
+    </div>
+    <div class="unit">
+      <h3 class="unit-h">Fehlerjagd <span class="badge" data-badge="hunt6" hidden></span></h3>
+      <p class="unit-in">In jedem Satz steckt genau ein Fehler. Tippe auf das falsche Wort!</p>
+      <div data-mount="hunt6"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================== STATION 7 =============================== -->
+<section class="station" id="s7">
+  <div class="card reveal">
+    <div class="st-head"><div class="st-num">7</div><div><div class="st-kick">Station 7 · Abschluss</div><h2 class="st-title">Übungen in drei Stufen</h2></div></div>
+    <p class="lead">Jetzt zeigst du, was du kannst. Die Stufen werden freier: erst auswählen, dann ergänzen, zuletzt selbst schreiben. Alle Aufgaben kannst du beliebig oft wiederholen.</p>
+
+    <div class="seg" role="tablist" id="seg">
+      <button class="g" role="tab" aria-selected="true" data-p="pA">A · Geschlossen<small>auswählen &amp; zuordnen <span class="lvl"><i class="f"></i><i></i><i></i></span></small></button>
+      <button class="h" role="tab" aria-selected="false" data-p="pB">B · Halboffen<small>ergänzen &amp; umformen <span class="lvl"><i class="f"></i><i class="f"></i><i></i></span></small></button>
+      <button class="o" role="tab" aria-selected="false" data-p="pC">C · Offen<small>selbst schreiben <span class="lvl"><i class="f"></i><i class="f"></i><i class="f"></i></span></small></button>
+    </div>
+
+    <!-- A -->
+    <div class="ppanel on" id="pA" role="tabpanel">
+      <div class="unit"><h3 class="unit-h"><span class="tagu">A1</span>Wähle die richtige Form <span class="badge" data-badge="A1" hidden></span></h3><p class="unit-in">Nur eine Antwort ist richtig.</p><div data-mount="A1"></div></div>
+      <div class="unit"><h3 class="unit-h"><span class="tagu">A2</span>Welcher Satz ist richtig? <span class="badge" data-badge="A2" hidden></span></h3><p class="unit-in">Drei Sätze zur Auswahl — nur einer ist korrekt.</p><div data-mount="A2"></div></div>
+      <div class="unit"><h3 class="unit-h"><span class="tagu">A3</span>Ordne zu <span class="badge" data-badge="A3" hidden></span></h3><p class="unit-in">Welcher Hauptsatz passt sinnvoll zu welchem if-Satz? Jeder Hauptsatz wird genau einmal gebraucht.</p><div data-mount="A3"></div></div>
+      <div class="unit"><h3 class="unit-h"><span class="tagu">A4</span>Baue den Satz <span class="badge" data-badge="A4" hidden></span></h3><p class="unit-in">Bringe die Wörter in die richtige Reihenfolge.</p><div data-mount="A4"></div></div>
+    </div>
+
+    <!-- B -->
+    <div class="ppanel" id="pB" role="tabpanel">
+      <div class="unit"><h3 class="unit-h"><span class="tagu">B1</span>Lückentext <span class="badge" data-badge="B1" hidden></span></h3><p class="unit-in">Setze die Verben in Klammern in die richtige Form. Kurzformen wie <i>'d</i> und <i>wouldn't</i> sind erlaubt. Punkte gibt es für den ersten Versuch.</p><div data-mount="B1"></div></div>
+      <div class="unit"><h3 class="unit-h"><span class="tagu">B2</span>Satz beenden <span class="badge" data-badge="B2" hidden></span></h3><p class="unit-in">Schreibe den fehlenden Teil selbst. Es gibt viele richtige Lösungen — wichtig ist die Form.</p><div data-mount="B2"></div></div>
+      <div class="unit"><h3 class="unit-h"><span class="tagu">B3</span>Von Type I zu Type II <span class="badge" data-badge="B3" hidden></span></h3><p class="unit-in">Forme den Satz in einen Gedankenspiel-Satz um. Der Inhalt bleibt gleich.</p><div data-mount="B3"></div></div>
+      <div class="unit"><h3 class="unit-h"><span class="tagu">B4</span>Fragen bilden <span class="badge" data-badge="B4" hidden></span></h3><p class="unit-in">Bilde aus den Stichwörtern eine vollständige Frage mit <i>would</i>.</p><div data-mount="B4"></div></div>
+    </div>
+
+    <!-- C -->
+    <div class="ppanel" id="pC" role="tabpanel">
+      <p class="unit-in">Hier gibt es keine „eine richtige Lösung“. Du schreibst frei; die Seite prüft live, ob deine Sätze die Form von conditional type II haben. Deine Texte werden im Browser zwischengespeichert.</p>
+      <div class="unit"><h3 class="unit-h"><span class="tagu">C1</span>Dream Day <span class="badge" data-badge="C1" hidden></span></h3><div data-mount="C1"></div></div>
+      <div class="unit"><h3 class="unit-h"><span class="tagu">C2</span>Advice Column <span class="badge" data-badge="C2" hidden></span></h3><div data-mount="C2"></div></div>
+      <div class="unit"><h3 class="unit-h"><span class="tagu">C3</span>Interview <span class="badge" data-badge="C3" hidden></span></h3><div data-mount="C3"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================== ABSCHLUSS =============================== -->
+<section class="station" id="abschluss">
+  <div class="card reveal">
+    <div class="trophy" id="trophy"><svg class="ic"><use href="#i-trophy"/></svg><div><h3>Mission geschafft!</h3><p>Du hast die komplette Lernstrecke durchgearbeitet. Stark!</p></div></div>
+    <div class="st-head"><div class="st-num"><svg class="ic" style="width:28px;height:28px"><use href="#i-star"/></svg></div><div><div class="st-kick">Dein Stand</div><h2 class="st-title">Zusammenfassung</h2></div></div>
+    <div class="meter"><i id="sumMeter"></i></div>
+    <p id="sumText" class="lead" style="margin-bottom:6px"></p>
+    <div class="sumgrid">
+      <div class="sumc"><small>Stationen 1–6</small><b id="sumS">0 / 9</b></div>
+      <div class="sumc"><small>A + B Punkte</small><b id="sumP">–</b></div>
+      <div class="sumc"><small>C Schreibaufgaben</small><b id="sumC">0 / 3</b></div>
+    </div>
+
+    <div class="cheat">
+      <h3>Spickzettel</h3>
+      <div class="scroll"><table class="tbl"><thead><tr><th>Thema</th><th>Merke</th></tr></thead><tbody>
+        <tr><td><b>Formel</b></td><td><span class="ifc">If + simple past</span> , <span class="mc">would + Infinitiv</span></td></tr>
+        <tr><td><b>Bedeutung</b></td><td>Gedankenspiele, Unwahrscheinliches, Ratschläge (Gegenwart/Zukunft)</td></tr>
+        <tr><td><b>Kein would im if-Satz</b></td><td>✓ If I had a dog, I would walk it. &nbsp; ✗ If I would have …</td></tr>
+        <tr><td><b>Komma</b></td><td>if-Satz vorn → Komma. Hauptsatz vorn → kein Komma.</td></tr>
+        <tr><td><b>be</b></td><td>If I <b>were</b> you, I would …</td></tr>
+        <tr><td><b>Verneinung</b></td><td>didn't / weren't im if-Satz, wouldn't im Hauptsatz</td></tr>
+        <tr><td><b>Varianten</b></td><td>could (könnte), might (vielleicht) statt would</td></tr>
+        <tr><td><b>Frage</b></td><td>What would you do if you won the lottery? – Yes, I would. / No, I wouldn't.</td></tr>
+        <tr><td><b>Type I</b></td><td>If + simple present, will + Infinitiv (realistisch)</td></tr>
+      </tbody></table></div>
+    </div>
+    <p style="margin-top:14px"><button class="btn ghost sm" id="resetAll" type="button">Fortschritt zurücksetzen</button></p>
+  </div>
+</section>
+</main>
+<div class="foot">Lernstrecke Englisch · Klasse 8 · Conditional type II</div>
+
+<script>
+"use strict";
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const el=(tag,cls,html)=>{ const e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; };
+const esc=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const shuffle=a=>{ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const icon=n=>`<svg class="ic"><use href="#i-${n}"/></svg>`;
+
+/* =============================== Speicher =============================== */
+const KEY="ct2.v1";
+let store={units:{},drafts:{}};
+try{ const s=JSON.parse(localStorage.getItem(KEY)||"{}"); if(s&&typeof s==="object"){ store.units=s.units||{}; store.drafts=s.drafts||{}; } }catch(e){}
+const save=()=>{ try{ localStorage.setItem(KEY,JSON.stringify(store)); }catch(e){} };
+
+const STATIONS=[
+  {id:"s1",name:"Bausteine",units:["cp1"]},
+  {id:"s2",name:"Type I",units:["cp2"]},
+  {id:"s3",name:"Die Idee",units:["cp3"]},
+  {id:"s4",name:"Die Formel",units:["bau4","cp4"]},
+  {id:"s5",name:"Feinheiten",units:["cp5"]},
+  {id:"s6",name:"Training",units:["sort6","hunt6"]},
+  {id:"s7",name:"Übungen",units:["A1","A2","A3","A4","B1","B2","B3","B4","C1","C2","C3"]}
+];
+const ALL_UNITS=STATIONS.flatMap(s=>s.units);
+const LERN_UNITS=STATIONS.slice(0,6).flatMap(s=>s.units);
+
+function setUnit(id,score,max){ store.units[id]={done:true,score:score,max:max}; save(); refresh(); }
+
+/* =============================== Bewertung von Sätzen =============================== */
+const norm=s=>String(s).toLowerCase().replace(/[‘’´`]/g,"'").replace(/\s+/g," ").replace(/\s+([,?.!;:])/g,"$1").trim();
+const kurz=s=>norm(s).replace(/[.!?]+$/,"")
+  .replace(/\bwouldn't\b/g,"would not").replace(/\bdidn't\b/g,"did not").replace(/\bcouldn't\b/g,"could not")
+  .replace(/\bweren't\b/g,"were not").replace(/\bwasn't\b/g,"was not")
+  .replace(/(^|\s)'d\b/g,"$1would").replace(/(\w)'d\b/g,"$1 would");
+const PAST=new Set("was were had did went saw took made came gave got knew thought found told felt became left meant kept began seemed showed heard ran moved brought wrote sat stood lost paid met led understood spoke spent grew taught bought sold sent built fell broke ate flew swam drove rode wore chose forgot slept sang won could didn't wasn't weren't hadn't couldn't".split(" "));
+const PRES=new Set("am is are has have do does can will go goes get gets know knows want wants like likes need needs see sees take takes".split(" "));
+const ED_NICHT=new Set("need needs feed speed bleed seed weed breed indeed proceed succeed exceed shed hundred sacred naked".split(" "));
+const MAIN_RE=/\b(?:would|wouldn't|could|couldn't|might)\b|'d\b/;
+const woerter=t=>norm(t).split(/[^a-z']+/).filter(Boolean);
+const istPast=w=>PAST.has(w)||(w.length>=4&&/ed$/.test(w)&&!ED_NICHT.has(w));
+
+function bewerteSatz(raw){
+  const t=norm(raw).replace(/[.!?]+$/,"");
+  if(!/\bif\b/.test(t)) return {status:"na",msg:"Dieser Satz enthält kein if."};
+  let ifc,main,komma=true,m;
+  if((m=/^(?:(?:and|but|so|then)[, ]+)?if\s+(.+?)\s*,\s*(.+)$/.exec(t))){ ifc=m[1]; main=m[2]; }
+  else if((m=/^(?:(?:and|but|so)[, ]+)?if\s+(.+?)\s+then\s+(.+)$/.exec(t))){ ifc=m[1]; main=m[2]; }
+  else if((m=/^if\s+(.+?)\s+(\S+)\s+((?:would|wouldn't|could|couldn't|might)\b.*)$/.exec(t))){ ifc=m[1]; main=m[2]+" "+m[3]; komma=false; }
+  else if((m=/^if\s+(.+?)\s+(\S+'d\b.*)$/.exec(t))){ ifc=m[1]; main=m[2]; komma=false; }
+  else if((m=/^if\s+(.+?)\s+((?:i|you|he|she|it|we|they)\s+\S.*)$/.exec(t))){ ifc=m[1]; main=m[2]; komma=false; }
+  else if(!/^if\b/.test(t)&&(m=/^(.+?)\s+if\s+(.+)$/.exec(t))){ main=m[1]; ifc=m[2]; }
+  else return {status:"warn",msg:"Ich finde den Hauptsatz nicht. Ein Satz mit <i>if</i> braucht einen if-Satz <b>und</b> einen Hauptsatz."};
+  const p=[];
+  const ws=woerter(ifc), hatPast=ws.some(istPast), hatPres=!hatPast&&ws.some(w=>PRES.has(w));
+  if(/\bwould(?:n't)?\b|'d\b/.test(ifc)) p.push("Im if-Satz steht kein <i>would</i>. Dort brauchst du den simple past (z. B. <i>had</i>, <i>were</i>).");
+  else if(hatPres) p.push("Im if-Satz muss der <b>simple past</b> stehen (z. B. <i>had</i> statt <i>have</i>, <i>were</i> statt <i>am/is/are</i>).");
+  if(!MAIN_RE.test(main)){
+    if(/\bwill\b|\bwon't\b|'ll\b/.test(main)) p.push("Im Hauptsatz steht <i>would</i>, nicht <i>will</i>. Mit <i>will</i> wäre es conditional type I.");
+    else p.push("Im Hauptsatz fehlt <i>would</i> (oder <i>could</i>/<i>might</i>) + Infinitiv.");
+  } else if(/\bwould\s+(?:to\b|(?:went|had|did|saw|took|bought|won|gave|got|made|ate|came|knew|found|was|were|is|are|am)\b|\w{3,}ed\b)/.test(main)){
+    p.push("Nach <i>would</i> steht der <b>Infinitiv</b> (ohne <i>to</i>), z. B. <i>would go</i>.");
+  }
+  if(!komma) p.push("Nach dem if-Satz fehlt ein <b>Komma</b>.");
+  if(p.length) return {status:"warn",msg:p.join(" "),ifc:ifc,main:main};
+  return {status:"ok",msg:"Sieht gut aus: if + simple past, would + Infinitiv.",ifc:ifc,main:main};
+}
+function satzListe(text){
+  const teile=(text.match(/[^.!?\n]+[.!?]*/g)||[]).map(s=>s.trim()).filter(Boolean);
+  return teile.map(s=>Object.assign({s:s},bewerteSatz(s))).filter(x=>x.status!=="na");
+}
+
+/* =============================== Ergebnis-Leiste =============================== */
+function resultBar(score,max,onRetry){
+  const pct=max?score/max:1;
+  const msg=pct===1?"Perfekt!":pct>=.75?"Sehr gut!":pct>=.5?"Gut — schau dir die Fehler noch einmal an.":"Übe noch einmal, dann sitzt es.";
+  const r=el("div","result",`<div class="score">${score}/${max}</div><div class="msg">${msg}</div>`);
+  const b=el("button","btn ghost sm","Nochmal"); b.type="button"; b.onclick=onRetry; r.append(b);
+  return r;
+}
+
+/* =============================== Baustein: Quiz (Sofortfeedback) =============================== */
+function runQuiz(root,unit,items,cfg){
+  cfg=cfg||{};
+  root.innerHTML="";
+  let answered=0,score=0;
+  const foot=el("div");
+  items.forEach((it,i)=>{
+    const card=el("div","qcard"+(cfg.row?" qrow":""));
+    card.innerHTML=`<div class="qn">${i+1}</div><div class="qbody"><p class="qtext">${it.q}</p><div class="qopts"></div><p class="qwhy" hidden></p></div>`;
+    const box=$(".qopts",card);
+    let opts;
+    if(it.tokens){ box.className="tokline"; opts=it.tokens.map((t,k)=>({t:t,k:k})); }
+    else{ opts=it.o.map((t,k)=>({t:t,k:k})); if(!cfg.keep) opts=shuffle(opts); }
+    opts.forEach(o=>{ const b=el("button",it.tokens?"tok":"opt",o.t); b.type="button"; b.dataset.k=o.k; box.append(b); });
+    box.onclick=e=>{
+      const b=e.target.closest("button"); if(!b||b.disabled) return;
+      const ok=+b.dataset.k===it.a;
+      $$("button",box).forEach(x=>{ x.disabled=true; if(+x.dataset.k===it.a) x.classList.add("right"); else if(x===b) x.classList.add("wrong"); else x.classList.add("dim"); });
+      const w=$(".qwhy",card); w.hidden=false;
+      w.innerHTML=`<b>${ok?"Richtig.":"Nicht ganz."}</b> ${it.tokens&&!ok?`Richtig wäre: <b>${esc(it.fix)}</b>. `:""}${it.why}`;
+      card.classList.add(ok?"done-ok":"done-sol");
+      if(ok) score++;
+      answered++;
+      if(answered===items.length){ foot.append(resultBar(score,items.length,()=>runQuiz(root,unit,items,cfg))); setUnit(unit,score,items.length); }
+    };
+    root.append(card);
+  });
+  root.append(foot);
+}
+
+/* =============================== Baustein: Aufgabenliste mit „Prüfen“ =============================== */
+function runItems(root,unit,items,build){
+  root.innerHTML="";
+  let finished=0,score=0,max=0;
+  const list=el("div"), foot=el("div");
+  root.append(list,foot);
+  items.forEach((item,i)=>{
+    const card=el("div","qcard");
+    card.innerHTML=`<div class="qn">${i+1}</div><div class="qbody"><div class="slot"></div><div class="acts"><button class="btn primary sm" type="button" data-a="chk">Prüfen</button><button class="btn ghost sm" type="button" data-a="sol" hidden>Lösung zeigen</button></div><div class="fb" aria-live="polite"></div></div>`;
+    list.append(card);
+    const ctrl=build(item,$(".slot",card));
+    max+=ctrl.max;
+    let tries=0,first=0,locked=false;
+    const fin=()=>{ locked=true; ctrl.lock(); $(".acts",card).hidden=true; score+=first; finished++;
+      if(finished===items.length){ foot.append(resultBar(score,max,()=>runItems(root,unit,items,build))); setUnit(unit,score,max); } };
+    $('[data-a="chk"]',card).onclick=()=>{
+      if(locked) return; tries++;
+      const r=ctrl.check(), fb=$(".fb",card);
+      fb.className="fb "+(r.ok?"ok":"bad"); fb.innerHTML=r.html;
+      if(tries===1) first=r.points;
+      if(r.ok){ card.classList.add("done-ok"); fin(); } else $('[data-a="sol"]',card).hidden=false;
+    };
+    $('[data-a="sol"]',card).onclick=()=>{
+      if(locked) return; ctrl.show();
+      const fb=$(".fb",card); fb.className="fb info"; fb.innerHTML=ctrl.solHtml?ctrl.solHtml():"Lösung eingeblendet.";
+      card.classList.add("done-sol"); fin();
+    };
+  });
+}
+
+/* =============================== Aufgabentypen =============================== */
+/* Lückentext */
+function buildGaps(item,slot){
+  const nums=Object.keys(item.g);
+  const html=esc(item.t).replace(/\{(\d)\}/g,(m,n)=>{ const w=Math.max(...item.g[n].ok.map(a=>a.length))+3; return `<input class="gap" data-g="${n}" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:${w}ch" aria-label="Lücke ${n}">`; });
+  slot.innerHTML=`<p class="gaps">${html}</p>`;
+  const inp=n=>$(`input[data-g="${n}"]`,slot);
+  return {
+    max:nums.length,
+    check(){
+      let pts=0; const soft=[], wrong=[];
+      nums.forEach(n=>{
+        const v=kurz(inp(n).value), g=item.g[n];
+        const ok=g.ok.some(a=>kurz(a)===v), sf=(g.soft||[]).some(a=>kurz(a)===v);
+        inp(n).className="gap "+((ok||sf)?"ok":"bad");
+        if(ok||sf){ pts++; if(sf&&g.note) soft.push(g.note); } else wrong.push(n);
+      });
+      if(!wrong.length) return {ok:true,points:pts,html:"Richtig! "+soft.map(s=>`<span class="soft">${s}</span>`).join("")};
+      return {ok:false,points:pts,html:`Noch nicht ganz — ${wrong.length===nums.length?"überprüfe alle Lücken":"prüfe die rot markierten Lücken"}. <span class="soft">Tipp: ${item.hint}</span>`};
+    },
+    show(){ nums.forEach(n=>{ inp(n).value=item.g[n].ok[0]; inp(n).className="gap ok"; }); },
+    solHtml(){ return "Lösung: "+nums.map(n=>`<b>${esc(item.g[n].ok[0])}</b>`).join(" · "); },
+    lock(){ nums.forEach(n=>inp(n).disabled=true); }
+  };
+}
+/* Ganzer Satz (Umformung / Frage) */
+function buildText(item,slot){
+  slot.innerHTML=(item.given?`<div class="given"><span class="tagb">${item.tag||"Vorgabe"}</span><b>${item.given}</b></div>`:"")+
+    `<p class="qtext" style="margin:6px 0 0">${item.prompt}</p><input class="tin" type="text" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="Dein Satz …" aria-label="Deine Antwort">`;
+  const inp=$("input",slot);
+  return {
+    max:1,
+    check(){
+      const v=kurz(inp.value), ok=item.variants.some(a=>kurz(a)===v);
+      inp.className="tin "+(ok?"ok":"bad");
+      if(ok) return {ok:true,points:1,html:"Richtig! "+esc(item.model)};
+      const b=inp.value.trim()?bewerteSatz(inp.value):null;
+      let h="Noch nicht ganz. ";
+      if(!inp.value.trim()) h+="Schreibe deinen Satz in das Feld.";
+      else if(b&&b.status==="warn") h+=b.msg;
+      else h+="Vergleiche noch einmal genau mit der Vorgabe (Inhalt, Wortstellung, Komma).";
+      if(item.hint) h+=`<span class="soft">Tipp: ${item.hint}</span>`;
+      return {ok:false,points:0,html:h};
+    },
+    show(){ inp.value=item.model; inp.className="tin ok"; },
+    solHtml(){ return "Musterlösung: <b>"+esc(item.model)+"</b>"; },
+    lock(){ inp.disabled=true; }
+  };
+}
+/* Satz selbst beenden */
+function buildComplete(item,slot){
+  slot.innerHTML=`<div class="compl">${item.pre?`<span class="pre">${esc(item.pre)}</span>`:""}<input class="tin" type="text" autocomplete="off" spellcheck="false" placeholder="${esc(item.ph)}" aria-label="Ergänzung">${item.post?`<span class="post">${esc(item.post)}</span>`:""}</div>`;
+  const inp=$("input",slot);
+  const voll=()=>(item.pre?item.pre+" ":"")+inp.value.trim()+(item.post||"");
+  return {
+    max:1,
+    check(){
+      if(inp.value.trim().length<3){ inp.className="tin bad"; return {ok:false,points:0,html:"Schreibe zuerst deine Ergänzung in das Feld."}; }
+      const b=bewerteSatz(voll());
+      const ok=b.status==="ok";
+      inp.className="tin "+(ok?"ok":"bad");
+      if(ok) return {ok:true,points:1,html:"Richtig gebaut: <i>"+esc(voll())+"</i>"};
+      return {ok:false,points:0,html:(b.status==="na"?"Der Satz braucht einen if-Satz. ":"")+(b.status==="na"?"":b.msg)};
+    },
+    show(){ inp.value=item.model; inp.className="tin ok"; },
+    solHtml(){ return "Beispiel: <b>"+esc((item.pre?item.pre+" ":"")+item.model+(item.post||""))+"</b>"; },
+    lock(){ inp.disabled=true; }
+  };
+}
+/* Satzbaukasten */
+function buildBuilder(item,slot){
+  slot.innerHTML=`<div class="line" aria-label="Dein Satz"></div><div class="pool" aria-label="Wörter"></div>`;
+  const line=$(".line",slot), pool=$(".pool",slot);
+  const chips=shuffle(item.words.map((w,i)=>({w:w,i:i}))).map(c=>{ const b=el("button","wchip",esc(c.w)); b.type="button"; b.dataset.i=c.i; return b; });
+  chips.forEach(b=>pool.append(b));
+  let locked=false;
+  const move=b=>{ if(locked) return; (b.parentNode===pool?line:pool).append(b); };
+  slot.addEventListener("click",e=>{ const b=e.target.closest(".wchip"); if(b) move(b); });
+  const cur=()=>$$(".wchip",line).map(b=>b.textContent).join(" ");
+  const strip=s=>kurz(s).replace(/,/g,"");
+  return {
+    max:1,
+    check(){
+      const ok=item.answers.some(a=>strip(a)===strip(cur()));
+      line.style.borderColor=ok?"var(--ok)":"var(--bad)";
+      if(ok) return {ok:true,points:1,html:"Richtig! <b>"+esc(item.model)+"</b>"};
+      return {ok:false,points:0,html:"Noch nicht ganz."+(item.hint?`<span class="soft">Tipp: ${item.hint}</span>`:"")};
+    },
+    show(){
+      const rest=chips.slice();
+      item.modelWords.forEach(w=>{ const k=rest.findIndex(b=>b.textContent.toLowerCase()===w.toLowerCase()); if(k>=0){ line.append(rest[k]); rest.splice(k,1); } });
+      rest.forEach(b=>pool.append(b)); line.style.borderColor="var(--ok)";
+    },
+    solHtml(){ return "Lösung: <b>"+esc(item.model)+"</b>"; },
+    lock(){ locked=true; $$(".wchip",slot).forEach(b=>b.disabled=true); }
+  };
+}
+/* Zuordnung (eine Aufgabe mit mehreren Zeilen) */
+function buildMatch(item,slot){
+  const opts=item.options.map((t,i)=>`<li>${esc(t)}</li>`).join("");
+  slot.innerHTML=`<ol class="mopts">${opts}</ol><div class="match"></div>`;
+  const box=$(".match",slot);
+  const sels=item.rows.map(r=>{
+    const row=el("div","mrow",`<div class="l">${esc(r.l)}</div>`);
+    const s=el("select"); s.setAttribute("aria-label",r.l);
+    s.innerHTML=`<option value="">— Hauptsatz wählen —</option>`+item.options.map((t,i)=>`<option value="${i}">${String.fromCharCode(65+i)}</option>`).join("");
+    row.append(s); box.append(row); return s;
+  });
+  return {
+    max:item.rows.length,
+    check(){
+      let pts=0;
+      sels.forEach((s,i)=>{ const ok=+s.value===item.rows[i].a&&s.value!==""; s.className=ok?"ok":"bad"; if(ok) pts++; });
+      if(pts===sels.length) return {ok:true,points:pts,html:"Alles richtig zugeordnet!"};
+      return {ok:false,points:pts,html:`${pts} von ${sels.length} richtig. Prüfe die rot markierten Zeilen.<span class="soft">Tipp: Lies beide Teile zusammen — ergibt der Satz Sinn?</span>`};
+    },
+    show(){ sels.forEach((s,i)=>{ s.value=item.rows[i].a; s.className="ok"; }); },
+    solHtml(){ return "Lösung eingeblendet."; },
+    lock(){ sels.forEach(s=>s.disabled=true); }
+  };
+}
+
+/* =============================== Schreib-Aufgaben =============================== */
+function runWriting(root,unit,cfg){
+  const draft=store.drafts[unit]||"";
+  root.innerHTML=`
+    <p class="unit-in">${cfg.task}</p>
+    ${cfg.extra||""}
+    ${cfg.starters?`<div class="starters" aria-label="Satzanfänge">${cfg.starters.map(s=>`<button type="button" data-ins="${esc(s)}">${esc(s)}</button>`).join("")}</div>`:""}
+    <textarea class="ta" spellcheck="false" placeholder="${esc(cfg.ph||"Write here …")}" aria-label="Dein Text">${esc(draft)}</textarea>
+    <div class="wmeta"><span class="wc">0 Wörter</span><span class="oks"></span></div>
+    <div class="meter"><i></i></div>
+    <ul class="fbl" aria-live="polite"></ul>
+    <div class="checks"><h4>Selbst-Check</h4>${cfg.checks.map((c,i)=>`<label><input type="checkbox"><span>${c}</span></label>`).join("")}</div>
+    <div class="acts">
+      <button class="btn primary sm" type="button" data-a="done">Aufgabe abschließen</button>
+      <button class="btn ghost sm" type="button" data-a="copy">Text kopieren</button>
+    </div>
+    <p class="fb" aria-live="polite"></p>
+    <details class="model"><summary>Musterlösung ansehen</summary><p>${esc(cfg.model)}</p></details>`;
+  const ta=$("textarea",root), list=$(".fbl",root), meter=$(".meter i",root), fb=$(".fb",root);
+  let okCount=0;
+  function analyse(){
+    const text=ta.value;
+    store.drafts[unit]=text; save();
+    const words=(text.match(/[A-Za-zÄÖÜäöüß']+/g)||[]).length;
+    $(".wc",root).textContent=words+(words===1?" Wort":" Wörter");
+    const sat=cfg.mode==="frage"?(text.match(/[^\n?]+\??/g)||[]).map(s=>s.trim()).filter(s=>/\w/.test(s)).map(s=>Object.assign({s:s},bewerteSatz(s))).filter(x=>x.status!=="na"):satzListe(text);
+    okCount=sat.filter(x=>x.status==="ok").length;
+    list.innerHTML=sat.map(x=>`<li class="${x.status==="ok"?"ok":"warn"}">${icon(x.status==="ok"?"check":"alert")}<div><span class="s">${esc(x.s)}</span><span class="m">${x.msg}</span></div></li>`).join("");
+    $(".oks",root).textContent=`${okCount} von ${cfg.need} passenden Sätzen`;
+    meter.style.width=Math.min(100,okCount/cfg.need*100)+"%";
+  }
+  ta.addEventListener("input",analyse);
+  $$("[data-ins]",root).forEach(b=>b.onclick=()=>{ ta.value=(ta.value?ta.value.replace(/\s*$/," "):"")+b.dataset.ins+" "; ta.focus(); analyse(); });
+  $('[data-a="copy"]',root).onclick=()=>{
+    const done=()=>{ fb.className="fb info"; fb.textContent="Text kopiert — du kannst ihn jetzt einfügen und abgeben."; };
+    try{ navigator.clipboard.writeText(ta.value).then(done,()=>{ ta.select(); document.execCommand("copy"); done(); }); }
+    catch(e){ ta.select(); try{ document.execCommand("copy"); done(); }catch(x){} }
+  };
+  $('[data-a="done"]',root).onclick=()=>{
+    if(okCount<cfg.need){ fb.className="fb bad"; fb.innerHTML=`Noch nicht ganz: Ich finde ${okCount} passende Sätze, gebraucht werden ${cfg.need}. Schau in die Hinweise über dem Selbst-Check.`; return; }
+    const boxes=$$('.checks input',root), all=boxes.every(b=>b.checked);
+    if(!all){ fb.className="fb info"; fb.textContent="Fast geschafft: Hake im Selbst-Check ab, was auf deinen Text zutrifft — sei ehrlich zu dir."; return; }
+    fb.className="fb ok"; fb.textContent="Super, Aufgabe abgeschlossen!";
+    setUnit(unit,okCount,cfg.need);
+  };
+  analyse();
+}
+
+/* =============================== Aufgabendaten =============================== */
+const V=(ifs,mains)=>{ const o=[]; ifs.forEach(i=>mains.forEach(m=>{ o.push(`If ${i}, ${m}.`); o.push(`${m.charAt(0).toUpperCase()+m.slice(1)} if ${i}.`); })); return o; };
+
+const DATA={
+  cp1:[
+    {q:"Welche Form ist der <b>simple past</b> von <i>buy</i>?",o:["buyed","bought","boughten","buys"],a:1,why:"<i>buy</i> ist unregelmäßig: buy – bought."},
+    {q:"Was steht nach <b>would</b>?",o:["der Infinitiv ohne <i>to</i>","to + Infinitiv","die -ing-Form","der simple past"],a:0,why:"Nach <i>would</i> folgt der Infinitiv ohne <i>to</i>: <i>I would go</i>."},
+    {q:"Was bedeutet <b>wouldn't</b>?",o:["would not","will not","could not","did not"],a:0,why:"<i>wouldn't</i> ist die Kurzform von <i>would not</i>."},
+    {q:"Der <b>if-Satz</b> steht am Satzanfang. Was gilt?",o:["Nach dem if-Satz steht ein Komma.","Es darf kein Komma stehen.","Nach if steht immer ein Punkt.","Der Hauptsatz muss dann mit if beginnen."],a:0,why:"If-Satz vorn → Komma. Steht der Hauptsatz vorn, brauchst du kein Komma."}
+  ],
+  cp2:[
+    {q:"Vervollständige: <i>If it ___ tomorrow, we will stay at home.</i>",o:["rains","will rain","rained","would rain"],a:0,why:"Type I: if + simple present. Nach <i>if</i> steht kein <i>will</i>."},
+    {q:"Wofür benutzt du conditional type I?",o:["für realistische, mögliche Situationen","für unmögliche Träume","für Ereignisse von gestern","für höfliche Bitten"],a:0,why:"Bei Type I kann die Bedingung wirklich eintreten."},
+    {q:"Welcher Satz ist richtig?",o:["If you study hard, you will pass the test.","If you will study hard, you pass the test.","If you studied hard, you will pass the test.","If you study hard, you would pass the test."],a:0,why:"Type I: If + simple present, will + Infinitiv."}
+  ],
+  cp3:[
+    {q:"If I have time tomorrow, I will call you.",o:["Realistisch (Type I)","Ausgedacht (Type II)"],a:0,why:"Ich habe vielleicht wirklich Zeit — das ist gut möglich."},
+    {q:"If I had wings, I would fly to school.",o:["Realistisch (Type I)","Ausgedacht (Type II)"],a:1,why:"Menschen haben keine Flügel. Das ist ein Gedankenspiel."},
+    {q:"If it rains, we will stay at home.",o:["Realistisch (Type I)","Ausgedacht (Type II)"],a:0,why:"Regen ist eine ganz normale Möglichkeit."},
+    {q:"If I were invisible, I would walk into every shop.",o:["Realistisch (Type I)","Ausgedacht (Type II)"],a:1,why:"Unsichtbar zu sein ist nicht möglich — nur ausgedacht."},
+    {q:"If I won a million euros, I would buy an island.",o:["Realistisch (Type I)","Ausgedacht (Type II)"],a:1,why:"Eine Million zu gewinnen ist extrem unwahrscheinlich — ein Traum."}
+  ],
+  cp4:[
+    {q:"If I ___ a robot, I would never do my homework.",o:["had","have","would have","will have"],a:0,why:"Im if-Satz steht der simple past: <i>had</i>."},
+    {q:"Welche Formel gehört zu conditional type II?",o:["if + simple past, would + Infinitiv","if + simple present, will + Infinitiv","if + would, simple past","if + simple past, will + Infinitiv"],a:0,why:"Type II: <span class=\"ifc\">if + simple past</span>, <span class=\"mc\">would + Infinitiv</span>."},
+    {q:"Welcher Satz ist richtig?",o:["I would call you if I had your number.","I would call you if I would have your number.","I will call you if I had your number.","I would called you if I had your number."],a:0,why:"Kein <i>would</i> im if-Satz; im Hauptsatz <i>would</i> + Infinitiv."},
+    {q:"She would visit us if she ___ more time.",o:["had","has","would have","will have"],a:0,why:"Auch wenn der Hauptsatz vorn steht: im if-Satz gilt der simple past."}
+  ],
+  cp5:[
+    {q:"If I ___ you, I would say sorry.",o:["were","am","will be","would be"],a:0,why:"Bei „If I were you …“ (Ratschlag) steht <i>were</i>."},
+    {q:"We would play football if we ___ so tired.",o:["weren't","aren't","wouldn't be","won't be"],a:0,why:"Verneinung im if-Satz: simple past → <i>weren't</i> / <i>didn't</i>."},
+    {q:"Welche Frage ist richtig?",o:["What would you do if you were invisible?","What you would do if you were invisible?","What would you to do if you were invisible?","What do you would do if you were invisible?"],a:0,why:"Fragewort + would + Subjekt + Infinitiv — dann der if-Satz."},
+    {q:"<i>Would you tell him?</i> — Kurzantwort „ja“:",o:["Yes, I would.","Yes, I'd.","Yes, I will.","Yes, I do."],a:0,why:"In Kurzantworten steht <i>would</i> ausgeschrieben: <i>Yes, I would.</i> / <i>No, I wouldn't.</i>"},
+    {q:"If we hurried, we ___ catch the bus. (vielleicht)",o:["might","will","did","are"],a:0,why:"<i>might</i> = vielleicht; <i>could</i> = könnte. Beide stehen statt <i>would</i>."}
+  ],
+  sort6:[
+    {q:"If she has time, she will help us.",o:["Type I","Type II"],a:0,why:"if + simple present, will + Infinitiv → <b>Type I</b>."},
+    {q:"If I were a bird, I would fly to Africa.",o:["Type I","Type II"],a:1,why:"if + simple past (<i>were</i>), would + Infinitiv → <b>Type II</b>."},
+    {q:"If it is sunny on Sunday, we will go swimming.",o:["Type I","Type II"],a:0,why:"Simple present und <i>will</i> → <b>Type I</b>."},
+    {q:"If we had a robot, we would never do homework.",o:["Type I","Type II"],a:1,why:"Simple past und <i>would</i> → <b>Type II</b>."},
+    {q:"If you don't hurry, you will miss the bus.",o:["Type I","Type II"],a:0,why:"<i>don't hurry</i> (present) und <i>will</i> → <b>Type I</b>."},
+    {q:"What would you do if you saw a ghost?",o:["Type I","Type II"],a:1,why:"<i>would</i> und <i>saw</i> (simple past) → <b>Type II</b>."},
+    {q:"If my brother wins the match, he will be happy.",o:["Type I","Type II"],a:0,why:"<i>wins</i> (present) und <i>will</i> → <b>Type I</b>."},
+    {q:"I would tell the truth if I were you.",o:["Type I","Type II"],a:1,why:"<i>would</i> im Hauptsatz und <i>were</i> im if-Satz → <b>Type II</b>."}
+  ],
+  hunt6:[
+    {q:"Tippe auf den Fehler:",tokens:["If","I","would","have","a","pony,","I","would","call","it","Star."],a:2,fix:"had",why:"Im if-Satz steht kein <i>would</i>, sondern der simple past: <i>If I had a pony …</i>"},
+    {q:"Tippe auf den Fehler:",tokens:["If","we","lived","in","Spain,","we","will","speak","Spanish."],a:6,fix:"would",why:"Zu <i>lived</i> (simple past) gehört im Hauptsatz <i>would</i>, nicht <i>will</i>."},
+    {q:"Tippe auf den Fehler:",tokens:["What","would","you","did","if","you","saw","a","bear?"],a:3,fix:"do",why:"Nach <i>would</i> steht der Infinitiv: <i>What would you do …?</i>"},
+    {q:"Tippe auf den Fehler:",tokens:["He","would","help","you","if","he","know","the","answer."],a:6,fix:"knew",why:"Im if-Satz steht der simple past: <i>if he knew</i>."},
+    {q:"Tippe auf den Fehler:",tokens:["If","I","am","you,","I","would","learn","more."],a:2,fix:"were",why:"Bei Ratschlägen heißt es <i>If I were you</i>."}
+  ],
+  bau4:[
+    {words:["If","I","had","a","dog","I","would","walk","it","every","day"],answers:["If I had a dog I would walk it every day"],model:"If I had a dog, I would walk it every day.",modelWords:["If","I","had","a","dog","I","would","walk","it","every","day"],hint:"Beginne mit dem if-Satz: If + Subjekt + simple past."},
+    {words:["We","would","play","outside","if","the","sun","shone"],answers:["We would play outside if the sun shone","If the sun shone we would play outside"],model:"We would play outside if the sun shone.",modelWords:["We","would","play","outside","if","the","sun","shone"],hint:"Hauptsatz zuerst geht auch — dann ohne Komma."},
+    {words:["If","he","were","taller","he","would","play","basketball"],answers:["If he were taller he would play basketball","He would play basketball if he were taller"],model:"If he were taller, he would play basketball.",modelWords:["If","he","were","taller","he","would","play","basketball"],hint:"Nach if steht bei he/she/it: were."}
+  ],
+  A1:[
+    {q:"If I ___ a superhero, I would save the world.",o:["were","am","would be","will be"],a:0,why:"Im if-Satz steht der simple past — bei „be“: <i>were</i>."},
+    {q:"She would buy the bike if she ___ enough money.",o:["had","has","would have","will have"],a:0,why:"if-Satz → simple past: <i>had</i>."},
+    {q:"If we ___ in Australia, we would see kangaroos.",o:["lived","live","would live","lives"],a:0,why:"Simple past im if-Satz: <i>lived</i>."},
+    {q:"What ___ you do if you saw a shark?",o:["would","will","did","do"],a:0,why:"Frage im Type II: <i>What would you do …?</i>"},
+    {q:"If it ___ so cold, we would go to the park.",o:["weren't","isn't","won't be","wouldn't be"],a:0,why:"Verneinung im if-Satz: <i>weren't</i> (simple past von <i>be</i>)."},
+    {q:"He ___ happier if he had a dog.",o:["would be","will be","is","was"],a:0,why:"Hauptsatz im Type II: <i>would</i> + Infinitiv."},
+    {q:"If I ___ you, I wouldn't do that.",o:["were","am","would be","will be"],a:0,why:"Ratschlag: <i>If I were you …</i>"},
+    {q:"They wouldn't be late if they ___ earlier.",o:["left","would leave","leave","will leave"],a:0,why:"if-Satz → simple past: <i>left</i> (leave – left)."}
+  ],
+  A2:[
+    {q:"Welcher Satz ist richtig?",o:["If I would have a car, I would drive to school.","If I had a car, I would drive to school.","If I have a car, I would drove to school."],a:1,why:"Im if-Satz kein <i>would</i> — und nach <i>would</i> der Infinitiv (<i>drive</i>)."},
+    {q:"Welcher Satz ist richtig?",o:["If she were here, she would help us.","If she would be here, she help us.","If she is here, she would helping us."],a:0,why:"<i>were</i> im if-Satz, <i>would help</i> im Hauptsatz."},
+    {q:"Welcher Satz ist richtig?",o:["We would go to the beach if the sun would shine.","We would go to the beach if the sun shone.","We go to the beach if the sun shone."],a:1,why:"Der if-Satz braucht den simple past (<i>shone</i>), kein <i>would</i>."},
+    {q:"Welcher Satz ist richtig?",o:["What would you do if you found a wallet?","What will you do if you found a wallet?","What would you did if you found a wallet?"],a:0,why:"<i>would</i> + Infinitiv im Hauptsatz, simple past im if-Satz."},
+    {q:"Welcher Satz ist richtig?",o:["If I am you, I would say sorry.","If I were you, I will say sorry.","If I were you, I would say sorry."],a:2,why:"<i>If I were you, I would …</i> — der Klassiker für Ratschläge."},
+    {q:"Welcher Satz ist richtig?",o:["He wouldn't be tired if he goes to bed earlier.","He wouldn't be tired if he went to bed earlier.","He won't be tired if he went to bed earlier."],a:1,why:"Type II: <i>wouldn't be</i> im Hauptsatz und <i>went</i> im if-Satz."}
+  ],
+  A3:{options:["I would sleep until noon and eat pancakes.","he would tell me all his secrets.","I would work as a translator.","we would swim every day before school.","I would cancel all the tests."],
+      rows:[{l:"If I could speak every language,",a:2},{l:"If it were Saturday today,",a:0},{l:"If my dog could talk,",a:1},{l:"If we lived next to the sea,",a:3},{l:"If I were the headteacher,",a:4}]},
+  A4:[
+    {words:["I","would","buy","a","castle","if","I","were","rich"],answers:["I would buy a castle if I were rich","If I were rich I would buy a castle"],model:"I would buy a castle if I were rich.",modelWords:["I","would","buy","a","castle","if","I","were","rich"],hint:"Der Hauptsatz mit would kann vorn stehen."},
+    {words:["If","we","had","more","time","we","would","visit","the","museum"],answers:["If we had more time we would visit the museum","We would visit the museum if we had more time"],model:"If we had more time, we would visit the museum.",modelWords:["If","we","had","more","time","we","would","visit","the","museum"],hint:"if-Satz: simple past. Hauptsatz: would + Infinitiv."},
+    {words:["What","would","you","do","if","you","saw","a","ghost"],answers:["What would you do if you saw a ghost","If you saw a ghost what would you do"],model:"What would you do if you saw a ghost?",modelWords:["What","would","you","do","if","you","saw","a","ghost"],hint:"Frage: Fragewort + would + Subjekt + Infinitiv."}
+  ],
+  B1:[
+    {t:"If I {1} (be) you, I {2} (talk) to my teacher.",g:{1:{ok:["were"],soft:["was"],note:"„was“ hört man im Alltag — im Schulenglisch benutzt du <b>were</b>."},2:{ok:["would talk","'d talk"]}},hint:"if-Satz: simple past (bei be: were). Hauptsatz: would + Infinitiv."},
+    {t:"If we {1} (have) more time, we {2} (visit) the museum.",g:{1:{ok:["had"]},2:{ok:["would visit","'d visit"]}},hint:"had im if-Satz, would + Infinitiv im Hauptsatz."},
+    {t:"She {1} (not / be) so tired if she {2} (go) to bed earlier.",g:{1:{ok:["wouldn't be","would not be"]},2:{ok:["went"]}},hint:"Hauptsatz verneint: wouldn't + Infinitiv. Im if-Satz: go → went."},
+    {t:"If it {1} (be) warmer, they {2} (swim) in the lake.",g:{1:{ok:["were"],soft:["was"],note:"„was“ ist umgangssprachlich — <b>were</b> ist die Standardform."},2:{ok:["would swim","'d swim"]}},hint:"be im if-Satz: were."},
+    {t:"What {1} you do if you {2} (see) a ghost?",g:{1:{ok:["would"]},2:{ok:["saw"]}},hint:"Frage mit would; im if-Satz see → saw."},
+    {t:"If Tom {1} (not / forget) his homework, the teacher {2} (not / be) angry.",g:{1:{ok:["didn't forget","did not forget"]},2:{ok:["wouldn't be","would not be"]}},hint:"Verneinung: didn't im if-Satz, wouldn't im Hauptsatz."},
+    {t:"I {1} (buy) a bigger house if I {2} (win) the lottery.",g:{1:{ok:["would buy","'d buy"]},2:{ok:["won"]}},hint:"win → won (simple past)."},
+    {t:"If my brother {1} (can) fly, he {2} (visit) us every day.",g:{1:{ok:["could"]},2:{ok:["would visit","'d visit"]}},hint:"can → could im if-Satz."}
+  ],
+  B2:[
+    {pre:"If I were the headteacher,",post:"",ph:"z. B. I would cancel all tests.",model:"I would cancel all the tests."},
+    {pre:"If I had a time machine,",post:"",ph:"Was würdest du tun?",model:"I would visit the dinosaurs."},
+    {pre:"",post:", I would buy a big house.",ph:"If … (z. B. If I won the lottery)",model:"If I won the lottery"},
+    {pre:"If my best friend moved to another country,",post:"",ph:"Was würdest du tun?",model:"I would visit him every summer."},
+    {pre:"I wouldn't go to school today if",post:"",ph:"… (z. B. I were ill)",model:"I were ill."}
+  ],
+  B3:[
+    {tag:"Type I",given:"If I have enough money, I will buy a new phone.",prompt:"Schreibe den Satz als <b>Type II</b> (Gedankenspiel):",variants:V(["I had enough money"],["I would buy a new phone"]),model:"If I had enough money, I would buy a new phone.",hint:"have → had, will → would."},
+    {tag:"Type I",given:"If she studies hard, she will pass the test.",prompt:"Schreibe den Satz als <b>Type II</b>:",variants:V(["she studied hard"],["she would pass the test"]),model:"If she studied hard, she would pass the test.",hint:"studies → studied, will → would."},
+    {tag:"Type I",given:"If we go to London, we will visit the Tower.",prompt:"Schreibe den Satz als <b>Type II</b>:",variants:V(["we went to London"],["we would visit the Tower"]),model:"If we went to London, we would visit the Tower.",hint:"go → went (unregelmäßig)."},
+    {tag:"Type I",given:"If they don't hurry, they will miss the bus.",prompt:"Schreibe den Satz als <b>Type II</b>:",variants:V(["they did not hurry"],["they would miss the bus"]),model:"If they didn't hurry, they would miss the bus.",hint:"don't → didn't."},
+    {tag:"Type I",given:"If you are nice to him, he will help you.",prompt:"Schreibe den Satz als <b>Type II</b>:",variants:V(["you were nice to him"],["he would help you"]),model:"If you were nice to him, he would help you.",hint:"are → were."}
+  ],
+  B4:[
+    {given:"what / you / do / if / you / win / a million euros",tag:"Stichwörter",prompt:"Bilde die Frage (Type II):",variants:["What would you do if you won a million euros?","If you won a million euros, what would you do?"],model:"What would you do if you won a million euros?",hint:"Fragewort + would + Subjekt + Infinitiv, dann der if-Satz mit simple past."},
+    {given:"where / she / live / if / she / can choose",tag:"Stichwörter",prompt:"Bilde die Frage (Type II):",variants:["Where would she live if she could choose?","If she could choose, where would she live?"],model:"Where would she live if she could choose?",hint:"can → could im if-Satz."},
+    {given:"what / happen / if / everybody / stop / use / phones",tag:"Stichwörter",prompt:"Bilde die Frage (Type II):",variants:["What would happen if everybody stopped using phones?","If everybody stopped using phones, what would happen?"],model:"What would happen if everybody stopped using phones?",hint:"stop → stopped, nach stop steht use + -ing."}
+  ]
+};
+
+const WRITE={
+  C1:{need:3,mode:"satz",
+    task:"Stell dir vor, du könntest einen Tag lang etwas Unmögliches tun (unsichtbar sein, fliegen, die Zeit anhalten …). Schreibe <b>4–6 Sätze</b>: Was würdest du tun? Mindestens <b>drei</b> Sätze sollen conditional type II sein.",
+    starters:["If I were invisible,","If I could fly,","If I could stop time,","If I were the president,"],
+    ph:"If I were invisible for a day, I would …",
+    checks:["Ich habe mindestens drei if-Sätze geschrieben.","Im if-Satz steht der simple past (kein <i>would</i>).","Im Hauptsatz steht <i>would</i> (oder <i>could/might</i>) + Infinitiv.","Nach einem vorangestellten if-Satz steht ein Komma."],
+    model:"If I were invisible for a day, I would go to the cinema without a ticket. I would also watch my favourite football club train.\nIf I could stop time, I would finish my homework in one second. But I wouldn't tell anyone, because it would be our secret.\nIf everyone could do this, the world would be really strange!"},
+  C2:{need:3,mode:"satz",
+    task:"Du bist die Ratgeberin bzw. der Ratgeber einer Schülerzeitung. Lies den Brief und schreibe eine Antwort mit <b>drei bis fünf Ratschlägen</b>. Benutze dafür <b>If I were you, I would …</b> (mindestens drei passende Sätze).",
+    extra:`<div class="letter">Dear Ms Wise,<br>my best friend often copies my homework in the morning. I don't want to say no because I like him, but my teacher has already noticed it. What should I do?<br>— Alex (13)</div>`,
+    starters:["If I were you, I would","If I were you, I wouldn't","If I were you, I could"],
+    ph:"Dear Alex, thank you for your letter. If I were you, I would …",
+    checks:["Ich habe mindestens drei Ratschläge mit <i>If I were you</i> geschrieben.","Ich habe <i>were</i> (nicht <i>was</i> oder <i>am</i>) benutzt.","Nach <i>If I were you</i> steht ein Komma.","Nach <i>would</i>/<i>wouldn't</i> steht der Infinitiv ohne <i>to</i>."],
+    model:"Dear Alex,\nthank you for your letter. If I were you, I would talk to your friend in private.\nIf I were you, I wouldn't give him your homework any more, but I would offer to learn together after school.\nIf I were you, I would also tell your teacher the truth if the problem got worse.\nBest wishes, Ms Wise"},
+  C3:{need:5,mode:"frage",
+    task:"Du machst ein Interview mit deiner Sitznachbarin oder deinem Sitznachbarn. Schreibe <b>fünf Fragen</b> mit <b>What would you do if …?</b> oder <b>Would you … if …?</b> — jede Frage in eine neue Zeile.",
+    starters:["What would you do if","Where would you live if","Would you tell … if","Who would you invite if"],
+    ph:"What would you do if you found a wallet?\n…",
+    checks:["Ich habe fünf Fragen geschrieben, jede in einer eigenen Zeile.","In jeder Frage steht <i>would</i> vor dem Subjekt.","Im if-Teil steht der simple past (<i>found, were, could …</i>).","Am Ende jeder Frage steht ein Fragezeichen."],
+    model:"What would you do if you found a wallet on the street?\nWhere would you live if you could choose any country?\nWould you tell a friend's secret if the teacher asked you?\nWhat would you change at our school if you were the headteacher?\nWho would you invite to dinner if you could meet anyone?"}
+};
+
+/* =============================== Einbinden =============================== */
+function mountAll(){
+  const q=(id,items,cfg)=>runQuiz($(`[data-mount="${id}"]`),id,items,cfg);
+  q("cp1",DATA.cp1); q("cp2",DATA.cp2); q("cp3",DATA.cp3,{keep:true,row:true}); q("cp4",DATA.cp4); q("cp5",DATA.cp5);
+  q("sort6",DATA.sort6,{keep:true,row:true}); q("hunt6",DATA.hunt6,{keep:true});
+  q("A1",DATA.A1); q("A2",DATA.A2);
+  const m=(id,items,fn)=>runItems($(`[data-mount="${id}"]`),id,items,fn);
+  m("bau4",DATA.bau4,buildBuilder); m("A4",DATA.A4,buildBuilder);
+  m("A3",[DATA.A3],buildMatch);
+  m("B1",DATA.B1,buildGaps); m("B2",DATA.B2,buildComplete); m("B3",DATA.B3,buildText); m("B4",DATA.B4,buildText);
+  Object.keys(WRITE).forEach(id=>runWriting($(`[data-mount="${id}"]`),id,WRITE[id]));
+}
+
+/* =============================== Beispiele mit Übersetzung =============================== */
+$$(".ex[data-de]").forEach(ex=>{
+  const de=el("p","de",esc(ex.dataset.de)); ex.append(de);
+  const b=el("button","de-btn","DE"); b.type="button"; b.setAttribute("aria-label","Deutsche Übersetzung ein-/ausblenden");
+  b.onclick=()=>ex.classList.toggle("open"); ex.append(b);
+});
+$("#deTgl").onclick=function(){ const on=document.body.classList.toggle("show-de"); this.setAttribute("aria-pressed",on); };
+
+/* =============================== Stepper =============================== */
+$$("[data-stepper]").forEach(st=>{
+  const steps=$$(":scope > .step",st); let cur=0; const seen=new Set([0]);
+  const nav=el("div","stepnav"), dots=el("div","dots"), count=el("span","stepcount");
+  const prev=el("button","btn ghost sm","← Zurück"), next=el("button","btn primary sm","Weiter →");
+  prev.type=next.type="button";
+  const dbs=steps.map((s,i)=>{ const d=el("button"); d.type="button"; d.setAttribute("aria-label","Schritt "+(i+1)); d.onclick=()=>go(i); dots.append(d); return d; });
+  nav.append(prev,el("div","","") ,next); nav.children[1].append(dots,count);
+  nav.children[1].style.cssText="display:flex;flex-direction:column;align-items:center;gap:4px";
+  st.append(nav);
+  function go(n){
+    cur=n; seen.add(n);
+    steps.forEach((s,i)=>s.classList.toggle("on",i===n));
+    dbs.forEach((d,i)=>{ d.className=(i===n?"on":seen.has(i)?"seen":""); });
+    prev.disabled=n===0; next.disabled=n===steps.length-1;
+    next.textContent=n===steps.length-1?"Alles gelesen ✓":"Weiter →";
+    count.textContent=`Schritt ${n+1} von ${steps.length}`;
+  }
+  prev.onclick=()=>go(cur-1); next.onclick=()=>go(cur+1);
+  go(0);
+});
+
+/* =============================== Übungen-Tabs =============================== */
+$$("#seg button").forEach(b=>b.onclick=()=>{
+  $$("#seg button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  $$(".ppanel").forEach(p=>p.classList.toggle("on",p.id===b.dataset.p));
+});
+
+/* =============================== Navigation, Fortschritt, Design =============================== */
+const pills=$("#pills");
+STATIONS.forEach((s,i)=>{
+  const a=el("a","pill",`<span class="num"><span>${i+1}</span>${icon("check")}</span><span class="plbl">${s.name}</span>`);
+  a.href="#"+s.id; a.dataset.st=s.id; pills.append(a);
+});
+function refresh(){
+  const doneN=ALL_UNITS.filter(u=>store.units[u]).length;
+  const pct=Math.round(doneN/ALL_UNITS.length*100);
+  $("#pbar").style.width=pct+"%"; $(".pbar").setAttribute("aria-valuenow",pct);
+  STATIONS.forEach(s=>{
+    const d=s.units.every(u=>store.units[u]), some=s.units.some(u=>store.units[u]);
+    const p=$(`.pill[data-st="${s.id}"]`); p.classList.toggle("done",d); p.classList.toggle("part",!d&&some);
+  });
+  $$("[data-badge]").forEach(b=>{
+    const u=store.units[b.dataset.badge]; b.hidden=!u;
+    if(u) b.textContent=(u.max&&b.dataset.badge.charAt(0)!=="C")?`✓ ${u.score}/${u.max}`:"✓ erledigt";
+  });
+  // Zusammenfassung
+  const lern=LERN_UNITS.filter(u=>store.units[u]).length;
+  const ab=["A1","A2","A3","A4","B1","B2","B3","B4"], abDone=ab.filter(u=>store.units[u]);
+  const sc=abDone.reduce((a,u)=>a+store.units[u].score,0), mx=abDone.reduce((a,u)=>a+store.units[u].max,0);
+  const c=["C1","C2","C3"].filter(u=>store.units[u]).length;
+  $("#sumS").textContent=`${lern} / ${LERN_UNITS.length}`;
+  $("#sumP").textContent=mx?`${sc} / ${mx}`:"–";
+  $("#sumC").textContent=`${c} / 3`;
+  $("#sumMeter").style.width=pct+"%";
+  const rest=ALL_UNITS.length-doneN;
+  $("#sumText").textContent=rest===0?"Alle Bausteine, Checkpoints und Übungen sind erledigt.":`Du hast ${doneN} von ${ALL_UNITS.length} Teilen erledigt (${pct} %). Noch ${rest} offen.`;
+  $("#trophy").classList.toggle("on",rest===0);
+}
+$("#resetAll").onclick=()=>{ if(confirm("Fortschritt und gespeicherte Texte wirklich löschen?")){ store={units:{},drafts:{}}; save(); location.reload(); } };
+
+const setTheme=t=>{ document.documentElement.dataset.theme=t; $("#themeIc").setAttribute("href",t==="dark"?"#i-sun":"#i-moon"); try{ localStorage.setItem("ct2.theme",t); }catch(e){} };
+$("#themeTgl").onclick=()=>setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark");
+$("#themeIc").setAttribute("href",document.documentElement.dataset.theme==="dark"?"#i-sun":"#i-moon");
+
+if("IntersectionObserver" in window){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } }),{threshold:.06});
+  $$(".reveal").forEach(r=>io.observe(r));
+  const so=new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){ $$(".pill").forEach(p=>p.classList.toggle("on",p.dataset.st===e.target.id)); const on=$(".pill.on"); if(on) on.scrollIntoView({block:"nearest",inline:"center"}); } });
+  },{rootMargin:"-40% 0px -55% 0px"});
+  STATIONS.forEach(s=>so.observe($("#"+s.id)));
+} else $$(".reveal").forEach(r=>r.classList.add("in"));
+
+/* Hero: wechselnde Beispiele */
+(function(){
+  const rot=$("#rot"), texte=["you could fly?","you were invisible for a day?","you won a million euros?","you could talk to animals?","you were the headteacher?","you had a time machine?"];
+  let i=0;
+  if(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  setInterval(()=>{ rot.classList.add("out"); setTimeout(()=>{ i=(i+1)%texte.length; rot.textContent=texte[i]; rot.classList.remove("out"); },450); },3200);
+})();
+
+mountAll();
+refresh();
+</script>
+</body>
+</html>

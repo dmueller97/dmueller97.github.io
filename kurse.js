@@ -277,6 +277,13 @@ const MATERIAL = [
     typ:"uebung",
     url:"inf/seki/latex.html",
     info:"Grundlagen, Überschriften, Textformatierung, Listen, Tabellen und Bilder. Mit Live-Vorschau-Werkstatt, Tabellen-Generator, sechs Aufgaben mit Selbstkontrolle und Selbsttest.",
+    stand:"2026-09", neu:true},
+
+   { fach:"englisch", klasse:8, bereich:"grammatik-8",
+    titel:"Conditional type II — Lernstrecke",
+    typ:"uebung",
+    url:"eng/seki/conditional-type-2.html",
+    info:"Schrittweise Lernstrecke ohne Vorwissen: Bausteine, Wiederholung Type I, Idee, Formel, Feinheiten, Training. Dazu Übungen in drei Stufen (geschlossen, halboffen, offen) mit Sofortfeedback.",
     stand:"2026-09", neu:true}
 
   /* Vorlagen zum Kopieren — Raute vor der Zeile entfernen und anpassen:
