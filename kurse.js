@@ -217,6 +217,13 @@ const MATERIAL = [
     stand:"2026-09", neu:true},
 
    { fach:"englisch", klasse:5, bereich:"grammatik-5",
+    titel:"Erklärung Verneinung mit be",
+    typ:"arbeitsblatt",
+    url:"eng/seki/negation-with-be.html",
+    info:"Wie verneine ich am/is/are? Regel, beide Kurzformen (he isn't / he's not), typische Fehler und eine Verneinungs-Maschine zum Ausprobieren. Dazu sechs Übungen mit Sofortfeedback.",
+    stand:"2026-09", neu:true},
+
+   { fach:"englisch", klasse:5, bereich:"grammatik-5",
     titel:"personal pronouns",
     typ:"uebung",
     url:"eng/seki/personal-pronouns-quiz.html",

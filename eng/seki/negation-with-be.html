@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verneinung mit be – Klasse 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FDFDF8; --grid: #DCE7F2; --ink: #1F3A68; --ink-soft: #5A6F92;
+    --marker: #FFE45C; --red: #C8322B; --green: #2E7D4F; --tile: #FFFFFF; --blue-l: #E8F0FB;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Andika", "Comic Sans MS", system-ui, sans-serif;
+    color: var(--ink); background-color: var(--paper);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px; min-height: 100vh; line-height: 1.55;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 20px 60px; }
+  h1 { font-size: 2.1rem; line-height: 1.1; margin: 0 0 6px; }
+  h2 { font-size: 1.45rem; margin: 0 0 10px; }
+  h3 { font-size: 1.12rem; margin: 20px 0 8px; }
+  p { margin: 0 0 10px; }
+  .intro { margin: 0 0 24px; color: var(--ink-soft); font-size: 1.08rem; max-width: 60ch; }
+  .sheet { background: var(--paper); border: 2px solid var(--ink); border-radius: 6px; padding: 22px 22px 20px; box-shadow: 5px 5px 0 var(--ink); margin-bottom: 24px; }
+  .not { background: var(--marker); border-radius: 5px; padding: 0 5px; font-weight: 700; }
+  .not.k { padding-left: 0; border-radius: 0 5px 5px 0; }
+  .be { color: var(--red); font-weight: 700; }
+  [hidden] { display: none !important; }
+
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 4px; font-size: .98rem; }
+  th, td { text-align: left; padding: 8px 9px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  th { color: var(--ink-soft); font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; }
+  td.en { font-weight: 700; }
+  tr:last-child td { border-bottom: none; }
+  .scroll { overflow-x: auto; }
+
+  .merksatz { border: 2px dashed var(--ink); border-radius: 8px; padding: 12px 14px; margin: 14px 0; background: #FFF8E1; }
+  .merksatz b { color: var(--ink); }
+  .formel { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; padding: 16px 10px; margin: 12px 0; background: var(--blue-l); border: 2px solid var(--ink); border-radius: 10px; font-size: 1.25rem; font-weight: 700; }
+  .formel span { padding: 6px 12px; border-radius: 8px; background: var(--tile); border: 2px solid var(--ink); }
+  .formel .plus { border: 0; background: none; padding: 0 2px; }
+  .formel .n { background: var(--marker); }
+
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 12px 0; }
+  @media (max-width: 560px) { .duo { grid-template-columns: 1fr; } }
+  .weg { border: 2px solid var(--ink); border-radius: 10px; padding: 12px 14px; background: var(--tile); }
+  .weg h3 { margin: 0 0 6px; font-size: 1.02rem; }
+  .weg p { margin: 0 0 4px; font-weight: 700; }
+  .weg small { color: var(--ink-soft); display: block; font-weight: 400; }
+
+  .bsp { list-style: none; padding: 0; margin: 8px 0; }
+  .bsp li { padding: 10px 12px; margin-bottom: 8px; border-left: 5px solid var(--ink); background: var(--tile); border-radius: 0 8px 8px 0; }
+  .bsp .en { font-weight: 700; font-size: 1.08rem; display: block; }
+  .bsp .de { color: var(--ink-soft); font-size: .95rem; display: block; }
+
+  .fehler td:first-child { color: var(--red); text-decoration: line-through; text-decoration-thickness: 2px; font-weight: 700; }
+  .fehler td:nth-child(2) { color: var(--green); font-weight: 700; }
+
+  /* Verneinungs-Maschine */
+  .maschine { border: 2px solid var(--ink); border-radius: 10px; padding: 16px; background: var(--blue-l); }
+  .mrow { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-bottom: 12px; }
+  .mrow label { font-weight: 700; display: flex; flex-direction: column; gap: 4px; font-size: .9rem; color: var(--ink-soft); }
+  select, input[type=text] { font: inherit; font-size: 1.05rem; padding: 8px 10px; border: 2px solid var(--ink); border-radius: 6px; background: var(--tile); color: var(--ink); }
+  .mout { display: grid; gap: 8px; }
+  .mline { display: flex; gap: 10px; align-items: baseline; background: var(--tile); border: 2px solid var(--ink); border-radius: 8px; padding: 8px 12px; font-size: 1.12rem; font-weight: 700; flex-wrap: wrap; }
+  .mline small { flex: 0 0 96px; color: var(--ink-soft); font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; font-weight: 700; }
+
+  /* Übungen */
+  .unit { margin-top: 26px; padding-top: 4px; }
+  .unit-h { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 0 0 4px; }
+  .tag { font-size: .8rem; background: var(--marker); border: 2px solid var(--ink); border-radius: 6px; padding: 1px 8px; font-weight: 700; }
+  .badge { margin-left: auto; font-size: .9rem; background: var(--green); color: #fff; border-radius: 6px; padding: 2px 10px; font-weight: 700; }
+  .unit-in { color: var(--ink-soft); margin-bottom: 10px; }
+  .qcard { display: flex; gap: 12px; padding: 14px; margin: 10px 0; border: 2px solid var(--ink); border-radius: 10px; background: var(--tile); }
+  .qcard.ok { border-color: var(--green); }
+  .qn { flex: none; width: 30px; height: 30px; border: 2px solid var(--ink); border-radius: 50%; display: grid; place-items: center; font-weight: 700; background: var(--marker); }
+  .qbody { flex: 1; min-width: 0; }
+  .qtext { font-size: 1.15rem; font-weight: 700; margin: 0 0 10px; }
+  .tiles { display: flex; flex-wrap: wrap; gap: 10px; }
+  .tile { font: inherit; font-size: 1.1rem; font-weight: 700; color: var(--ink); background: var(--tile); border: 2px solid var(--ink); border-radius: 8px; padding: 8px 16px; cursor: pointer; box-shadow: 0 4px 0 var(--ink); transition: transform .08s, box-shadow .08s; }
+  .tile:hover:not(:disabled) { background: #FFF8CC; }
+  .tile:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+  .tile:disabled { cursor: default; opacity: .5; }
+  .tile.right { background: var(--green); border-color: var(--green); color: #fff; opacity: 1; box-shadow: 0 4px 0 #1C5234; }
+  .tile.wrong { background: var(--red); border-color: var(--red); color: #fff; opacity: 1; box-shadow: 0 4px 0 #86211C; }
+  .why { margin: 10px 0 0; color: var(--ink-soft); }
+  .gapline { font-size: 1.15rem; font-weight: 700; margin: 0 0 8px; line-height: 2.3; }
+  input.gap { width: 8.5em; text-align: center; font-weight: 700; border-width: 0 0 3px; border-radius: 4px 4px 0 0; background: #FFF8CC; padding: 4px 8px; }
+  input.tin { width: 100%; font-weight: 700; }
+  input.ok { background: #DDF1E4; border-color: var(--green); }
+  input.bad { background: #FBE1DE; border-color: var(--red); }
+  .acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .btn { font: inherit; font-size: 1.02rem; font-weight: 700; color: var(--paper); background: var(--ink); border: 2px solid var(--ink); border-radius: 8px; padding: 8px 18px; cursor: pointer; }
+  .btn:hover { background: #2B4E8A; }
+  .btn.ghost { background: var(--paper); color: var(--ink); }
+  .btn.ghost:hover { background: #FFF8CC; }
+  .fb { margin-top: 10px; padding: 8px 12px; border-radius: 8px; }
+  .fb:empty { display: none; }
+  .fb.ok { background: #DDF1E4; color: var(--green); font-weight: 700; }
+  .fb.bad { background: #FBE1DE; }
+  .fb.info { background: #FFF3C4; }
+  .fb small { display: block; color: var(--ink-soft); font-weight: 400; margin-top: 2px; }
+  .pool, .line { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; border-radius: 8px; min-height: 52px; }
+  .pool { background: var(--blue-l); border: 2px solid var(--ink); }
+  .line { border: 2px dashed var(--ink); background: var(--tile); margin-bottom: 8px; }
+  .line:empty::before { content: "Tippe auf die Wörter, um den Satz zu bauen …"; color: var(--ink-soft); }
+  .wchip { font: inherit; font-size: 1.05rem; font-weight: 700; color: var(--ink); background: var(--tile); border: 2px solid var(--ink); border-radius: 8px; padding: 6px 12px; cursor: pointer; box-shadow: 0 3px 0 var(--ink); }
+  .wchip:hover:not(:disabled) { background: #FFF8CC; }
+  .wchip:disabled { opacity: .5; cursor: default; }
+  .line .wchip { background: var(--marker); }
+  .result { display: flex; align-items: center; gap: 14px; margin-top: 12px; padding: 12px 14px; border: 2px solid var(--ink); border-radius: 10px; background: var(--marker); flex-wrap: wrap; }
+  .result .score { font-size: 1.6rem; font-weight: 700; }
+  .result .msg { flex: 1; font-weight: 700; }
+  .meter { height: 16px; border: 2px solid var(--ink); border-radius: 8px; background: var(--tile); overflow: hidden; margin: 10px 0 14px; }
+  .meter i { display: block; height: 100%; width: 0; background: var(--green); transition: width .4s; }
+  .sum { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 12px 0; }
+  .sum div { border: 2px solid var(--ink); border-radius: 8px; padding: 8px 12px; background: var(--tile); }
+  .sum small { display: block; color: var(--ink-soft); }
+  .sum b { font-size: 1.25rem; }
+  @media (prefers-reduced-motion: reduce) { .tile, .meter i { transition: none; } }
+  @media (max-width: 480px) { h1 { font-size: 1.7rem; } .sheet { padding: 16px; } .mline small { flex-basis: 100%; } }
+</style>
+</head>
+<body>
+<a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
+<main>
+  <h1>Verneinung mit <i>be</i></h1>
+  <p class="intro">Wie sagst du auf Englisch, dass etwas <b>nicht</b> stimmt? Zum Beispiel: „Ich bin nicht müde.“ oder „Tom ist nicht zu Hause.“ Mit <i>be</i> ist das ganz einfach — du brauchst nur ein kleines Wort: <span class="not">not</span>.</p>
+
+  <section class="sheet">
+    <h2>1. Die Grundregel</h2>
+    <p><span class="not">not</span> steht <b>direkt hinter</b> <span class="be">am</span> / <span class="be">is</span> / <span class="be">are</span>. Sonst ändert sich nichts. Die Reihenfolge ist genau wie im Deutschen:</p>
+    <div class="formel"><span>Person</span><span class="plus">+</span><span class="be">am / is / are</span><span class="plus">+</span><span class="n">not</span><span class="plus">+</span><span>Rest</span></div>
+    <p><i>Ich bin nicht müde.</i> → <b>I am <span class="not">not</span> tired.</b></p>
+    <div class="scroll"><table>
+      <tr><th>Person</th><th>bejaht</th><th>verneint (lang)</th></tr>
+      <tr><td class="en">I</td><td>I am tired.</td><td>I am <span class="not">not</span> tired.</td></tr>
+      <tr><td class="en">you</td><td>You are late.</td><td>You are <span class="not">not</span> late.</td></tr>
+      <tr><td class="en">he / she / it</td><td>He is at home.</td><td>He is <span class="not">not</span> at home.</td></tr>
+      <tr><td class="en">we</td><td>We are friends.</td><td>We are <span class="not">not</span> friends.</td></tr>
+      <tr><td class="en">they</td><td>They are ten.</td><td>They are <span class="not">not</span> ten.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="sheet">
+    <h2>2. Zwei Wege für die Kurzform</h2>
+    <p>Im Gespräch und in Chats sagst du fast immer die Kurzform. Dafür gibt es <b>zwei Wege</b> — beide bedeuten dasselbe:</p>
+    <div class="duo">
+      <div class="weg"><h3>Weg 1: is / are + n't</h3><p>he <span class="not">isn't</span> · she <span class="not">isn't</span> · it <span class="not">isn't</span></p><p>you <span class="not">aren't</span> · we <span class="not">aren't</span> · they <span class="not">aren't</span></p><small>Das o in not fällt weg: is + not = isn't</small></div>
+      <div class="weg"><h3>Weg 2: Person + 's / 're / 'm + not</h3><p>he<span class="not k">'s not</span> · she<span class="not k">'s not</span> · it<span class="not k">'s not</span></p><p>you<span class="not k">'re not</span> · we<span class="not k">'re not</span> · they<span class="not k">'re not</span></p><small>Die Person und <i>be</i> werden verbunden: he is → he's</small></div>
+    </div>
+    <div class="merksatz"><b>Nur bei <i>I</i> gibt es einen einzigen Weg:</b> <span class="not">I'm not</span>. Ein „amn't“ gibt es im Englischen <b>nicht</b>!</div>
+    <div class="scroll"><table>
+      <tr><th>lang</th><th>Kurzform 1</th><th>Kurzform 2</th></tr>
+      <tr><td>I am not</td><td class="en">—</td><td class="en">I'm not</td></tr>
+      <tr><td>you are not</td><td class="en">you aren't</td><td class="en">you're not</td></tr>
+      <tr><td>he is not</td><td class="en">he isn't</td><td class="en">he's not</td></tr>
+      <tr><td>she is not</td><td class="en">she isn't</td><td class="en">she's not</td></tr>
+      <tr><td>it is not</td><td class="en">it isn't</td><td class="en">it's not</td></tr>
+      <tr><td>we are not</td><td class="en">we aren't</td><td class="en">we're not</td></tr>
+      <tr><td>they are not</td><td class="en">they aren't</td><td class="en">they're not</td></tr>
+    </table></div>
+  </section>
+
+  <section class="sheet">
+    <h2>3. Die Verneinungs-Maschine</h2>
+    <p>Probiere es selbst aus: Wähle eine Person und einen Satzrest — die Maschine baut dir alle Formen.</p>
+    <div class="maschine">
+      <div class="mrow">
+        <label>Person <select id="mP"></select></label>
+        <label>Satzrest <select id="mR"></select></label>
+      </div>
+      <div class="mout" id="mOut" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="sheet">
+    <h2>4. Beispiele aus dem Schulalltag</h2>
+    <ul class="bsp">
+      <li><span class="en">Tom <span class="not">isn't</span> at home. He's at the sports club.</span><span class="de">Tom ist nicht zu Hause. Er ist im Sportverein.</span></li>
+      <li><span class="en">We <span class="not">aren't</span> late. The lesson starts at nine.</span><span class="de">Wir sind nicht zu spät. Die Stunde beginnt um neun.</span></li>
+      <li><span class="en">It <span class="not">isn't</span> my pencil. It's Mia's pencil.</span><span class="de">Das ist nicht mein Bleistift. Es ist Mias Bleistift.</span></li>
+      <li><span class="en">I<span class="not k">'m not</span> from London. I'm from Chemnitz.</span><span class="de">Ich komme nicht aus London. Ich komme aus Chemnitz.</span></li>
+      <li><span class="en">My parents <span class="not">aren't</span> at work today.</span><span class="de">Meine Eltern sind heute nicht bei der Arbeit.</span></li>
+      <li><span class="en">You<span class="not k">'re not</span> in class 5b. You're in class 5a.</span><span class="de">Du bist nicht in der 5b. Du bist in der 5a.</span></li>
+    </ul>
+  </section>
+
+  <section class="sheet">
+    <h2>5. Typische Fehler</h2>
+    <div class="scroll"><table class="fehler">
+      <tr><th>falsch</th><th>richtig</th><th>Warum?</th></tr>
+      <tr><td>I don't am tired.</td><td>I'm not tired.</td><td>Bei <i>be</i> brauchst du kein <i>don't</i>.</td></tr>
+      <tr><td>He not is here.</td><td>He isn't here.</td><td><i>not</i> steht <b>hinter</b> <i>be</i>.</td></tr>
+      <tr><td>I amn't hungry.</td><td>I'm not hungry.</td><td>„amn't“ gibt es nicht.</td></tr>
+      <tr><td>They isn't friends.</td><td>They aren't friends.</td><td><i>they</i> gehört zu <i>are</i>.</td></tr>
+      <tr><td>We doesn't are late.</td><td>We aren't late.</td><td>Kein <i>doesn't</i> und kein <i>don't</i> mit <i>be</i>.</td></tr>
+    </table></div>
+    <div class="merksatz"><b>Merke:</b> <i>don't</i> und <i>doesn't</i> brauchst du bei anderen Verben (z. B. <i>I don't like pizza</i>). Bei <i>am / is / are</i> verneinst du <b>direkt mit not</b> — ohne Hilfsverb.</div>
+  </section>
+
+  <section class="sheet">
+    <h2>6. Kurze Antworten mit „No“</h2>
+    <ul class="bsp">
+      <li><span class="en">Are you ten? – No, I<span class="not k">'m not</span>.</span><span class="de">Bist du zehn? – Nein.</span></li>
+      <li><span class="en">Is Tom your brother? – No, he <span class="not">isn't</span>.</span><span class="de">Ist Tom dein Bruder? – Nein.</span></li>
+      <li><span class="en">Are they in class 5b? – No, they <span class="not">aren't</span>.</span><span class="de">Sind sie in der 5b? – Nein.</span></li>
+    </ul>
+    <div class="merksatz">Bei <b>No</b> darfst du die Kurzform benutzen (<i>No, he isn't.</i>). Bei <b>Yes</b> steht <i>be</i> ausgeschrieben: <i>Yes, he is.</i> — nie <i>Yes, he's.</i></div>
+  </section>
+
+  <section class="sheet" id="uebung">
+    <h2>Jetzt bist du dran!</h2>
+    <p style="color:var(--ink-soft)">Sechs Übungen — von leicht bis knifflig. Alle kannst du beliebig oft wiederholen.</p>
+    <div class="meter" aria-hidden="true"><i id="gesMeter"></i></div>
+
+    <div class="unit"><h3 class="unit-h"><span class="tag">Ü1</span>Wähle die richtige Form <span class="badge" data-b="u1" hidden></span></h3><p class="unit-in">Tippe auf die richtige Verneinung.</p><div data-m="u1"></div></div>
+    <div class="unit"><h3 class="unit-h"><span class="tag">Ü2</span>Richtig oder Fehler? <span class="badge" data-b="u2" hidden></span></h3><p class="unit-in">Stimmt der Satz? Wenn nicht, findest du die richtige Version in der Erklärung.</p><div data-m="u2"></div></div>
+    <div class="unit"><h3 class="unit-h"><span class="tag">Ü3</span>Baue den Satz <span class="badge" data-b="u3" hidden></span></h3><p class="unit-in">Tippe die Wörter in der richtigen Reihenfolge an.</p><div data-m="u3"></div></div>
+    <div class="unit"><h3 class="unit-h"><span class="tag">Ü4</span>Lückentext <span class="badge" data-b="u4" hidden></span></h3><p class="unit-in">Schreibe die verneinte Form von <i>be</i> in die Lücke — lang (<i>is not</i>) oder kurz (<i>isn't</i>, <i>'s not</i>).</p><div data-m="u4"></div></div>
+    <div class="unit"><h3 class="unit-h"><span class="tag">Ü5</span>Verneine den Satz <span class="badge" data-b="u5" hidden></span></h3><p class="unit-in">Schreibe den ganzen Satz verneint auf. Lang oder kurz ist beides in Ordnung.</p><div data-m="u5"></div></div>
+    <div class="unit"><h3 class="unit-h"><span class="tag">Ü6</span>Mach es wahr! <span class="badge" data-b="u6" hidden></span></h3><p class="unit-in">Diese Sätze sind falsch. Verneine sie, dann stimmen sie.</p><div data-m="u6"></div></div>
+  </section>
+
+  <section class="sheet">
+    <h2>Dein Ergebnis</h2>
+    <p id="sumText" style="color:var(--ink-soft)">Löse die Übungen, dann siehst du hier deinen Stand.</p>
+    <div class="sum">
+      <div><small>Ü1–Ü3 (Auswählen)</small><b id="sA">–</b></div>
+      <div><small>Ü4–Ü6 (Schreiben)</small><b id="sB">–</b></div>
+      <div><small>Gesamt</small><b id="sG">–</b></div>
+    </div>
+  </section>
+</main>
+
+<script>
+"use strict";
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const el=(t,c,h)=>{ const e=document.createElement(t); if(c) e.className=c; if(h!=null) e.innerHTML=h; return e; };
+const esc=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const shuffle=a=>{ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+
+/* ---------- Normalisieren: Kurzformen = lange Formen ---------- */
+const norm=s=>String(s).toLowerCase().replace(/[‘’´`]/g,"'").replace(/\s+/g," ").replace(/\s+([,.?!])/g,"$1").trim();
+const kurz=s=>norm(s).replace(/[.!?]+$/,"")
+  .replace(/\bisn't\b/g,"is not").replace(/\baren't\b/g,"are not")
+  .replace(/(^|\s)'m not\b/g,"$1am not").replace(/(^|\s)'s not\b/g,"$1is not").replace(/(^|\s)'re not\b/g,"$1are not")
+  .replace(/(\w)'m not\b/g,"$1 am not").replace(/(\w)'s not\b/g,"$1 is not").replace(/(\w)'re not\b/g,"$1 are not");
+
+/* ---------- Verneinungs-Maschine ---------- */
+const PERS=[
+  {t:"I",be:"am",k:["I'm not"]},{t:"You",be:"are",k:["You aren't","You're not"]},{t:"He",be:"is",k:["He isn't","He's not"]},
+  {t:"She",be:"is",k:["She isn't","She's not"]},{t:"It",be:"is",k:["It isn't","It's not"]},{t:"We",be:"are",k:["We aren't","We're not"]},
+  {t:"They",be:"are",k:["They aren't","They're not"]},{t:"Tom",be:"is",k:["Tom isn't","Tom's not"]},{t:"My parents",be:"are",k:["My parents aren't"]}
+];
+const REST=["tired","in my class","from Chemnitz","eleven years old","a teacher","at home","late"];
+PERS.forEach((p,i)=>$("#mP").append(new Option(p.t,i)));
+REST.forEach((r,i)=>$("#mR").append(new Option(r,i)));
+$("#mP").value=2; $("#mR").value=0;
+function maschine(){
+  const p=PERS[+$("#mP").value], r=REST[+$("#mR").value];
+  const n=t=>t.replace(/(not|n't)/,'<span class="not">$1</span>');
+  const lines=[["bejaht",`${p.t} <span class="be">${p.be}</span> ${r}.`],["verneint (lang)",`${p.t} <span class="be">${p.be}</span> <span class="not">not</span> ${r}.`]];
+  p.k.forEach((k,i)=>lines.push([i===0?"Kurzform":"Kurzform 2",n(esc(k))+" "+r+"."]));
+  $("#mOut").innerHTML=lines.map(l=>`<div class="mline"><small>${l[0]}</small><span>${l[1]}</span></div>`).join("");
+}
+$("#mP").onchange=$("#mR").onchange=maschine; maschine();
+
+/* ---------- Ergebnisse ---------- */
+const res={};
+const GROUP={A:["u1","u2","u3"],B:["u4","u5","u6"]};
+function setRes(id,score,max){
+  res[id]={score:score,max:max};
+  const b=$(`[data-b="${id}"]`); b.hidden=false; b.textContent=`✓ ${score}/${max}`;
+  const sum=ids=>ids.filter(i=>res[i]).reduce((a,i)=>[a[0]+res[i].score,a[1]+res[i].max],[0,0]);
+  const a=sum(GROUP.A), bb=sum(GROUP.B), g=[a[0]+bb[0],a[1]+bb[1]];
+  $("#sA").textContent=a[1]?`${a[0]} / ${a[1]}`:"–"; $("#sB").textContent=bb[1]?`${bb[0]} / ${bb[1]}`:"–"; $("#sG").textContent=g[1]?`${g[0]} / ${g[1]}`:"–";
+  const done=Object.keys(res).length;
+  $("#gesMeter").style.width=Math.round(done/6*100)+"%";
+  $("#sumText").textContent=done<6?`Du hast ${done} von 6 Übungen geschafft.`:(g[0]/g[1]>=.9?"Super! Du beherrschst die Verneinung mit be.":g[0]/g[1]>=.7?"Gut gemacht! Wiederhole die Übungen mit den roten Feldern noch einmal.":"Lies die Erklärung oben noch einmal und versuche die Übungen dann erneut.");
+}
+function resultBar(score,max,retry){
+  const p=max?score/max:1, r=el("div","result",`<span class="score">${score}/${max}</span><span class="msg">${p===1?"Perfekt!":p>=.75?"Sehr gut!":p>=.5?"Gut — schau dir die Fehler noch einmal an.":"Übe noch einmal, dann sitzt es."}</span>`);
+  const b=el("button","btn ghost","Nochmal"); b.type="button"; b.onclick=retry; r.append(b); return r;
+}
+
+/* ---------- Auswahl-Aufgaben (Sofortfeedback) ---------- */
+function runChoice(root,id,items,opt){
+  opt=opt||{}; root.innerHTML=""; let done=0,score=0; const foot=el("div");
+  items.forEach((it,i)=>{
+    const card=el("div","qcard"); card.innerHTML=`<div class="qn">${i+1}</div><div class="qbody"><p class="qtext">${it.q}</p><div class="tiles"></div><p class="why" hidden></p></div>`;
+    const box=$(".tiles",card);
+    let os=it.o.map((t,k)=>({t:t,k:k})); if(!opt.keep) os=shuffle(os);
+    os.forEach(o=>{ const b=el("button","tile",esc(o.t)); b.type="button"; b.dataset.k=o.k; box.append(b); });
+    box.onclick=e=>{
+      const b=e.target.closest(".tile"); if(!b||b.disabled) return;
+      const ok=+b.dataset.k===it.a;
+      $$(".tile",box).forEach(x=>{ x.disabled=true; if(+x.dataset.k===it.a) x.classList.add("right"); else if(x===b) x.classList.add("wrong"); });
+      const w=$(".why",card); w.hidden=false; w.innerHTML=`<b>${ok?"Richtig!":"Nicht ganz."}</b> ${it.why}`;
+      card.classList.toggle("ok",ok); if(ok) score++; done++;
+      if(done===items.length){ foot.append(resultBar(score,items.length,()=>runChoice(root,id,items,opt))); setRes(id,score,items.length); }
+    };
+    root.append(card);
+  });
+  root.append(foot);
+}
+
+/* ---------- Aufgaben mit „Prüfen“ (Tippen / Bauen) ---------- */
+function diagnose(text){
+  const t=norm(text);
+  if(!t) return "Schreibe zuerst deine Antwort in das Feld.";
+  if(/\b(don't|doesn't|do not|does not)\b/.test(t)) return "Bei <i>be</i> gibt es kein <i>don't</i>/<i>doesn't</i>. Verneine direkt mit <b>not</b>.";
+  if(/\bamn't\b/.test(t)) return "„amn't“ gibt es nicht. Es heißt <b>I'm not</b> / <b>I am not</b>.";
+  if(/\bnot (am|is|are)\b/.test(t)) return "<b>not</b> steht <b>hinter</b> <i>am / is / are</i>.";
+  if(!/\bnot\b|n't/.test(t)) return "Es fehlt die Verneinung: <b>not</b> oder <b>n't</b>.";
+  return "Prüfe die Form von <i>be</i>: <i>I am</i> · <i>he/she/it is</i> · <i>you/we/they are</i>.";
+}
+function runTyped(root,id,items,build){
+  root.innerHTML=""; let fin=0,score=0,max=0; const foot=el("div");
+  items.forEach((it,i)=>{
+    const card=el("div","qcard"); card.innerHTML=`<div class="qn">${i+1}</div><div class="qbody"><div class="slot"></div><div class="acts"><button class="btn" type="button" data-a="c">Prüfen</button><button class="btn ghost" type="button" data-a="s" hidden>Lösung zeigen</button></div><div class="fb" aria-live="polite"></div></div>`;
+    root.append(card);
+    const c=build(it,$(".slot",card)); max+=1;
+    let tries=0,first=0,locked=false;
+    const end=()=>{ locked=true; c.lock(); $(".acts",card).hidden=true; score+=first; fin++; if(fin===items.length){ foot.append(resultBar(score,max,()=>runTyped(root,id,items,build))); setRes(id,score,max); } };
+    $('[data-a="c"]',card).onclick=()=>{
+      if(locked) return; tries++;
+      const r=c.check(), fb=$(".fb",card);
+      fb.className="fb "+(r.ok?"ok":"bad"); fb.innerHTML=r.html;
+      if(tries===1&&r.ok) first=1;
+      if(r.ok){ card.classList.add("ok"); end(); } else $('[data-a="s"]',card).hidden=false;
+    };
+    $('[data-a="s"]',card).onclick=()=>{ if(locked) return; c.show(); const fb=$(".fb",card); fb.className="fb info"; fb.innerHTML="Lösung: <b>"+esc(it.model)+"</b>"; end(); };
+    root.append(foot);
+  });
+}
+function buildGap(it,slot){
+  slot.innerHTML=`<p class="gapline">${esc(it.t).replace("___",`<input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Lücke">`)}</p>`;
+  const inp=$("input",slot);
+  return {
+    check(){
+      const ok=it.ok.some(a=>kurz(a)===kurz(inp.value)); inp.className="gap "+(ok?"ok":"bad");
+      return ok?{ok:true,html:"Richtig!"}:{ok:false,html:diagnose(inp.value)+(it.hint?`<small>Tipp: ${it.hint}</small>`:"")};
+    },
+    show(){ inp.value=it.ok[0]; inp.className="gap ok"; }, lock(){ inp.disabled=true; }
+  };
+}
+function buildSentence(it,slot){
+  slot.innerHTML=`<p class="qtext">${it.q}</p><input class="tin" type="text" autocomplete="off" spellcheck="false" placeholder="Dein Satz …" aria-label="Deine Antwort">`;
+  const inp=$("input",slot);
+  return {
+    check(){
+      const ok=it.ok.some(a=>kurz(a)===kurz(inp.value)); inp.className="tin "+(ok?"ok":"bad");
+      if(ok) return {ok:true,html:"Richtig! <small>"+esc(it.model)+"</small>"};
+      const w=kurz(inp.value).split(" ").length>1&&!it.ok.some(a=>kurz(a).split(" ")[0]===kurz(inp.value).split(" ")[0]);
+      return {ok:false,html:diagnose(inp.value)+(w?"<small>Achte auch darauf, den restlichen Satz unverändert zu lassen.</small>":"")+(it.hint?`<small>Tipp: ${it.hint}</small>`:"")};
+    },
+    show(){ inp.value=it.model; inp.className="tin ok"; }, lock(){ inp.disabled=true; }
+  };
+}
+function buildBuilder(it,slot){
+  slot.innerHTML=`<p class="qtext">${it.q||"Bringe die Wörter in die richtige Reihenfolge."}</p><div class="line"></div><div class="pool"></div>`;
+  const line=$(".line",slot), pool=$(".pool",slot);
+  const chips=shuffle(it.words.map(w=>w)).map(w=>{ const b=el("button","wchip",esc(w)); b.type="button"; return b; });
+  chips.forEach(b=>pool.append(b));
+  let locked=false;
+  slot.addEventListener("click",e=>{ const b=e.target.closest(".wchip"); if(!b||locked) return; (b.parentNode===pool?line:pool).append(b); });
+  return {
+    check(){ const cur=$$(".wchip",line).map(b=>b.textContent).join(" "); const ok=kurz(cur)===kurz(it.model);
+      return ok?{ok:true,html:"Richtig! <small>"+esc(it.model)+"</small>"}:{ok:false,html:"Noch nicht ganz. "+diagnose(cur||"x")};},
+    show(){ const rest=chips.slice(); it.model.replace(/[.!?]$/,"").split(" ").forEach(w=>{ const k=rest.findIndex(b=>b.textContent.toLowerCase()===w.toLowerCase()); if(k>=0){ line.append(rest[k]); rest.splice(k,1); } }); },
+    lock(){ locked=true; $$(".wchip",slot).forEach(b=>b.disabled=true); }
+  };
+}
+
+/* ---------- Aufgabendaten ---------- */
+const D={
+  u1:[
+    {q:"Tom ___ my brother.",o:["isn't","aren't","don't","amn't"],a:0,why:"<i>Tom</i> = <i>he</i> → <b>is</b> + not = <b>isn't</b>."},
+    {q:"I ___ eleven. I'm ten.",o:["'m not","isn't","aren't","don't"],a:0,why:"Bei <i>I</i> heißt es immer <b>I'm not</b> (oder I am not)."},
+    {q:"We ___ at school on Sunday.",o:["aren't","isn't","am not","don't"],a:0,why:"<i>we</i> gehört zu <i>are</i> → <b>aren't</b>."},
+    {q:"My cat ___ black. It's white.",o:["isn't","aren't","not is","don't"],a:0,why:"<i>My cat</i> = <i>it</i> → <b>isn't</b>."},
+    {q:"You ___ in class 5a.",o:["aren't","isn't","am not","don't"],a:0,why:"<i>you</i> gehört zu <i>are</i> → <b>aren't</b>."},
+    {q:"Lisa and Ben ___ late.",o:["aren't","isn't","don't","not"],a:0,why:"Zwei Personen = <i>they</i> → <b>aren't</b>."},
+    {q:"It ___ my pencil.",o:["isn't","aren't","amn't","not"],a:0,why:"<i>it</i> gehört zu <i>is</i> → <b>isn't</b>."},
+    {q:"Welcher Satz ist richtig?",o:["He isn't here.","He not is here.","He don't is here.","He amn't here."],a:0,why:"<i>not</i> steht hinter <i>be</i>: He is not / He <b>isn't</b> here."}
+  ],
+  u2:[
+    {q:"I am not ten years old.",o:["richtig","Fehler"],a:0,why:"Das stimmt: <i>am + not</i>, in dieser Reihenfolge."},
+    {q:"He not is my friend.",o:["richtig","Fehler"],a:1,why:"<i>not</i> steht <b>hinter</b> <i>is</i>: He is not / He isn't my friend."},
+    {q:"We don't are late.",o:["richtig","Fehler"],a:1,why:"Mit <i>be</i> gibt es kein <i>don't</i>: We <b>aren't</b> late."},
+    {q:"She isn't at school today.",o:["richtig","Fehler"],a:0,why:"Das stimmt: <i>she</i> + <i>isn't</i>."},
+    {q:"I amn't hungry.",o:["richtig","Fehler"],a:1,why:"„amn't“ gibt es nicht: I'm not hungry."},
+    {q:"They isn't from Spain.",o:["richtig","Fehler"],a:1,why:"<i>they</i> gehört zu <i>are</i>: They <b>aren't</b> from Spain."},
+    {q:"It's not my bag.",o:["richtig","Fehler"],a:0,why:"Das stimmt: <i>It's not</i> = <i>It is not</i> (Weg 2)."},
+    {q:"You aren't in class 5b.",o:["richtig","Fehler"],a:0,why:"Das stimmt: <i>you aren't</i>."}
+  ],
+  u3:[
+    {words:["We","aren't","at","home","today"],model:"We aren't at home today."},
+    {words:["My","dog","isn't","very","big"],model:"My dog isn't very big."},
+    {words:["I'm","not","from","Germany"],model:"I'm not from Germany."},
+    {words:["They","are","not","my","friends"],model:"They are not my friends."},
+    {words:["The","books","aren't","on","the","table"],model:"The books aren't on the table."}
+  ],
+  u4:[
+    {t:"I ___ a teacher.",ok:["am not"],model:"am not (I'm not)",hint:"Bei <i>I</i>: am not oder 'm not."},
+    {t:"Anna ___ twelve years old. She is eleven.",ok:["is not"],model:"isn't",hint:"Anna = she → is not / isn't / 's not."},
+    {t:"The children ___ in the garden.",ok:["are not"],model:"aren't",hint:"Mehrere Personen → are not / aren't."},
+    {t:"My parents ___ at home.",ok:["are not"],model:"aren't",hint:"<i>My parents</i> = <i>they</i> → are not / aren't."},
+    {t:"It ___ cold today.",ok:["is not"],model:"isn't",hint:"it → is not / isn't."},
+    {t:"We ___ in the same class.",ok:["are not"],model:"aren't",hint:"we → are not / aren't."}
+  ],
+  u5:[
+    {q:"Verneine: <b>I am hungry.</b>",ok:["I am not hungry."],model:"I'm not hungry. (I am not hungry.)"},
+    {q:"Verneine: <b>Tom is my friend.</b>",ok:["Tom is not my friend."],model:"Tom isn't my friend. (Tom is not my friend.)"},
+    {q:"Verneine: <b>The girls are in the park.</b>",ok:["The girls are not in the park."],model:"The girls aren't in the park."},
+    {q:"Verneine: <b>It is a big house.</b>",ok:["It is not a big house."],model:"It isn't a big house. (It's not a big house.)"},
+    {q:"Verneine: <b>You are late.</b>",ok:["You are not late."],model:"You aren't late. (You're not late.)"}
+  ],
+  u6:[
+    {q:"Falsch: <b>A dog is a fish.</b> → Mach es wahr:",ok:["A dog is not a fish."],model:"A dog isn't a fish."},
+    {q:"Falsch: <b>Cats are birds.</b> → Mach es wahr:",ok:["Cats are not birds."],model:"Cats aren't birds."},
+    {q:"Falsch: <b>London is in Germany.</b> → Mach es wahr:",ok:["London is not in Germany."],model:"London isn't in Germany."},
+    {q:"Falsch: <b>I am a teacher.</b> (Du bist Schülerin oder Schüler!) → Mach es wahr:",ok:["I am not a teacher."],model:"I'm not a teacher."},
+    {q:"Falsch: <b>The sun is cold.</b> → Mach es wahr:",ok:["The sun is not cold."],model:"The sun isn't cold."}
+  ]
+};
+const M=id=>$(`[data-m="${id}"]`);
+runChoice(M("u1"),"u1",D.u1);
+runChoice(M("u2"),"u2",D.u2.map(x=>Object.assign({},x,{q:"„"+x.q+"“"})),{keep:true});
+runTyped(M("u3"),"u3",D.u3,buildBuilder);
+runTyped(M("u4"),"u4",D.u4,buildGap);
+runTyped(M("u5"),"u5",D.u5,buildSentence);
+runTyped(M("u6"),"u6",D.u6,buildSentence);
+</script>
+</body>
+</html>
