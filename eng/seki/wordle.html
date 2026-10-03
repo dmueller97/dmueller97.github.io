@@ -95,11 +95,11 @@
   }
   .row { display: flex; gap: 6px; }
   .cell {
-    width: 46px; height: 46px;
+    width: min(46px, calc((100vw - 110px) / var(--n, 6) - 6px)); aspect-ratio: 1;
     border: 2px solid var(--ink);
     border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.5rem; font-weight: 700; text-transform: uppercase;
+    font-size: clamp(.85rem, 4.2vw, 1.5rem); font-weight: 700; text-transform: uppercase;
     background: var(--tile);
     transition: transform .15s;
   }
@@ -131,6 +131,10 @@
   .feedback strong.ok { color: var(--green); }
   .feedback strong.no { color: var(--red); }
 
+  .topline { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; margin-bottom: 14px; }
+  .chip { font-weight: 700; background: var(--marker); border: 2px solid var(--ink); border-radius: 999px; padding: 2px 14px; font-size: .95rem; }
+  .btn.small { font-size: .95rem; padding: 5px 14px; }
+  #hintText { text-align: center; font-size: 1.15rem; font-weight: 700; margin: -4px 0 12px; }
   .actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
 
   [hidden] { display: none !important; }
@@ -138,7 +142,6 @@
   @media (max-width: 480px) {
     h1 { font-size: 1.8rem; }
     .sheet { padding: 16px 12px 14px; }
-    .cell { width: 38px; height: 38px; font-size: 1.2rem; }
     .key { padding: 9px 5px; min-width: 24px; font-size: .85rem; }
     .key.wide { min-width: 44px; font-size: .7rem; }
   }
@@ -148,10 +151,12 @@
 <a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
 <main>
   <h1>Vokabel-Wordle</h1>
-  <p class="intro">Errate das englische Wort in 6 Versuchen. Grün = richtiger Buchstabe an richtiger Stelle, Gelb = Buchstabe kommt vor, ist aber an der falschen Stelle, Grau = Buchstabe kommt nicht vor.</p>
+  <p class="intro">Errate das englische Wort in 6 Versuchen. Grün = richtiger Buchstabe an richtiger Stelle, Gelb = Buchstabe kommt vor, ist aber an der falschen Stelle, Grau = Buchstabe kommt nicht vor. Die Wörter kommen aus: Numbers, Days of the week, Months, Colours, Animals, Pencil case und Unit 1.</p>
 
   <section class="sheet setup" id="setup">
     <div class="setup-row">
+      <label for="thema">Thema</label>
+      <select id="thema"></select>
       <button class="btn" id="randomStart">Zufälliges Wort spielen</button>
     </div>
     <p class="hint">oder für die ganze Klasse: Lehrkraft gibt ein geheimes Wort vor (Beamer/Whiteboard zeigen, Klasse rät gemeinsam):</p>
@@ -163,7 +168,7 @@
     <p class="hint" id="setupError" style="color:var(--red)"></p>
     <details id="neueWoerter" hidden>
       <summary class="hint" style="cursor:pointer">Neue eigene Wörter noch nicht dauerhaft gespeichert</summary>
-      <p class="hint">Diese Wörter merkt sich nur dieser Browser. Damit sie für alle dauerhaft in der Liste stehen, kopiere sie und schicke sie an Claude, damit sie in <code>wordle.html</code> eingetragen werden.</p>
+      <p class="hint">Diese Wörter merkt sich nur dieser Browser. Damit sie für alle dauerhaft in der Liste stehen, kopiere sie und schicke sie an Claude (am besten mit deutscher Übersetzung), damit sie in die Wortliste <code>vokabeln-data.js</code> eingetragen werden.</p>
       <div class="setup-row">
         <input type="text" id="neueWoerterListe" readonly style="font-family:monospace">
         <button class="btn secondary" id="neueWoerterKopieren" type="button">Kopieren</button>
@@ -172,6 +177,11 @@
   </section>
 
   <section class="sheet" id="game" hidden>
+    <div class="topline" id="topline">
+      <span class="chip" id="themaChip"></span>
+      <button class="btn secondary small" id="hintBtn" type="button">Hinweis (Deutsch)</button>
+    </div>
+    <p id="hintText" hidden></p>
     <div id="board"></div>
     <p class="feedback" id="feedback"></p>
     <div id="keyboard"></div>
@@ -182,34 +192,15 @@
   </section>
 </main>
 
+<script src="vokabeln-data.js"></script>
 <script>
-  // Wortpool: bekannte Vokabeln aus Klasse 5 (Access 1). Bei Bedarf ergänzen.
-  const WORDPOOL = [
-    // Schule und Klassenzimmer
-    "class","chair","table","pupil","phone","board","English","friend","school","lesson",
-    "teacher","subject","player","welcome","classmate","neighbour","worksheet","page","spell","describe",
-    // Federmäppchen
-    "pencil","pen","ruler","eraser","rubber","sharpener","scissors","glue","marker","crayon",
-    "notebook","bag","case",
-    // Familie
-    "brother","sister","mother","father","family","divorced","everyone",
-    // Tiere
-    "animal","horse","sheep","mouse","rabbit","spider","snake","dog","cat","bird",
-    "fish","lion","tiger","elephant","monkey","bear","cow","pig","duck","frog","fox",
-    // Zeit
-    "summer","winter","autumn","spring","monday","sunday","morning","evening","weekend","hour",
-    // Zu Hause
-    "house","doorbell","upstairs","downstairs","kitchen","bedroom","window","dinner","breakfast",
-    // Orte und Umgebung
-    "garden","forest","street","corner","market","castle","museum","library","country","island",
-    "village","beach","sand","person","people","pier","sky","seagull",
-    // Sonstiges
-    "London","postman","address","number","colour","thing","awesome","uniform",
-    // Farben
-    "purple","orange","yellow","brown","black","white","pink","grey","red","green",
-    // Verben
-    "write","check","open","close","speak","think","read"
-  ];
+  // Wortliste: nur Einzelwörter aus diesen Themen (Quelle: vokabeln-data.js)
+  const WORDLE_THEMEN = ["zahlen","wochentage","monate","farben","tiere","federmaeppchen","unit1"];
+  const imWordle = e => /^[a-z]+$/i.test(e.en) && e.en.length >= 3 && (WORDLE_THEMEN.includes(e.thema) || e.unit === 1);
+  const WORDLISTE = VOKABELN.filter(imWordle);
+  const WORDPOOL = WORDLISTE.map(e => e.en.toLowerCase());
+  const passt = (e, t) => t === "" || (t === "unit1" ? e.unit === 1 : e.thema === t);
+  let aktuellerEintrag = null;
 
   const $ = id => document.getElementById(id);
   const MAXTRIES = 6;
@@ -240,6 +231,11 @@
   function alleWoerter(){
     return WORDPOOL.concat(ladeEigeneWoerter());
   }
+  Object.entries(THEMEN).filter(([id]) => WORDLE_THEMEN.includes(id)).forEach(([id, name]) => {
+    const o = document.createElement("option"); o.value = id; o.textContent = name; $("thema").appendChild(o);
+  });
+  $("thema").insertBefore(Object.assign(document.createElement("option"), {value: "", textContent: "Alle Themen"}), $("thema").firstChild);
+  $("thema").value = "";
   function merkeWortFallsNeu(w){
     const bekannt = alleWoerter().some(v=>v.toLowerCase()===w);
     if(bekannt) return;
@@ -256,6 +252,7 @@
 
   function buildBoard(){
     $("board").innerHTML = "";
+    $("board").style.setProperty("--n", wordLen);
     for(let r=0;r<MAXTRIES;r++){
       const row=document.createElement("div"); row.className="row"; row.id="row"+r;
       for(let c=0;c<wordLen;c++){
@@ -282,7 +279,17 @@
     });
   }
 
-  function startGame(word){
+  function startGame(word, eintrag){
+    aktuellerEintrag = eintrag || null;
+    const chip = $("themaChip");
+    chip.hidden = !aktuellerEintrag;
+    $("hintBtn").hidden = !aktuellerEintrag;
+    $("hintText").hidden = true;
+    if(aktuellerEintrag){
+      chip.textContent = "Thema: " + (THEMEN[aktuellerEintrag.thema] || "") + (aktuellerEintrag.unit === 1 && aktuellerEintrag.thema !== "unit1" ? " · Unit 1" : "");
+      $("hintText").textContent = "Deutsch: " + aktuellerEintrag.de;
+    }
+    $("topline").hidden = !aktuellerEintrag;
     answer = normalise(word);
     wordLen = answer.length;
     guesses = [];
@@ -296,9 +303,12 @@
     buildKeyboard();
   }
 
-  function randomWord(){
-    const woerter = alleWoerter();
-    return woerter[Math.floor(Math.random()*woerter.length)];
+  function randomEintrag(){
+    const t = $("thema").value;
+    const liste = WORDLISTE.filter(e => passt(e, t));
+    const eigene = t === "" ? ladeEigeneWoerter() : [];
+    const i = Math.floor(Math.random() * (liste.length + eigene.length));
+    return i < liste.length ? liste[i] : { en: eigene[i - liste.length] };
   }
 
   function evaluate(guess){
@@ -385,7 +395,11 @@
     else if(/^[a-zA-Z]$/.test(e.key)){ handleKey(e.key.toUpperCase()); }
   });
 
-  $("randomStart").addEventListener("click", ()=> startGame(randomWord()));
+  $("randomStart").addEventListener("click", ()=>{
+    const e = randomEintrag();
+    startGame(e.en, e.de ? e : null);
+  });
+  $("hintBtn").addEventListener("click", ()=>{ $("hintText").hidden = false; });
 
   $("secretStart").addEventListener("click", ()=>{
     const w = normalise($("secretWord").value);

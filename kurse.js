@@ -241,8 +241,8 @@ const MATERIAL = [
     titel:"Vokabel-Wordle",
     typ:"werkzeug",
     url:"eng/seki/wordle.html",
-    info:"Wortratespiel für die Vokabelkontrolle: zufälliges Wort aus dem Pool oder eigenes geheimes Wort der Lehrkraft, beliebig oft neu spielbar.",
-    stand:"2026-09", neu:true},
+    info:"Wortratespiel für die Vokabelkontrolle mit Wörtern zu Zahlen, Wochentagen, Monaten, Farben, Tieren, Federmäppchen und Unit 1. Thema wählbar, Hinweis auf Deutsch, auch mit eigenem geheimen Wort der Lehrkraft.",
+    stand:"2026-10", neu:true},
 
    { fach:"englisch", klasse:5, bereich:"wortschatz-5",
     titel:"Vokabel-Bingo",
@@ -264,6 +264,13 @@ const MATERIAL = [
     url:"eng/seki/spielbrett.html",
     info:"Frage-Antwort-Brettspiel für zwei Spieler: Vokabel richtig beantworten, würfeln, vorrücken. Frosch-Felder lösen Aktionskarten aus. Easy (Multiple Choice) oder Profi (Wort eintippen).",
     stand:"2026-09", neu:true},
+
+   { fach:"englisch", klasse:5, bereich:"wortschatz-5",
+    titel:"Word Pop",
+    typ:"werkzeug",
+    url:"eng/seki/wordpop.html",
+    info:"Luftballons mit Wörtern steigen auf: Übersetzung eintippen oder den passenden Ballon antippen, bevor er davonfliegt. Mit jedem Level wird es schneller. Themen und Richtung (Englisch/Deutsch) wählbar.",
+    stand:"2026-10", neu:true},
 
    { fach:"englisch", klasse:5, bereich:"wortschatz-5",
     titel:"Englisches Bombenspiel",

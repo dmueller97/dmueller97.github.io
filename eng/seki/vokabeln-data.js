@@ -2,7 +2,9 @@
    VOKABELN — gemeinsamer Wortschatz für Bingo, Memory, Spielbrett
    und Bombenspiel (Klasse 5, Access 1).
 
-   Jeder Eintrag: { en, de, thema }
+   Jeder Eintrag: { en, de, thema, alt?, unit? }
+   alt  = weitere akzeptierte deutsche Übersetzungen (für Word Pop)
+   unit = 1 für die Wörter aus Unit 1 (At home with friends / The postman)
    thema steuert die Themenauswahl im Bombenspiel und kann in den
    anderen Spielen zum Filtern genutzt werden.
 
@@ -11,7 +13,7 @@
    =================================================================== */
 const VOKABELN = [
   // Schule und Klassenzimmer
-  { en:"class",      de:"die Klasse",        thema:"schule" },
+  { en:"class",      de:"die Klasse",        thema:"schule", unit:1 },
   { en:"chair",      de:"der Stuhl",         thema:"schule" },
   { en:"table",      de:"der Tisch",         thema:"schule" },
   { en:"pupil",      de:"der Schüler",       thema:"schule" },
@@ -44,7 +46,7 @@ const VOKABELN = [
   { en:"mother",     de:"die Mutter",        thema:"familie" },
   { en:"father",     de:"der Vater",         thema:"familie" },
   { en:"family",     de:"die Familie",       thema:"familie" },
-  { en:"everyone",   de:"alle",              thema:"familie" },
+  { en:"everyone",   de:"alle",              thema:"familie", unit:1 },
 
   // Tiere
   { en:"animal",     de:"das Tier",          thema:"tiere" },
@@ -70,8 +72,8 @@ const VOKABELN = [
   { en:"fox",        de:"der Fuchs",         thema:"tiere" },
 
   // Zu Hause
-  { en:"house",      de:"das Haus",          thema:"zuhause" },
-  { en:"doorbell",   de:"die Türklingel",    thema:"zuhause" },
+  { en:"house",      de:"das Haus",          thema:"zuhause", unit:1 },
+  { en:"doorbell",   de:"die Türklingel",    thema:"zuhause", unit:1 },
   { en:"kitchen",    de:"die Küche",         thema:"zuhause" },
   { en:"bedroom",    de:"das Schlafzimmer",  thema:"zuhause" },
   { en:"window",     de:"das Fenster",       thema:"zuhause" },
@@ -121,8 +123,84 @@ const VOKABELN = [
   { en:"speak",      de:"sprechen",          thema:"verben" },
   { en:"think",      de:"denken",            thema:"verben" },
   { en:"read",       de:"lesen",             thema:"verben" },
-  { en:"describe",   de:"beschreiben",       thema:"verben" },
-  { en:"spell",      de:"buchstabieren",     thema:"verben" }
+  { en:"describe",   de:"beschreiben",       thema:"verben", unit:1 },
+  { en:"spell",      de:"buchstabieren",     thema:"verben" },
+
+  // Zahlen
+  { en:"one", de:"eins", thema:"zahlen", alt:["ein", "eine"] },
+  { en:"two", de:"zwei", thema:"zahlen" },
+  { en:"three", de:"drei", thema:"zahlen" },
+  { en:"four", de:"vier", thema:"zahlen" },
+  { en:"five", de:"fünf", thema:"zahlen" },
+  { en:"six", de:"sechs", thema:"zahlen" },
+  { en:"seven", de:"sieben", thema:"zahlen" },
+  { en:"eight", de:"acht", thema:"zahlen" },
+  { en:"nine", de:"neun", thema:"zahlen" },
+  { en:"ten", de:"zehn", thema:"zahlen" },
+  { en:"eleven", de:"elf", thema:"zahlen" },
+  { en:"twelve", de:"zwölf", thema:"zahlen" },
+  { en:"thirteen", de:"dreizehn", thema:"zahlen" },
+  { en:"fourteen", de:"vierzehn", thema:"zahlen" },
+  { en:"fifteen", de:"fünfzehn", thema:"zahlen" },
+  { en:"sixteen", de:"sechzehn", thema:"zahlen" },
+  { en:"seventeen", de:"siebzehn", thema:"zahlen" },
+  { en:"eighteen", de:"achtzehn", thema:"zahlen" },
+  { en:"nineteen", de:"neunzehn", thema:"zahlen" },
+  { en:"twenty", de:"zwanzig", thema:"zahlen" },
+  { en:"thirty", de:"dreißig", thema:"zahlen" },
+  { en:"forty", de:"vierzig", thema:"zahlen" },
+  { en:"fifty", de:"fünfzig", thema:"zahlen" },
+  { en:"hundred", de:"hundert", thema:"zahlen" },
+
+  // Wochentage
+  { en:"monday", de:"Montag", thema:"wochentage" },
+  { en:"tuesday", de:"Dienstag", thema:"wochentage" },
+  { en:"wednesday", de:"Mittwoch", thema:"wochentage" },
+  { en:"thursday", de:"Donnerstag", thema:"wochentage" },
+  { en:"friday", de:"Freitag", thema:"wochentage" },
+  { en:"saturday", de:"Samstag", thema:"wochentage" },
+  { en:"sunday", de:"Sonntag", thema:"wochentage" },
+
+  // Monate
+  { en:"january", de:"Januar", thema:"monate" },
+  { en:"february", de:"Februar", thema:"monate" },
+  { en:"march", de:"März", thema:"monate" },
+  { en:"april", de:"April", thema:"monate" },
+  { en:"may", de:"Mai", thema:"monate" },
+  { en:"june", de:"Juni", thema:"monate" },
+  { en:"july", de:"Juli", thema:"monate" },
+  { en:"august", de:"August", thema:"monate" },
+  { en:"september", de:"September", thema:"monate" },
+  { en:"october", de:"Oktober", thema:"monate" },
+  { en:"november", de:"November", thema:"monate" },
+  { en:"december", de:"Dezember", thema:"monate" },
+
+  // Weitere Farben, Tiere, Federmäppchen
+  { en:"blue", de:"blau", thema:"farben" },
+  { en:"hamster", de:"der Hamster", thema:"tiere" },
+  { en:"parrot", de:"der Papagei", thema:"tiere" },
+  { en:"goat", de:"die Ziege", thema:"tiere" },
+  { en:"chicken", de:"das Huhn", thema:"tiere" },
+  { en:"giraffe", de:"die Giraffe", thema:"tiere" },
+  { en:"zebra", de:"das Zebra", thema:"tiere" },
+  { en:"turtle", de:"die Schildkröte", thema:"tiere" },
+  { en:"penguin", de:"der Pinguin", thema:"tiere" },
+  { en:"book", de:"das Buch", thema:"federmaeppchen" },
+  { en:"paper", de:"das Papier", thema:"federmaeppchen" },
+  { en:"calculator", de:"der Taschenrechner", thema:"federmaeppchen" },
+
+  // Unit 1: At home with friends / The postman
+  { en:"home", de:"zu Hause", thema:"zuhause", alt:["daheim", "zuhause", "das Zuhause"], unit:1 },
+  { en:"houses", de:"die Häuser", thema:"zuhause", unit:1 },
+  { en:"maybe", de:"vielleicht", thema:"unit1", unit:1 },
+  { en:"upstairs", de:"nach oben", thema:"unit1", alt:["oben"], unit:1 },
+  { en:"downstairs", de:"nach unten", thema:"unit1", alt:["unten"], unit:1 },
+  { en:"hour", de:"die Stunde (60 Minuten)", thema:"unit1", alt:["Stunde"], unit:1 },
+  { en:"divorced", de:"geschieden / getrennt", thema:"unit1", unit:1 },
+  { en:"postman", de:"der Postbote", thema:"unit1", alt:["Briefträger"], unit:1 },
+  { en:"picture", de:"das Bild", thema:"unit1", unit:1 },
+  { en:"please", de:"bitte", thema:"unit1", unit:1 },
+  { en:"come", de:"kommen", thema:"unit1", alt:["komm"], unit:1 }
 ];
 
 const THEMEN = {
@@ -134,5 +212,9 @@ const THEMEN = {
   orte:          "Orte",
   farben:        "Farben",
   zeit:          "Zeit",
-  verben:        "Verben"
+  verben:        "Verben",
+  zahlen:        "Zahlen",
+  wochentage:    "Wochentage",
+  monate:        "Monate",
+  unit1:         "Unit 1: At home with friends"
 };
