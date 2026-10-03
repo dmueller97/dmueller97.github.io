@@ -72,6 +72,10 @@
   .balloon .s { position: absolute; top: 100%; left: 50%; width: 2px; height: 36px; margin-top: 4px; background: rgba(255,255,255,.85); }
   .balloon .t { position: relative; z-index: 1; color: #fff; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,.5); padding: 0 8px 6px; line-height: 1.1; }
   .balloon.klick:hover .b { filter: brightness(1.1); }
+  .balloon.ziel .b { box-shadow: inset -8px -10px 18px rgba(0,0,0,.2), 0 0 0 4px #FFE45C, 0 0 18px 8px rgba(255,228,92,.85); }
+  .balloon.ziel .b::before { content: "★"; position: absolute; right: -4px; top: -4px; width: 26px; height: 26px; line-height: 23px; text-align: center; font-size: 15px; color: var(--ink); background: #FFE45C; border: 2px solid var(--ink); border-radius: 50%; z-index: 2; }
+  .balloon.ziel.dringend .b { box-shadow: inset -8px -10px 18px rgba(0,0,0,.2), 0 0 0 4px #fff, 0 0 22px 11px rgba(200,50,43,.95); animation: blink .4s infinite alternate; }
+  @keyframes blink { to { filter: brightness(1.3) saturate(1.3); } }
   .balloon.shake { animation: shake .3s; }
   @keyframes shake { 0%,100% { margin-left: 0; } 25% { margin-left: -7px; } 75% { margin-left: 7px; } }
   .spark { position: absolute; width: 10px; height: 10px; border-radius: 50%; z-index: 15; pointer-events: none; animation: spark .55s ease-out forwards; }
@@ -104,7 +108,9 @@
   #tippIn.nope { animation: shakeIn .3s; border-color: var(--red); background: #FBE1DE; }
   @keyframes shakeIn { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-7px); } 75% { transform: translateX(7px); } }
   #promptBar { text-align: center; font-size: 1.25rem; padding: 10px 14px; border: 2px dashed var(--ink); border-radius: 10px; background: #FFF8E1; }
-  #promptBar b { background: var(--marker); border-radius: 6px; padding: 0 8px; font-size: 1.35rem; }
+  #promptBar .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 8px; }
+  #promptBar .chips b { background: var(--marker); border: 2px solid var(--ink); border-radius: 8px; padding: 0 10px; font-size: 1.35rem; }
+  #promptBar .chips b.dringend { background: #F6B3AD; animation: blink .4s infinite alternate; }
   #msg { min-height: 1.6em; margin: 10px 0 0; text-align: center; font-size: 1.05rem; }
   #msg.ok { color: var(--green); font-weight: 700; }
   #msg.no { color: var(--red); font-weight: 700; }
@@ -117,7 +123,7 @@
 <a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
 <main>
   <h1>Word Pop</h1>
-  <p class="intro">Luftballons steigen in den Himmel — in jedem steht ein Wort. Finde die Übersetzung und bring den Ballon zum Platzen, bevor er oben davonfliegt! Mit jedem Level werden die Ballons schneller.</p>
+  <p class="intro">Luftballons steigen in den Himmel — in jedem steht ein Wort. Rette die <b>gesuchten</b> Wörter: Finde ihre Übersetzung und lass den Ballon platzen, bevor er oben ankommt. Alle anderen Ballons dürfen davonfliegen. Je länger du spielst, desto schneller werden die Ballons!</p>
 
   <section class="sheet setup" id="setup">
     <div class="setup-row">
@@ -180,7 +186,8 @@
         <input type="text" id="tippIn" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="tippen &amp; Enter">
         <button class="btn" type="submit">Pop!</button>
       </form>
-      <div id="promptBar" hidden>Welcher Ballon bedeutet: <b id="promptText">…</b> ?</div>
+      <p class="hint" id="tippHint" style="text-align:center;margin-top:8px">Rette die ★-Ballons: tippe ihre Übersetzung. Die anderen Ballons dürfen davonfliegen.</p>
+      <div id="promptBar" hidden>Gesucht — finde diese Ballons, bevor sie oben ankommen:<div class="chips" id="promptChips"></div></div>
       <p id="msg" aria-live="polite"></p>
     </div>
     <p style="text-align:center"><button class="btn secondary" id="menuBtn" type="button">Zurück zu den Einstellungen</button></p>
@@ -260,7 +267,8 @@ const FARBEN = [["#E8504A", "#B3261E"], ["#3F7FE0", "#1F4FA8"], ["#35B070", "#1B
 
 /* ---------- Spielzustand ---------- */
 let G = null;
-const tempoNow = () => G.cfg.tempo * Math.min(150, 34 + (G.level - 1) * 10);
+const tempoNow = () => G.cfg.tempo * Math.min(165, 34 + 0.55 * G.t);
+const zielAnzahl = () => Math.min(4, 2 + Math.floor(G.t / 45));
 const spawnEvery = () => Math.max(0.55, 1.5 - (G.level - 1) * 0.1) / Math.sqrt(G.cfg.tempo);
 const maxLive = () => Math.min(12, 6 + G.level, Math.max(4, Math.floor(G.W / 105) * 2));
 
@@ -269,15 +277,17 @@ function neuesSpiel(cfg) {
   const pool = poolFor(cfg.thema);
   const stage = $("stage");
   G = { cfg, pool, bag: [], balloons: [], idc: 0, score: 0, level: 1, popped: 0, lives: 3, streak: 0, wrong: 0,
-        missed: new Map(), paused: false, over: false, t: 0, spawnT: 0, prompt: null, W: stage.clientWidth, H: stage.clientHeight, raf: 0, last: 0, best: loadBest(cfg) };
+        missed: new Map(), paused: false, over: false, t: 0, spawnT: 0, targets: [], W: stage.clientWidth, H: stage.clientHeight, raf: 0, last: 0, best: loadBest(cfg) };
   $("layer").innerHTML = ""; $("over").hidden = true; $("msg").textContent = ""; $("msg").className = "";
   $("pauseBtn").textContent = "Pause";
-  $("tippForm").hidden = cfg.modus !== "tippen"; $("promptBar").hidden = cfg.modus !== "klicken";
-  hud(); setPrompt();
+  $("tippIn").value = ""; $("tippIn").classList.remove("nope");
+  $("tippForm").hidden = cfg.modus !== "tippen"; $("promptBar").hidden = cfg.modus !== "klicken"; $("tippHint").hidden = cfg.modus !== "tippen";
+  hud();
   if (cfg.modus === "tippen") $("tippIn").focus({ preventScroll: true });
   G.spawnT = 0;
   const welle = Math.min(maxLive() - 1, pool.length, 7);
   for (let i = 0; i < welle; i++) spawn(G.H * (0.12 + 0.62 * (i / Math.max(1, welle - 1))) * R(.9, 1.05));
+  fuelleZiele();
   G.last = performance.now(); G.raf = requestAnimationFrame(loop);
 }
 
@@ -291,13 +301,18 @@ function loop(ts) {
 function tick(dt) {
   G.t += dt; G.spawnT += dt;
   if (G.spawnT >= spawnEvery() && G.balloons.length < maxLive()) { G.spawnT = 0; spawn(); }
+  const neu = 1 + Math.floor(G.t / 20);
+  if (neu > G.level) { G.level = neu; zeigeToast("Level " + neu + " — schneller!"); hud(); }
   const swayOn = !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const base = tempoNow();
   for (const b of G.balloons.slice()) {
-    b.y -= b.vy * dt;
+    b.y -= b.rel * base * dt;
     const sx = swayOn ? Math.sin(G.t * b.fr + b.ph) * b.amp : 0;
     b.el.style.transform = "translate3d(" + (b.x + sx).toFixed(1) + "px," + b.y.toFixed(1) + "px,0)";
-    if (b.y + b.h < 0) entkommen(b);
+    if (b.y + b.h < 0) { entkommen(b); if (G.over) return; continue; }
+    if (b.ziel) { const d = b.y < G.H * 0.3; if (d !== b.dringend) { b.dringend = d; b.el.classList.toggle("dringend", d); const c = document.querySelector('#promptChips b[data-id="' + b.id + '"]'); if (c) c.classList.toggle("dringend", d); } }
   }
+  fuelleZiele();
 }
 
 function naechsterEintrag() {
@@ -329,46 +344,57 @@ function spawn(startY) {
   el.style.cssText = "width:" + w + "px;height:" + h + "px;--c1:" + c1 + ";--c2:" + c2 + ";transform:translate3d(" + x + "px," + y0 + "px,0)";
   const fs = text.length <= 6 ? 1.3 : text.length <= 9 ? 1.12 : text.length <= 13 ? .95 : .8;
   el.innerHTML = '<span class="b"></span><span class="s"></span><span class="t" style="font-size:' + fs + 'rem">' + esc(text) + "</span>";
-  const b = { id: ++G.idc, e, lang, text, el, x, y: y0, w, h, vy: tempoNow() * R(.88, 1.15), ph: R(0, 6.28), amp: R(5, 13), fr: R(.8, 1.6) };
+  const b = { id: ++G.idc, e, lang, text, el, x, y: y0, w, h, rel: R(.88, 1.15), ph: R(0, 6.28), amp: R(5, 13), fr: R(.8, 1.6) };
   if (klick) el.addEventListener("click", () => antippen(b));
   $("layer").appendChild(el);
   G.balloons.push(b);
-  if (klick && !G.prompt) setPrompt();
 }
 
-/* ---------- Aufgabe im Antipp-Modus ---------- */
-function setPrompt() {
-  if (!G || G.cfg.modus !== "klicken") return;
-  if (!G.balloons.length) { G.prompt = null; $("promptText").textContent = "…"; return; }
-  const b = G.balloons[Math.floor(Math.random() * G.balloons.length)];
-  G.prompt = b;
-  $("promptText").textContent = b.lang === "en" ? ballonDe(b.e) : b.e.en;
+/* ---------- Gesuchte Ballons (Ziele) ---------- */
+function fuelleZiele() {
+  const want = Math.min(zielAnzahl(), G.balloons.length);
+  let neu = false;
+  while (G.targets.length < want) {
+    const kand = G.balloons.filter(b => !b.ziel);
+    if (!kand.length) break;
+    const fair = kand.filter(b => b.y > G.H * 0.35);
+    const quelle = fair.length ? fair : kand;
+    const b = quelle[Math.floor(Math.random() * quelle.length)];
+    b.ziel = true; if (G.cfg.modus === "tippen") b.el.classList.add("ziel");
+    G.targets.push(b); neu = true;
+  }
+  if (neu) zeigeChips();
+}
+function zeigeChips() {
+  if (G.cfg.modus !== "klicken") return;
+  $("promptChips").innerHTML = G.targets.map(b => '<b data-id="' + b.id + '"' + (b.dringend ? ' class="dringend"' : "") + ">" + esc(b.lang === "en" ? ballonDe(b.e) : b.e.en) + "</b>").join("") || "<b>…</b>";
+}
+function ziel(b, an) {
+  b.ziel = an; b.dringend = false; b.el.classList.remove("dringend");
+  if (G.cfg.modus === "tippen") b.el.classList.toggle("ziel", an);
+  G.targets = G.targets.filter(x => x !== b); if (an) G.targets.push(b);
 }
 
 /* ---------- Treffer, Fehler, Verlust ---------- */
 function antippen(b) {
   if (G.paused || G.over) return;
-  if (!G.prompt) { return; }
-  if (gleich(G.prompt.e, b.e)) { treffer(b); }
-  else {
-    G.streak = 0; G.wrong++; G.score = Math.max(0, G.score - 5);
-    G.missed.set(G.prompt.e.en, G.prompt.e);
-    b.el.classList.remove("shake"); void b.el.offsetWidth; b.el.classList.add("shake");
-    meldung("Das war „" + b.text + "“ — gesucht war „" + (G.prompt.lang === "en" ? ballonDe(G.prompt.e) : G.prompt.e.en) + "“ ↔ " + (G.prompt.lang === "en" ? G.prompt.e.en : ballonDe(G.prompt.e)), false);
-    klang("wrong"); hud();
-  }
+  const t = G.targets.find(x => gleich(x.e, b.e));
+  if (t) { if (t !== b) { ziel(t, false); ziel(b, true); } treffer(b); return; }
+  G.streak = 0; G.wrong++; G.score = Math.max(0, G.score - 5);
+  b.el.classList.remove("shake"); void b.el.offsetWidth; b.el.classList.add("shake");
+  meldung("„" + b.text + "“ wird gerade nicht gesucht.", false);
+  klang("wrong"); hud();
 }
 
+const passtTipp = (b, v) => b.lang === "en" ? deSet(b.e).has(normDe(v)) : englischAkzeptiert(b.e).has(normEn(v));
 function tippen(wert) {
   const v = wert.trim(); if (!v || !G || G.paused || G.over) return;
-  const live = G.balloons.slice().sort((a, b) => a.y - b.y);
-  for (const b of live) {
-    const ok = b.lang === "en" ? deSet(b.e).has(normDe(v)) : englischAkzeptiert(b.e).has(normEn(v));
-    if (ok) { treffer(b); $("tippIn").value = ""; return; }
-  }
-  G.streak = 0; G.wrong++;
+  const z = G.targets.slice().sort((a, b) => a.y - b.y).find(b => passtTipp(b, v));
+  if (z) { treffer(z); $("tippIn").value = ""; return; }
   const inp = $("tippIn"); inp.classList.remove("nope"); void inp.offsetWidth; inp.classList.add("nope");
-  meldung("„" + v + "“ passt zu keinem Ballon.", false); klang("wrong"); hud();
+  if (G.balloons.some(b => !b.ziel && passtTipp(b, v))) { meldung("„" + v + "“ stimmt, aber dieser Ballon wird gerade nicht gesucht (kein ★).", false); klang("wrong"); return; }
+  G.streak = 0; G.wrong++;
+  meldung("„" + v + "“ passt zu keinem gesuchten Ballon.", false); klang("wrong"); hud();
 }
 
 function treffer(b) {
@@ -376,21 +402,22 @@ function treffer(b) {
   G.streak++; G.score += pts; G.popped++;
   const r = b.el.getBoundingClientRect(), s = $("stage").getBoundingClientRect();
   effekt(r.left - s.left + b.w / 2, r.top - s.top + b.h / 2, getComputedStyle(b.el).getPropertyValue("--c1"), pts);
+  G.targets = G.targets.filter(x => x !== b);
   entferne(b);
   klang("pop");
   meldung(b.e.en + " = " + ballonDe(b.e), true);
-  const neu = 1 + Math.floor(G.popped / 5);
-  if (neu > G.level) { G.level = neu; zeigeToast("Level " + neu + " — schneller!"); }
-  if (G.prompt === b) setPrompt();
+  fuelleZiele(); zeigeChips();
   hud();
 }
 
 function entkommen(b) {
+  if (!b.ziel) { entferne(b); return; }
   G.missed.set(b.e.en, b.e); G.lives--; G.streak = 0;
+  G.targets = G.targets.filter(x => x !== b);
   entferne(b); klang("life");
   const st = $("stage"); st.classList.remove("hit"); void st.offsetWidth; st.classList.add("hit");
-  meldung("Entkommen: " + b.e.en + " = " + ballonDe(b.e), false);
-  if (G.prompt === b) setPrompt();
+  meldung("Nicht gerettet: " + b.e.en + " = " + ballonDe(b.e), false);
+  fuelleZiele(); zeigeChips();
   hud();
   if (G.lives <= 0) spielEnde();
 }
@@ -456,6 +483,7 @@ $("start").addEventListener("click", () => {
   $("setup").hidden = true; $("game").hidden = false;
   neuesSpiel(cfg);
 });
+$("tippIn").addEventListener("input", () => $("tippIn").classList.remove("nope"));
 $("tippForm").addEventListener("submit", e => { e.preventDefault(); tippen($("tippIn").value); });
 $("pauseBtn").addEventListener("click", () => pause(!(G && G.paused)));
 $("soundBtn").addEventListener("click", function () { ton = !ton; this.textContent = ton ? "Ton an" : "Ton aus"; this.setAttribute("aria-pressed", ton); });
