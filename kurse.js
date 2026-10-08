@@ -224,6 +224,13 @@ const MATERIAL = [
     stand:"2026-09", neu:true},
 
    { fach:"englisch", klasse:5, bereich:"grammatik-5",
+    titel:"Übung Verneinung von am/is/are",
+    typ:"uebung",
+    url:"eng/seki/forms-of-be-h5p.html",
+    info:"Lückentext: Setze die richtige Verneinung von am, is oder are ein. Interaktive H5P-Übung von ZUM Apps.",
+    stand:"2026-10", neu:true},
+
+   { fach:"englisch", klasse:5, bereich:"grammatik-5",
     titel:"personal pronouns",
     typ:"uebung",
     url:"eng/seki/personal-pronouns-quiz.html",
