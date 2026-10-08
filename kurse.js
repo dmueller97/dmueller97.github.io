@@ -215,6 +215,13 @@ const MATERIAL = [
     info:"Praktikumstag im Rechenzentrum, und ausgerechnet jetzt fällt die Hauptversorgung aus. Schaffts du es alle Rätsel zu lösen...?",
     stand:"2026-09", neu:true },
 
+   { fach:"englisch", klasse:5, bereich:"kap1-5",
+    titel:"Klassenarbeitsvorbereitung Unit 1",
+    typ:"plan",
+    url:"eng/seki/unit1-klassenarbeit.html",
+    info:"Learning Bazaar: Kann-Liste zum Abhaken, alle Übungsstände zu Unit 1, Vokabel-Selbsttest und eine Übungsarbeit mit zwölf Aufgaben und Auswertung.",
+    stand:"2026-10", neu:true},
+
    { fach:"englisch", klasse:5, bereich:"unit1-5",
     titel:"Erklärung personal pronouns & forms of be",
     typ:"arbeitsblatt",
