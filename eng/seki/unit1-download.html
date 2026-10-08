@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 1 – Präsentation (Download)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --paper:#FDFDF8; --grid:#DCE7F2; --ink:#1F3A68; --ink-soft:#5A6F92; --red:#C8322B; --green:#2E7D4F; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { font-family:"Andika","Comic Sans MS",system-ui,sans-serif; color:var(--ink); background-color:var(--paper);
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px); background-size:24px 24px; min-height:100vh; line-height:1.55; }
+  main { max-width:640px; margin:0 auto; padding:32px 20px 60px; }
+  h1 { font-size:2.1rem; line-height:1.1; margin:0 0 4px; }
+  .intro { color:var(--ink-soft); font-size:1.05rem; margin:0 0 20px; }
+  .sheet { background:var(--paper); border:2px solid var(--ink); border-radius:6px; padding:22px; box-shadow:5px 5px 0 var(--ink); }
+  label { font-weight:700; display:block; margin-bottom:6px; }
+  .row { display:flex; flex-wrap:wrap; gap:10px; }
+  input { font:inherit; font-size:1.1rem; padding:9px 12px; border:2px solid var(--ink); border-radius:6px; flex:1 1 220px; color:var(--ink); }
+  button { font:inherit; font-size:1.1rem; font-weight:700; color:var(--paper); background:var(--ink); border:2px solid var(--ink); border-radius:8px; padding:9px 20px; cursor:pointer; }
+  button:hover { background:#2B4E8A; } button:disabled { opacity:.5; cursor:wait; }
+  #msg { min-height:1.6em; margin:12px 0 0; font-weight:700; } #msg.no { color:var(--red); } #msg.ok { color:var(--green); }
+  .hint { color:var(--ink-soft); font-size:.92rem; margin-top:14px; }
+</style>
+</head>
+<body>
+<a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
+<main>
+  <h1>Unit 1: Präsentation</h1>
+  <p class="intro">Die Unterrichtspräsentation zu Unit 1 (PDF) ist passwortgeschützt. Gib das Passwort ein, das du von deiner Lehrkraft bekommen hast.</p>
+  <form class="sheet" id="form" autocomplete="off">
+    <label for="pw">Passwort</label>
+    <div class="row"><input type="password" id="pw" autocomplete="off" autocapitalize="off" spellcheck="false" required><button type="submit" id="go">Herunterladen</button></div>
+    <p id="msg" aria-live="polite"></p>
+    <p class="hint">Die Datei (ca. 4 MB) ist verschlüsselt und wird erst nach der richtigen Eingabe in deinem Browser entschlüsselt.</p>
+  </form>
+</main>
+<script>
+"use strict";
+const FILE = "../downloads/unit1-praesentation.bin", NAME = "U1_MIX_unit1_PPT_v24.pdf", ITER = 600000;
+const msg = (t, c) => { const m = document.getElementById("msg"); m.textContent = t; m.className = c || ""; };
+async function entschluesseln(pw) {
+  const r = await fetch(FILE); if (!r.ok) throw new Error("laden");
+  const b = new Uint8Array(await r.arrayBuffer());
+  if (String.fromCharCode(...b.slice(0, 4)) !== "KSR1") throw new Error("format");
+  const salt = b.slice(4, 20), iv = b.slice(20, 32), ct = b.slice(32);
+  const km = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: ITER, hash: "SHA-256" }, km, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  return crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct);
+}
+document.getElementById("form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const go = document.getElementById("go"), pw = document.getElementById("pw").value;
+  if (!window.crypto || !crypto.subtle) { msg("Dieser Browser unterstützt die Entschlüsselung nicht (https nötig).", "no"); return; }
+  go.disabled = true; msg("Prüfe Passwort …");
+  try {
+    const buf = await entschluesseln(pw);
+    const url = URL.createObjectURL(new Blob([buf], { type: "application/pdf" }));
+    const a = document.createElement("a"); a.href = url; a.download = NAME; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    msg("Passwort richtig — der Download startet.", "ok"); document.getElementById("pw").value = "";
+  } catch (err) {
+    msg(err.message === "laden" || err.message === "format" ? "Die Datei konnte nicht geladen werden." : "Falsches Passwort.", "no");
+  }
+  go.disabled = false;
+});
+</script>
+</body>
+</html>

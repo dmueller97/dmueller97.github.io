@@ -223,6 +223,13 @@ const MATERIAL = [
     stand:"2026-10", neu:true},
 
    { fach:"englisch", klasse:5, bereich:"unit1-5",
+    titel:"Präsentation Unit 1 (Download, Passwort)",
+    typ:"plan",
+    url:"eng/seki/unit1-download.html",
+    info:"Die Unterrichtspräsentation zu Unit 1 als PDF zum Herunterladen. Das Passwort bekommst du von deiner Lehrkraft.",
+    stand:"2026-10", neu:true},
+
+   { fach:"englisch", klasse:5, bereich:"unit1-5",
     titel:"Erklärung personal pronouns & forms of be",
     typ:"arbeitsblatt",
     url:"eng/seki/personal-pronouns-forms-of-be.html",
