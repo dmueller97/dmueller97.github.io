@@ -285,12 +285,6 @@ const MATERIAL = [
     info:"Luftballons mit Wörtern steigen auf: Übersetzung eintippen oder den passenden Ballon antippen, bevor er davonfliegt. Mit jedem Level wird es schneller. Themen und Richtung (Englisch/Deutsch) wählbar.",
     stand:"2026-10", neu:true},
 
-   { fach:"englisch", klasse:5, bereich:"leadin-5",
-    titel:"Englisches Bombenspiel",
-    typ:"werkzeug",
-    url:"eng/seki/bombenspiel.html",
-    info:"Reihum ein englisches Wort zum Thema nennen und die tickende Bombe weitergeben, bevor sie explodiert. Für 2 bis 6 Spieler, Thema fest oder zufällig wechselnd.",
-    stand:"2026-09", neu:true},
 
    { fach:"informatik", klasse:10, bereich:"sprachen-regex",
     titel:"Formale Sprachen: Syntax und Semantik — Selbstlernkurs",

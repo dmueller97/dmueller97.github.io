@@ -157,6 +157,7 @@ const TYP = {
 };
 const KLASSEN = [5,6,7,8,9,10,11,12];
 const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
 const app = $("#app");
 const esc = t => String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 
@@ -241,16 +242,15 @@ function viewKlasse(fid, kl){
   if(!bereiche.length) return h+`<p class="note">Für diese Klassenstufe ist in kurse.js noch keine Gliederung hinterlegt.</p>`;
 
   const benutzt=new Set();
-  h += bereiche.map(b=>{
-    const es=alle.filter(e=>e.bereich===b.id);
-    es.forEach(e=>benutzt.add(e));
-    return `<section class="bereich${es.length?"":" leer"}" id="${esc(b.id)}">
-      <div class="h"><span class="t">${esc(b.name)}</span><span class="i">${esc(b.info||"")}</span>
-      <span class="c">${es.length?es.length+(es.length===1?" Eintrag":" Einträge"):""}</span></div>
-      ${es.length?`<div class="eintraege">${es.map(e=>eintragHtml(e)).join("")}</div>`
-                 :`<div class="leerhinweis">Noch kein Material.</div>`}
-    </section>`;
-  }).join("");
+  const voll=[], leer=[];
+  bereiche.forEach(b=>{ const es=alle.filter(e=>e.bereich===b.id); es.forEach(e=>benutzt.add(e)); (es.length?voll:leer).push([b,es]); });
+  const offen=location.hash.split("/")[2]||"";
+  if(voll.length>1) h += `<p class="note"><button class="btn small" id="alleAuf" type="button">Alle aufklappen</button> <button class="btn small" id="alleZu" type="button">Alle zuklappen</button></p>`;
+  h += voll.map(([b,es])=>`<details class="bereich" id="${esc(b.id)}"${(voll.length===1||offen===b.id)?" open":""}>
+      <summary><span class="t">${esc(b.name)}</span><span class="i">${esc(b.info||"")}</span><span class="c">${es.length} ${es.length===1?"Eintrag":"Einträge"}</span></summary>
+      <div class="eintraege">${es.map(e=>eintragHtml(e)).join("")}</div>
+    </details>`).join("");
+  if(leer.length) h += `<p class="note leerzeile">Noch ohne Material: ${leer.map(([b])=>esc(b.name)).join(" · ")}</p>`;
 
   const rest=alle.filter(e=>!benutzt.has(e));
   if(rest.length){
@@ -286,6 +286,10 @@ function route(){
     if(el) el.scrollIntoView({block:"start"});
   } else window.scrollTo(0,0);
 }
+document.addEventListener("click",e=>{
+  if(e.target.id==="alleAuf") $$("details.bereich").forEach(d=>d.open=true);
+  if(e.target.id==="alleZu") $$("details.bereich").forEach(d=>d.open=false);
+});
 window.addEventListener("hashchange",route);
 $("#q").addEventListener("input",route);
 document.addEventListener("keydown",e=>{
