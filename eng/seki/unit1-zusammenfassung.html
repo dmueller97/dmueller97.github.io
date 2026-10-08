@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 1 – Zusammenfassung (farbig)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --paper:#FDFDF8; --grid:#DCE7F2; --ink:#1F3A68; --ink-soft:#5A6F92;
+    --pro:#1F6FD1; --pro-l:#DCEBFF; --be:#C8322B; --be-l:#FFE3DF; --not:#FFE45C; --q:#1E8449; --q-l:#DDF3E4; --voc:#7B3FB5; --voc-l:#EEE2FA; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { font-family:"Andika","Comic Sans MS",system-ui,sans-serif; color:var(--ink); background-color:var(--paper);
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px); background-size:24px 24px; min-height:100vh; line-height:1.55; }
+  main { max-width:860px; margin:0 auto; padding:32px 20px 60px; }
+  h1 { font-size:2.1rem; line-height:1.1; margin:0 0 4px; }
+  h2 { font-size:1.4rem; margin:0 0 10px; }
+  p { margin:0 0 10px; }
+  .intro { color:var(--ink-soft); font-size:1.05rem; max-width:62ch; margin-bottom:16px; }
+  .legend { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 22px; }
+  .sheet { background:var(--paper); border:2px solid var(--ink); border-radius:6px; padding:20px 22px; box-shadow:5px 5px 0 var(--ink); margin-bottom:22px; break-inside:avoid; }
+  .pro, .be, .nt, .qw, .vc { border-radius:6px; padding:0 6px; font-weight:700; }
+  .pro { background:var(--pro-l); color:var(--pro); } .be { background:var(--be-l); color:var(--be); }
+  .nt { background:var(--not); color:var(--ink); } .qw { background:var(--q-l); color:var(--q); } .vc { background:var(--voc-l); color:var(--voc); }
+  table { width:100%; border-collapse:collapse; margin:8px 0; }
+  th, td { text-align:left; padding:6px 9px; border-bottom:1px solid var(--grid); vertical-align:top; }
+  th { color:var(--ink-soft); font-size:.8rem; text-transform:uppercase; letter-spacing:.04em; }
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:20px; } @media (max-width:640px){ .two { grid-template-columns:1fr; } }
+  .merk { border:2px dashed var(--ink); border-radius:8px; padding:10px 14px; background:#FFF8E1; margin:12px 0 4px; }
+  .bsp { list-style:none; padding:0; margin:8px 0; } .bsp li { padding:7px 12px; margin-bottom:6px; border-left:5px solid var(--ink); background:#fff; border-radius:0 8px 8px 0; font-size:1.05rem; }
+  .bsp small { color:var(--ink-soft); display:block; }
+  .tools { margin:0 0 18px; } .tools button, .tools a { font:inherit; font-weight:700; color:var(--paper); background:var(--ink); border:2px solid var(--ink); border-radius:8px; padding:7px 16px; cursor:pointer; text-decoration:none; display:inline-block; }
+  @media print { body { background:#fff; } .tools, a[href="../../index.html"] { display:none!important; } .sheet { box-shadow:none; } * { -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+  @media (max-width:480px){ h1{font-size:1.7rem;} .sheet{padding:14px;} }
+</style>
+</head>
+<body>
+<a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
+<main>
+  <h1>Unit 1: Zusammenfassung</h1>
+  <p class="intro">Alles Wichtige aus der Unit-1-Präsentation auf einen Blick: Personalpronomen, <i>be</i> in Aussagen, Verneinung und Fragen sowie der Wortschatz. Die Farben helfen dir beim Merken.</p>
+  <div class="legend" aria-label="Farbcode">
+    <span class="pro">Personalpronomen</span><span class="be">Form von be</span><span class="nt">not / n't</span><span class="qw">Fragewort</span><span class="vc">Wortschatz</span>
+  </div>
+  <p class="tools"><button type="button" onclick="window.print()">Drucken / als PDF sichern</button></p>
+
+  <section class="sheet">
+    <h2>1. Personal pronouns</h2>
+    <div class="two">
+      <table><tr><th>Einzahl</th><th></th></tr>
+        <tr><td>ich</td><td><span class="pro">I</span></td></tr><tr><td>du</td><td><span class="pro">you</span></td></tr><tr><td>er</td><td><span class="pro">he</span></td></tr><tr><td>sie</td><td><span class="pro">she</span></td></tr><tr><td>es</td><td><span class="pro">it</span></td></tr></table>
+      <table><tr><th>Mehrzahl</th><th></th></tr>
+        <tr><td>wir</td><td><span class="pro">we</span></td></tr><tr><td>ihr</td><td><span class="pro">you</span></td></tr><tr><td>sie</td><td><span class="pro">they</span></td></tr></table>
+    </div>
+  </section>
+
+  <section class="sheet">
+    <h2>2. The verb <i>be</i> – Aussagen</h2>
+    <p>Wie im Deutschen (ich bin, du bist, wir sind) braucht man im Englischen eine Form von <i>be</i>. Sie lässt sich abkürzen: <span class="pro">I</span> <span class="be">am</span> → <span class="pro">I</span><span class="be">'m</span>.</p>
+    <div class="two">
+      <table><tr><th>Langform</th><th>Kurzform</th></tr>
+        <tr><td><span class="pro">I</span> <span class="be">am</span></td><td><span class="pro">I</span><span class="be">'m</span></td></tr>
+        <tr><td><span class="pro">you</span> <span class="be">are</span></td><td><span class="pro">you</span><span class="be">'re</span></td></tr>
+        <tr><td><span class="pro">he</span> <span class="be">is</span></td><td><span class="pro">he</span><span class="be">'s</span></td></tr>
+        <tr><td><span class="pro">she</span> <span class="be">is</span></td><td><span class="pro">she</span><span class="be">'s</span></td></tr>
+        <tr><td><span class="pro">it</span> <span class="be">is</span></td><td><span class="pro">it</span><span class="be">'s</span></td></tr></table>
+      <table><tr><th>Langform</th><th>Kurzform</th></tr>
+        <tr><td><span class="pro">we</span> <span class="be">are</span></td><td><span class="pro">we</span><span class="be">'re</span></td></tr>
+        <tr><td><span class="pro">you</span> <span class="be">are</span></td><td><span class="pro">you</span><span class="be">'re</span></td></tr>
+        <tr><td><span class="pro">they</span> <span class="be">are</span></td><td><span class="pro">they</span><span class="be">'re</span></td></tr></table>
+    </div>
+    <div class="merk"><b>Merke:</b> <span class="pro">I</span> → <span class="be">am</span> · <span class="pro">he / she / it</span> → <span class="be">is</span> · <span class="pro">we / you / they</span> → <span class="be">are</span></div>
+  </section>
+
+  <section class="sheet">
+    <h2>3. Verneinte Aussagen</h2>
+    <p>Nach der Form von <i>be</i> schreibst du einfach <span class="nt">not</span>. Auch hier gibt es Kurzformen.</p>
+    <div class="two">
+      <table><tr><th>Langform</th><th>Kurzform</th></tr>
+        <tr><td><span class="pro">I</span> <span class="be">am</span> <span class="nt">not</span></td><td>– (nur <span class="pro">I</span><span class="be">'m</span> <span class="nt">not</span>)</td></tr>
+        <tr><td><span class="pro">you</span> <span class="be">are</span> <span class="nt">not</span></td><td><span class="pro">you</span> <span class="be">are</span><span class="nt">n't</span></td></tr>
+        <tr><td><span class="pro">he</span> <span class="be">is</span> <span class="nt">not</span></td><td><span class="pro">he</span> <span class="be">is</span><span class="nt">n't</span></td></tr>
+        <tr><td><span class="pro">she</span> <span class="be">is</span> <span class="nt">not</span></td><td><span class="pro">she</span> <span class="be">is</span><span class="nt">n't</span></td></tr>
+        <tr><td><span class="pro">it</span> <span class="be">is</span> <span class="nt">not</span></td><td><span class="pro">it</span> <span class="be">is</span><span class="nt">n't</span></td></tr></table>
+      <table><tr><th>Langform</th><th>Kurzform</th></tr>
+        <tr><td><span class="pro">we</span> <span class="be">are</span> <span class="nt">not</span></td><td><span class="pro">we</span> <span class="be">are</span><span class="nt">n't</span></td></tr>
+        <tr><td><span class="pro">you</span> <span class="be">are</span> <span class="nt">not</span></td><td><span class="pro">you</span> <span class="be">are</span><span class="nt">n't</span></td></tr>
+        <tr><td><span class="pro">they</span> <span class="be">are</span> <span class="nt">not</span></td><td><span class="pro">they</span> <span class="be">are</span><span class="nt">n't</span></td></tr></table>
+    </div>
+    <ul class="bsp">
+      <li><span class="pro">I</span><span class="be">'m</span> <span class="nt">not</span> so sure. <small>= I am not so sure.</small></li>
+      <li><span class="pro">It</span> <span class="be">is</span><span class="nt">n't</span> my computer. <small>= It is not my computer.</small></li>
+      <li>Mum and Dad <span class="be">are</span><span class="nt">n't</span> together. <small>= Mum and Dad are not together.</small></li>
+    </ul>
+    <div class="merk"><b>Zusatz:</b> Bei he / she / it geht auch <span class="pro">he</span><span class="be">'s</span> <span class="nt">not</span> statt <span class="pro">he</span> <span class="be">is</span><span class="nt">n't</span> (gleiche Bedeutung). Ein „amn't“ gibt es nicht.</div>
+  </section>
+
+  <section class="sheet">
+    <h2>4. Questions with <i>be</i></h2>
+    <p>Für Fragen tauschst du das Personalpronomen mit dem Verb: <span class="be">verb</span> + <span class="pro">pers. pron.</span> + Rest des Satzes.</p>
+    <table><tr><th>Aussagesatz</th><th>Fragesatz</th></tr>
+      <tr><td><span class="pro">He</span> <span class="be">is</span> my friend.</td><td><span class="be">Is</span> <span class="pro">he</span> my friend?</td></tr>
+      <tr><td><span class="pro">It</span> <span class="be">is</span> my computer.</td><td><span class="be">Is</span> <span class="pro">it</span> my computer?</td></tr>
+      <tr><td><span class="pro">I</span> <span class="be">am</span> at school.</td><td><span class="be">Am</span> <span class="pro">I</span> at school?</td></tr>
+      <tr><td><span class="pro">They</span> <span class="be">are</span> your friends.</td><td><span class="be">Are</span> <span class="pro">they</span> your friends?</td></tr></table>
+    <h3>Mit Fragewort</h3>
+    <p><span class="qw">q-word</span> + <span class="be">verb</span> + <span class="pro">Subjekt</span> + Rest:</p>
+    <ul class="bsp">
+      <li><span class="qw">What</span> <span class="be">is</span> in the parcel? <small>was?</small></li>
+      <li><span class="qw">Who</span> <span class="be">is</span> your best friend? <small>wer?</small></li>
+      <li><span class="qw">When</span> <span class="be">is</span> your birthday? <small>wann?</small></li>
+      <li><span class="qw">Where</span> <span class="be">is</span> your hometown? <small>wo?</small></li>
+      <li><span class="qw">Why</span> <span class="be">are</span> <span class="pro">you</span> here? <small>warum?</small></li>
+    </ul>
+    <p>Beispiele für Ja/Nein-Fragen: <span class="be">Is</span> your family big? · <span class="be">Is</span> your dad at home? · <span class="be">Are</span> your friends nice? · <span class="be">Are</span> <span class="pro">you</span> from England?</p>
+  </section>
+
+  <section class="sheet">
+    <h2>5. Vocabulary</h2>
+    <div class="two">
+      <div><h3>At home with friends</h3><table>
+        <tr><td><span class="vc">at home</span></td><td>zu Hause</td></tr><tr><td><span class="vc">one house / many houses</span></td><td>ein Haus / viele Häuser</td></tr>
+        <tr><td><span class="vc">a lot of</span></td><td>viel / viele</td></tr><tr><td><span class="vc">everyone</span></td><td>jeder / jede</td></tr>
+        <tr><td><span class="vc">That is …</span></td><td>Das ist …</td></tr><tr><td><span class="vc">it's called …</span></td><td>es heißt …</td></tr>
+        <tr><td><span class="vc">describe (something)</span></td><td>(etwas) beschreiben</td></tr><tr><td><span class="vc">Describe the picture, please.</span></td><td>Beschreibe das Bild, bitte.</td></tr></table></div>
+      <div><h3>The postman (der Postbote)</h3><table>
+        <tr><td><span class="vc">They are at Alice's home.</span></td><td>Sie sind bei Alice zuhause.</td></tr><tr><td><span class="vc">the doorbell rings</span></td><td>die Türklingel klingelt</td></tr>
+        <tr><td><span class="vc">maybe</span></td><td>vielleicht</td></tr><tr><td><span class="vc">Maybe it's Lily.</span></td><td>Es ist vielleicht Lily.</td></tr>
+        <tr><td><span class="vc">Come in!</span></td><td>Komm rein!</td></tr><tr><td><span class="vc">We go upstairs / downstairs.</span></td><td>Wir gehen nach oben / unten.</td></tr>
+        <tr><td><span class="vc">for an hour</span></td><td>für eine Stunde</td></tr><tr><td><span class="vc">She is in my class.</span></td><td>Sie ist in meiner Klasse.</td></tr>
+        <tr><td><span class="vc">divorced</span></td><td>getrennt / geschieden</td></tr></table></div>
+    </div>
+    <p>Wörter aus dem Text: <span class="vc">doorbell</span> <span class="vc">upstairs</span> <span class="vc">downstairs</span> <span class="vc">postman</span> <span class="vc">parcel</span> <span class="vc">lucky</span> <span class="vc">grandmother</span> <span class="vc">mum</span> <span class="vc">dad</span> <span class="vc">brother</span> <span class="vc">sister</span></p>
+  </section>
+
+  <section class="sheet">
+    <h2>6. Sprechhilfe: My street</h2>
+    <p>My street is called … · In my street is / are … · There you can see … · The colour of … is … · We have a lot of … · Everyone in my street is … · I like about my street that … · I don't like about my street that …</p>
+  </section>
+</main>
+</body>
+</html>

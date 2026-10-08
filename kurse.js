@@ -223,6 +223,13 @@ const MATERIAL = [
     stand:"2026-10", neu:true},
 
    { fach:"englisch", klasse:5, bereich:"unit1-5",
+    titel:"Zusammenfassung Unit 1 (farbig)",
+    typ:"arbeitsblatt",
+    url:"eng/seki/unit1-zusammenfassung.html",
+    info:"Alles Wichtige der Präsentation farbig markiert: Personalpronomen, be in Aussagen, Verneinung und Fragen, Fragewörter und Wortschatz. Zum Drucken geeignet.",
+    stand:"2026-10", neu:true},
+
+   { fach:"englisch", klasse:5, bereich:"unit1-5",
     titel:"Präsentation Unit 1 (Download, Passwort)",
     typ:"plan",
     url:"eng/seki/unit1-download.html",
