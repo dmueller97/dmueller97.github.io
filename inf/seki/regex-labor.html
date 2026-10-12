@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RegEx-Labor — Muster bauen, testen, filtern, prüfen</title>
+<style>
+:root{
+  --bg:#0E1A1C; --panel:#142528; --panel2:#0F1F22; --line:#23393E; --line2:#2E4A50;
+  --ink:#DFEAEB; --ink2:#9FB6B9; --muted:#6F8A8F;
+  --brand:#2FB3A0; --hi:#FFC24B; --ok:#58C08C; --bad:#E4573D; --r:12px;
+  --c-cls:#2FB3A0; --c-anchor:#A58BF0; --c-quant:#FFC24B; --c-group:#5AAEFF; --c-alt:#F27FB5; --c-lit:#9FB6B9;
+  --mark-a:rgba(255,194,75,.38); --mark-b:rgba(90,174,255,.38);
+}
+[data-theme="light"]{
+  --bg:#F2F4F3; --panel:#FFFFFF; --panel2:#F7F9F8; --line:#D8E0DF; --line2:#C2CFCE;
+  --ink:#14242A; --ink2:#4A6066; --muted:#7B8F94; --brand:#17897A; --hi:#B86E00; --ok:#1E8E55; --bad:#C23B22;
+  --c-cls:#17897A; --c-anchor:#7656D0; --c-quant:#B86E00; --c-group:#1F78D1; --c-alt:#C93F86; --c-lit:#5C7076;
+  --mark-a:rgba(255,194,75,.55); --mark-b:rgba(90,174,255,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;font-size:16px;line-height:1.6}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.mono,code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}
+code{background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:0 5px;font-size:.92em}
+
+header{position:sticky;top:0;z-index:30;background:var(--panel);border-bottom:1px solid var(--line);
+  padding:8px 16px 8px 130px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+header b{font-size:16px;letter-spacing:-.2px;white-space:nowrap}
+header nav{flex:1;display:flex;gap:6px;flex-wrap:wrap}
+header nav a{color:var(--ink2);text-decoration:none;font-size:13.5px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2)}
+header nav a:hover{border-color:var(--brand);color:var(--ink)}
+.btn{background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:8px 13px;min-height:40px;font-size:14.5px}
+.btn:hover{border-color:var(--brand)}
+.btn.klein{min-height:32px;padding:3px 11px;font-size:13px}
+.btn.prim{background:var(--brand);border-color:var(--brand);color:#04201C;font-weight:650}
+.btn.prim:hover{filter:brightness(1.1)}
+
+main{max-width:980px;margin:0 auto;padding:22px 16px 60px}
+.hero{background:linear-gradient(135deg,rgba(47,179,160,.18),rgba(165,139,240,.14));border:1px solid var(--line2);
+  border-radius:16px;padding:20px 20px 16px;margin-bottom:8px}
+h1{margin:0 0 6px;font-size:28px;letter-spacing:-.5px;line-height:1.2}
+h2{margin:44px 0 6px;font-size:22px;letter-spacing:-.3px;scroll-margin-top:70px;display:flex;align-items:center;gap:10px}
+h2 .nr{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#04201C;font-size:15px;font-weight:800}
+h3{margin:18px 0 6px;font-size:16px;color:var(--ink2)}
+.lead{color:var(--ink2);margin:0 0 6px}
+.sub{color:var(--ink2);margin:0 0 14px;font-size:15px}
+.merk{border-left:3px solid var(--brand);background:var(--panel);border-radius:0 var(--r) var(--r) 0;padding:11px 15px;margin:14px 0;font-size:15px}
+.merk b{color:var(--brand)}
+
+.karte{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:12px 0}
+.karte > h4{margin:0 0 8px;font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.zeile{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.zeile label{font-size:13.5px;color:var(--ink2);display:inline-flex;gap:5px;align-items:center}
+.zeile.eng{margin-bottom:4px}
+input[type=text],input[type=number],select,textarea{background:var(--panel2);border:1px solid var(--line2);border-radius:10px;
+  padding:9px 12px;min-height:42px;font-size:16px;max-width:100%}
+input[type=text],textarea{width:100%;font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}
+input[type=number]{width:78px}
+textarea{resize:vertical;min-height:90px;line-height:1.5}
+input[type=checkbox],input[type=radio]{accent-color:var(--brand);width:17px;height:17px}
+.regexfeld{display:flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line2);border-radius:12px;padding:0 10px}
+.regexfeld:focus-within{border-color:var(--brand)}
+.regexfeld span{color:var(--muted);font-family:ui-monospace,monospace;font-size:20px}
+.regexfeld input{border:0;background:transparent;min-height:46px;padding:6px 4px;font-size:17px;outline:none}
+.fehler{color:var(--bad);font-size:14px;margin:6px 0 0;min-height:1.3em}
+.hinweis{color:var(--muted);font-size:13.5px}
+
+/* Ausgabe mit Markierung */
+.ausgabe{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin:8px 0;
+  font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:15px;line-height:1.75;white-space:pre-wrap;word-break:break-word;min-height:56px}
+mark{color:inherit;border-radius:4px;padding:1px 0;box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+mark.a{background:var(--mark-a)} mark.b{background:var(--mark-b)}
+.zaehler{font-size:14px;color:var(--ink2);margin:2px 0 8px}
+.zaehler b{color:var(--hi)}
+
+/* Token-Chips */
+.tok{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:44px;padding:4px 9px 3px;border-radius:9px;
+  border:1.5px solid var(--cc);background:color-mix(in srgb,var(--cc) 14%,transparent);font-family:ui-monospace,monospace;line-height:1.2;vertical-align:middle}
+.tok b{font-size:16px;color:var(--ink);font-weight:700;white-space:pre}
+.tok small{font-size:10px;color:var(--cc);font-family:"Segoe UI",system-ui,sans-serif;letter-spacing:.03em;font-weight:600}
+.tok.cls{--cc:var(--c-cls)} .tok.anchor{--cc:var(--c-anchor)} .tok.quant{--cc:var(--c-quant)}
+.tok.group{--cc:var(--c-group)} .tok.alt{--cc:var(--c-alt)} .tok.lit{--cc:var(--c-lit)}
+.legende{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.legende .tok{min-width:0;padding:2px 9px;flex-direction:row;gap:6px}
+.legende .tok small{font-size:12px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--panel2);color:var(--ink2);font-weight:650;font-size:12.5px}
+.scroll{overflow-x:auto}
+td.tk{width:1%;white-space:nowrap}
+
+/* Chips für Beispiele */
+.beispiele{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 10px}
+.beispiele > span{font-size:13px;color:var(--muted)}
+.bsp{background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:3px 12px;font-size:13.5px;min-height:30px}
+.bsp:hover{border-color:var(--brand)}
+
+/* Baukasten */
+.baukasten{display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:14px;align-items:start}
+@media(max-width:820px){.baukasten{grid-template-columns:1fr}}
+.palette details{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--panel2)}
+.palette summary{cursor:pointer;padding:8px 12px;font-weight:650;font-size:14.5px;list-style:none;display:flex;align-items:center;gap:8px}
+.palette summary::-webkit-details-marker{display:none}
+.palette summary::before{content:"▸";color:var(--muted)}
+.palette details[open] summary::before{content:"▾"}
+.palette summary i{width:10px;height:10px;border-radius:3px;background:var(--cc)}
+.palette .inh{padding:2px 10px 10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.bb{display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1.5px solid var(--cc,var(--line2));border-radius:9px;padding:4px 10px;min-height:36px;font-size:13.5px}
+.bb:hover{background:color-mix(in srgb,var(--cc,var(--brand)) 18%,var(--panel))}
+.bb code{border:0;background:transparent;padding:0;font-weight:700;color:var(--cc,var(--ink));font-size:14.5px}
+.palette input[type=text]{width:110px;min-height:36px;padding:4px 9px;font-size:14.5px}
+.palette input[type=number]{width:62px;min-height:36px;padding:4px 7px;font-size:14.5px}
+.ablage{min-height:84px;background:var(--panel2);border:2px dashed var(--line2);border-radius:12px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;align-content:flex-start}
+.ablage .leer{color:var(--muted);font-size:14px;align-self:center;width:100%;text-align:center}
+.chip{display:flex;flex-direction:column;align-items:stretch;gap:2px}
+.chip .tok{cursor:default}
+.chip .ctl{display:flex;justify-content:center;gap:2px}
+.chip .ctl button{background:transparent;border:0;color:var(--muted);font-size:12px;padding:0 5px;min-height:20px;border-radius:5px}
+.chip .ctl button:hover{background:var(--line);color:var(--ink)}
+.chip .ctl button.x:hover{color:var(--bad)}
+.ergebnis{display:flex;gap:8px;align-items:center;margin:10px 0 4px}
+.ergebnis .regexfeld{flex:1;min-width:0}
+.ergebnis .regexfeld input{min-height:40px;font-size:16px}
+ol.worten{margin:6px 0 0;padding-left:22px;font-size:14.5px;color:var(--ink2)}
+ol.worten li{margin:2px 0}
+ol.worten code{color:var(--ink)}
+.zl{display:flex;gap:8px;align-items:flex-start;padding:3px 0;border-bottom:1px dashed var(--line);font-family:ui-monospace,monospace;font-size:15px}
+.zl:last-child{border-bottom:0}
+.zl .ico{width:20px;flex:none;text-align:center;font-weight:800}
+.zl .ico.ok{color:var(--ok)} .zl .ico.no{color:var(--bad)}
+.zl .txt{white-space:pre-wrap;word-break:break-word;min-width:0}
+
+/* Generator / Filter */
+.zwei{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:700px){.zwei{grid-template-columns:1fr}}
+.wortliste{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;max-height:260px;overflow:auto}
+.w{background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:2px 9px;font-family:ui-monospace,monospace;font-size:14.5px}
+.w.treffer{border-color:var(--ok);background:rgba(88,192,140,.12)}
+.w.nope{opacity:.5}
+.kopf{font-size:13px;font-weight:700;margin-bottom:2px}
+.kopf.g{color:var(--ok)} .kopf.r{color:var(--muted)}
+.gruppe{display:flex;gap:6px;flex-wrap:wrap}
+.pille{display:inline-flex;gap:6px;align-items:center;background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:3px 12px;font-size:14px;cursor:pointer;min-height:34px}
+.pille:has(input:checked){border-color:var(--brand);background:rgba(47,179,160,.16)}
+.pille input{width:15px;height:15px}
+.pille code{background:transparent;border:0;padding:0;color:var(--muted)}
+
+/* Validieren */
+.aufgabenwahl{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.aufgabenwahl .btn.aktiv{background:var(--brand);color:#04201C;border-color:var(--brand);font-weight:700}
+.aufgabenwahl .btn.fertig::after{content:" ✓";color:var(--ok);font-weight:800}
+.aufgabenwahl .btn.aktiv.fertig::after{color:#04201C}
+.schwer{color:var(--hi);letter-spacing:2px;font-size:13px}
+.fall{display:flex;gap:10px;align-items:center;padding:6px 10px;border:1px solid var(--line);border-radius:9px;margin:5px 0;background:var(--panel2);font-family:ui-monospace,monospace;font-size:15px}
+.fall.ok{border-color:var(--ok);background:rgba(88,192,140,.1)}
+.fall.no{border-color:var(--bad);background:rgba(228,87,61,.1)}
+.fall .t{flex:1;min-width:0;word-break:break-all;white-space:pre}
+.fall .soll{font-family:"Segoe UI",system-ui,sans-serif;font-size:12px;color:var(--muted);white-space:nowrap}
+.fall .ico{font-weight:800;width:18px;text-align:center}
+.fall.ok .ico{color:var(--ok)} .fall.no .ico{color:var(--bad)}
+.fall.neutral .ico{color:var(--muted)}
+.balken{height:8px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;overflow:hidden;margin:8px 0}
+.balken i{display:block;height:100%;background:var(--brand);width:0;transition:width .25s}
+.balken.fertig i{background:var(--ok)}
+.status{font-size:15px;margin:4px 0;min-height:1.5em}
+.status.ok{color:var(--ok);font-weight:650} .status.bad{color:var(--bad)}
+.gross{font-size:19px;padding:12px 14px}
+details.loesung{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+details.loesung summary{cursor:pointer;color:var(--brand);font-size:14px;font-weight:600}
+details.loesung .inh{margin-top:8px;font-size:14.5px;color:var(--ink2)}
+.prueffeld{display:flex;align-items:center;gap:10px}
+.prueffeld input{flex:1}
+.prueffeld .urteil{font-size:26px;width:34px;text-align:center;font-weight:800}
+.prueffeld input.ok{border-color:var(--ok);box-shadow:0 0 0 2px rgba(88,192,140,.25)}
+.prueffeld input.no{border-color:var(--bad);box-shadow:0 0 0 2px rgba(228,87,61,.22)}
+
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;padding:14px 16px;text-align:center}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body data-theme="dark">
+<a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
+
+<header>
+  <b>RegEx-Labor</b>
+  <nav>
+    <a href="#s1">Spielwiese</a><a href="#s2">Baukasten</a><a href="#s3">Generator</a>
+    <a href="#s4">Filter</a><a href="#s5">Validieren</a><a href="#s6">Spickzettel</a>
+  </nav>
+  <button class="btn klein" id="theme">Hell</button>
+</header>
+
+<main>
+<div class="hero">
+  <h1>RegEx-Labor</h1>
+  <p class="lead">Ein <b>regulärer Ausdruck</b> (RegEx) beschreibt ein Muster für Text. Hier probierst du Muster aus, setzt sie aus Bausteinen
+  zusammen, erzeugst dir beliebig viele Zeichenfolgen zum Testen — und benutzt deine Ausdrücke zum <b>Filtern</b> und <b>Validieren</b>.</p>
+</div>
+
+<div class="merk"><b>Ablauf:</b> 1&nbsp;Spielwiese zum Ausprobieren → 2&nbsp;Baukasten, wenn du das Muster noch nicht tippen willst →
+3&nbsp;Generator für Testdaten → 4&nbsp;Filter für ganze Listen → 5&nbsp;Validieren: Aufgaben, bei denen dein Ausdruck gültige und ungültige Eingaben trennen muss.</div>
+
+<div class="legende" aria-label="Farblegende">
+  <span class="tok cls"><b>\d</b><small>Zeichenklasse</small></span>
+  <span class="tok quant"><b>+</b><small>Quantor (wie oft)</small></span>
+  <span class="tok anchor"><b>^</b><small>Anker (wo)</small></span>
+  <span class="tok group"><b>( )</b><small>Gruppe</small></span>
+  <span class="tok alt"><b>|</b><small>Oder</small></span>
+  <span class="tok lit"><b>a</b><small>festes Zeichen</small></span>
+</div>
+
+<!-- ============ 1 Spielwiese ============ -->
+<h2 id="s1"><span class="nr">1</span>Spielwiese</h2>
+<p class="sub">Tippe ein Muster und einen Text. Alle Treffer leuchten sofort auf — abwechselnd gelb und blau, damit du erkennst, wo ein Treffer endet und der nächste beginnt.</p>
+
+<div class="karte">
+  <div class="beispiele" id="pw-bsp"><span>Beispiele:</span></div>
+  <div class="regexfeld"><span>/</span><input type="text" id="pw-rx" value="\b[A-Z]\w+" spellcheck="false" autocomplete="off" aria-label="Regulärer Ausdruck"><span>/</span></div>
+  <div class="zeile" style="margin-top:8px">
+    <label><input type="checkbox" id="pw-i"> <code>i</code> Groß-/Kleinschreibung egal</label>
+    <label><input type="checkbox" id="pw-m"> <code>m</code> ^ und $ pro Zeile</label>
+  </div>
+  <p class="fehler" id="pw-err"></p>
+  <textarea id="pw-text" spellcheck="false" aria-label="Testtext">Am 12.10.2026 kaufen Anna und Ben 3 Hefte für 4,50 € und 15 Stifte für 7 €.
+Kontakt: anna.mueller@web.de oder 0351 / 123456.</textarea>
+  <div class="zaehler" id="pw-zaehler"></div>
+  <div class="ausgabe" id="pw-out" aria-live="polite"></div>
+  <h3>Zerlegung deines Ausdrucks</h3>
+  <div class="scroll"><table id="pw-tab"></table></div>
+  <details class="loesung"><summary>Treffer im Detail (mit Gruppen)</summary><div class="inh scroll" id="pw-det"></div></details>
+</div>
+
+<!-- ============ 2 Baukasten ============ -->
+<h2 id="s2"><span class="nr">2</span>Baukasten</h2>
+<p class="sub">Klicke Bausteine an, sie landen in der Reihenfolge links→rechts in deinem Muster. Mit ◀ ▶ ordnest du um, mit ✕ entfernst du. Unten siehst du live, was dein Muster in deinen Testzeilen findet.</p>
+
+<div class="baukasten">
+  <div class="palette" id="palette"></div>
+  <div>
+    <div class="karte" style="margin-top:0">
+      <h4>Dein Muster</h4>
+      <div class="beispiele" id="rezepte"><span>Fertige Rezepte laden:</span></div>
+      <div class="ablage" id="ablage"></div>
+      <div class="ergebnis">
+        <div class="regexfeld"><span>/</span><input type="text" id="bk-out" readonly aria-label="Fertiger Ausdruck"><span>/</span></div>
+        <button class="btn klein" id="bk-copy">Kopieren</button>
+        <button class="btn klein" id="bk-clear">Leeren</button>
+      </div>
+      <p class="fehler" id="bk-err"></p>
+      <h3>In Worten</h3>
+      <ol class="worten" id="bk-worten"></ol>
+    </div>
+    <div class="karte">
+      <h4>Teste dein Muster</h4>
+      <div class="zeile eng">
+        <label><input type="checkbox" id="bk-ganz"> Die <b>ganze Zeile</b> muss passen</label>
+        <button class="btn klein" id="bk-spiel">In die Spielwiese übernehmen ↑</button>
+      </div>
+      <textarea id="bk-text" spellcheck="false" rows="6" aria-label="Testzeilen">12345
+1234
+Haus
+H4us
+#FF00AA
+B-MK 4711
+09:45</textarea>
+      <div id="bk-liste" style="margin-top:8px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 3 Generator ============ -->
+<h2 id="s3"><span class="nr">3</span>Zeichen-Generator</h2>
+<p class="sub">Brauchst du Testdaten? Wähle ein Alphabet, eine Länge und eine Anzahl — du bekommst beliebig viele zufällige Zeichenfolgen. Die kannst du direkt in den Filter oder in die Spielwiese schicken.</p>
+
+<div class="karte">
+  <h4>Alphabet</h4>
+  <div class="gruppe" id="gen-sets"></div>
+  <div class="zeile" style="margin-top:10px">
+    <label>Eigene Zeichen: <input type="text" id="gen-eigen" style="width:170px;min-height:36px" placeholder="z. B. xyz€" spellcheck="false"></label>
+  </div>
+  <div class="zeile">
+    <label>Länge von <input type="number" id="gen-min" value="4" min="1" max="40"> bis <input type="number" id="gen-max" value="8" min="1" max="40"></label>
+    <label>Anzahl <input type="number" id="gen-n" value="30" min="1" max="500"></label>
+    <label>Art
+      <select id="gen-art">
+        <option value="zufall">Zufällige Zeichen</option>
+        <option value="silben">Aussprechbar (Konsonant–Vokal)</option>
+      </select>
+    </label>
+    <label><input type="checkbox" id="gen-gross"> Erster Buchstabe groß</label>
+  </div>
+  <div class="zeile">
+    <button class="btn prim" id="gen-go">Generieren</button>
+    <button class="btn" id="gen-ins-filter">→ in den Filter</button>
+    <button class="btn" id="gen-ins-text">→ in die Spielwiese</button>
+    <button class="btn" id="gen-copy">Kopieren</button>
+  </div>
+  <div class="zaehler" id="gen-info"></div>
+  <div class="wortliste" id="gen-out"></div>
+</div>
+
+<!-- ============ 4 Filter ============ -->
+<h2 id="s4"><span class="nr">4</span>Filter</h2>
+<p class="sub">Eine Liste, ein Muster — und du siehst, welche Einträge durchkommen. So funktionieren Suchfunktionen, Spam-Filter und „Zeige nur …“-Schalter.</p>
+
+<div class="karte">
+  <div class="zwei">
+    <div>
+      <h4>Liste (ein Eintrag pro Zeile)</h4>
+      <textarea id="fl-liste" rows="9" spellcheck="false" aria-label="Liste"></textarea>
+    </div>
+    <div>
+      <h4>Filter</h4>
+      <div class="beispiele" id="fl-bsp"></div>
+      <div class="regexfeld"><span>/</span><input type="text" id="fl-rx" value="^[A-Z]" spellcheck="false" autocomplete="off" aria-label="Filter-Ausdruck"><span>/</span></div>
+      <p class="fehler" id="fl-err"></p>
+      <div class="zeile">
+        <label><input type="radio" name="fl-mod" value="enth" checked> enthält Muster</label>
+        <label><input type="radio" name="fl-mod" value="ganz"> ganzer Eintrag passt</label>
+        <label><input type="radio" name="fl-mod" value="nicht"> enthält Muster <b>nicht</b></label>
+        <label><input type="checkbox" id="fl-i"> <code>i</code> Groß/klein egal</label>
+      </div>
+    </div>
+  </div>
+  <div class="zaehler" id="fl-zaehler"></div>
+  <div class="zwei">
+    <div><div class="kopf g">✓ kommt durch</div><div class="wortliste" id="fl-ja"></div></div>
+    <div><div class="kopf r">✗ gefiltert</div><div class="wortliste" id="fl-nein"></div></div>
+  </div>
+  <button class="btn klein" id="fl-copy">Treffer kopieren</button>
+</div>
+
+<!-- ============ 5 Validieren ============ -->
+<h2 id="s5"><span class="nr">5</span>Validieren</h2>
+<p class="sub"><b>Validieren</b> heißt: prüfen, ob eine Eingabe das richtige Format hat — etwa bei einer Postleitzahl in einem Formular.
+Hier muss dein Ausdruck <b>die ganze Eingabe</b> bewerten (Anfang und Ende werden automatisch mitgeprüft).</p>
+
+<h3>Aufgaben</h3>
+<div class="karte">
+  <div class="aufgabenwahl" id="va-wahl"></div>
+  <div id="va-aufgabe"></div>
+</div>
+
+<h3>Freier Eingabe-Prüfer</h3>
+<div class="karte">
+  <p class="hinweis" style="margin-top:0">Schreibe dein eigenes Format und tippe dann Eingaben — das Feld wird grün oder rot, wie in einem echten Formular.</p>
+  <div class="regexfeld"><span>/</span><input type="text" id="fp-rx" value="[A-Z]{2}\d{4}" spellcheck="false" autocomplete="off" aria-label="Format"><span>/</span></div>
+  <p class="fehler" id="fp-err"></p>
+  <div class="prueffeld"><input type="text" id="fp-in" class="gross" placeholder="Eingabe testen …" spellcheck="false" autocomplete="off"><span class="urteil" id="fp-urteil"></span></div>
+  <p class="status" id="fp-status"></p>
+</div>
+
+<!-- ============ 6 Spickzettel ============ -->
+<h2 id="s6"><span class="nr">6</span>Spickzettel</h2>
+<div class="karte"><div class="scroll"><table id="spick"></table></div></div>
+
+<div class="merk"><b>Gut zu wissen:</b> RegEx gibt es in fast jeder Programmiersprache (Python: <code>import re</code>). Die Schreibweise hier entspricht der von JavaScript;
+fast alles davon funktioniert in Python genauso. Reguläre Ausdrücke sind außerdem genau die Sprachen, die ein <b>endlicher Automat</b> erkennt — mehr dazu im Kurs „Formale Sprachen“.</div>
+</main>
+
+<footer>RegEx-Labor · Muster werden nur in deinem Browser ausgewertet, nichts wird gesendet.</footer>
+
+<script>
+(()=>{
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const vis=s=>s.replace(/ /g,"␣");
+const CATNAME={cls:"Zeichen",anchor:"Anker",quant:"Wie oft",group:"Gruppe",alt:"Oder",lit:"fest"};
+const MAXTEXT=5000, MAXLIST=2000;
+
+/* ---------- Grundfunktionen ---------- */
+function comp(rx,fl){ try{ return {re:new RegExp(rx,fl)}; }catch(e){ return {err:String(e.message).replace(/^Invalid regular expression:\s*/,"").replace(/^\/.*\/[a-z]*:\s*/,"")}; } }
+function full(rx,fl){ return comp("^(?:"+rx+")$",fl||""); }
+function hl(text,re){
+  re.lastIndex=0; let out="",last=0,n=0,cnt=0,m;
+  while((m=re.exec(text))){
+    if(m[0]===""){ re.lastIndex++; if(re.lastIndex>text.length)break; continue; }
+    out+=esc(text.slice(last,m.index))+`<mark class="${n++%2?"b":"a"}">${esc(m[0])}</mark>`;
+    last=m.index+m[0].length; if(++cnt>3000)break;
+  }
+  return {html:out+esc(text.slice(last)),count:cnt};
+}
+function lines(t){ return t.split(/\r?\n/).filter(x=>x!==""); }
+function copy(txt,btn){
+  const done=()=>{ if(btn){ const o=btn.textContent; btn.textContent="Kopiert ✓"; setTimeout(()=>btn.textContent=o,1200);} };
+  try{ navigator.clipboard.writeText(txt).then(done,done); }catch(e){ done(); }
+}
+
+/* ---------- Tokenizer: zerlegt einen Ausdruck und erklärt die Teile ---------- */
+const ESC={d:"eine Ziffer (0–9)",D:"alles außer einer Ziffer",w:"ein Buchstabe, eine Ziffer oder _",W:"ein Zeichen, das kein Buchstabe/Ziffer/_ ist",
+  s:"ein Leerraum (Leerzeichen, Tab, Zeilenumbruch)",S:"ein Zeichen, das kein Leerraum ist",b:"eine Wortgrenze (zwischen Wortzeichen und Nicht-Wortzeichen)",
+  B:"keine Wortgrenze",n:"ein Zeilenumbruch",t:"ein Tab"};
+function tokenize(p){
+  const t=[]; let i=0;
+  while(i<p.length){
+    const c=p[i]; let rx,cat,desc;
+    if(c==="\\"){
+      const n=p[i+1]; rx=n===undefined?"\\":c+n; i+=2;
+      if(n===undefined){cat="lit";desc="Ein einzelner \\ am Ende ist unvollständig";}
+      else if("dDwWsS".includes(n)){cat="cls";desc=ESC[n][0].toUpperCase()+ESC[n].slice(1);}
+      else if("bB".includes(n)){cat="anchor";desc=ESC[n][0].toUpperCase()+ESC[n].slice(1);}
+      else if("nt".includes(n)){cat="lit";desc=ESC[n][0].toUpperCase()+ESC[n].slice(1);}
+      else if(/[1-9]/.test(n)){cat="group";desc=`Wiederholt genau das, was Gruppe ${n} gefunden hat`;}
+      else {cat="lit";desc=`Das Zeichen „${n}“ selbst (der \\ hebt die Sonderbedeutung auf)`;}
+    }else if(c==="["){
+      let j=i+1; const neg=p[j]==="^"; if(neg)j++;
+      while(j<p.length&&p[j]!=="]"){ if(p[j]==="\\")j++; j++; }
+      if(j>=p.length){ rx=p.slice(i); i=p.length; cat="cls"; desc="Zeichenklasse ist nicht mit ] geschlossen"; }
+      else{ rx=p.slice(i,j+1); i=j+1; cat="cls"; const inner=rx.slice(neg?2:1,-1);
+        desc=neg?`Ein Zeichen, das <b>nicht</b> zu <code>${esc(inner)}</code> gehört`:`Ein Zeichen aus <code>${esc(inner)}</code> (a-z = von a bis z)`; }
+    }else if(c==="("){
+      const r=p.slice(i); let m;
+      if(r.startsWith("(?:")){rx="(?:";desc="Gruppe beginnt (ohne zu merken)";}
+      else if(r.startsWith("(?=")){rx="(?=";desc="Vorausschau: ab hier muss sich anschließen …";}
+      else if(r.startsWith("(?!")){rx="(?!";desc="Vorausschau: ab hier darf sich <b>nicht</b> anschließen …";}
+      else if(r.startsWith("(?<=")){rx="(?<=";desc="Rückschau: davor muss stehen …";}
+      else if(r.startsWith("(?<!")){rx="(?<!";desc="Rückschau: davor darf <b>nicht</b> stehen …";}
+      else if((m=r.match(/^\(\?<[A-Za-z_]\w*>/))){rx=m[0];desc=`Benannte Gruppe „${rx.slice(3,-1)}“ beginnt`;}
+      else {rx="(";desc="Gruppe beginnt (Treffer wird gemerkt)";}
+      i+=rx.length; cat="group";
+    }else if(c===")"){rx=")";i++;cat="group";desc="Gruppe endet";}
+    else if(c==="|"){rx="|";i++;cat="alt";desc="<b>Oder</b>: entweder das Linke oder das Rechte";}
+    else if(c==="^"){rx="^";i++;cat="anchor";desc="Anfang des Textes (bzw. der Zeile bei <code>m</code>)";}
+    else if(c==="$"){rx="$";i++;cat="anchor";desc="Ende des Textes (bzw. der Zeile bei <code>m</code>)";}
+    else if(c==="."){rx=".";i++;cat="cls";desc="Ein beliebiges Zeichen (außer Zeilenumbruch)";}
+    else if(c==="*"||c==="+"||c==="?"||c==="{"){
+      const m=p.slice(i).match(/^\{(\d+)(?:(,)(\d*))?\}/);
+      if(c==="{"&&!m){rx="{";i++;cat="lit";desc="Das Zeichen „{“ selbst";}
+      else{
+        rx=c==="{"?m[0]:c; i+=rx.length; cat="quant";
+        if(c==="*")desc="… beliebig oft (auch gar nicht)";
+        else if(c==="+")desc="… mindestens einmal";
+        else if(c==="?")desc="… optional (0- oder 1-mal)";
+        else if(!m[2])desc=`… genau ${m[1]}-mal`;
+        else if(m[3]==="")desc=`… mindestens ${m[1]}-mal`;
+        else desc=`… ${m[1]} bis ${m[3]}-mal`;
+        if(p[i]==="?"&&c!=="?"){rx+="?";i++;desc+=" (so wenig wie möglich)";}
+      }
+    }else{ rx=c;i++;cat="lit";desc=`Das Zeichen „${esc(c===" "?"Leerzeichen":c)}“`; }
+    t.push({rx,cat,desc});
+  }
+  return t;
+}
+const tokHTML=(rx,cat,title)=>`<span class="tok ${cat}" title="${esc(title||"")}"><b>${esc(vis(rx))}</b><small>${CATNAME[cat]}</small></span>`;
+
+/* ---------- 1 Spielwiese ---------- */
+const BSP=[
+  ["Zahlen","\\d+","Am 12.10.2026 kosten 3 Hefte 4,50 € und 15 Stifte 7 €."],
+  ["Wörter mit Großbuchstaben","\\b[A-Z]\\w+"],
+  ["Datum","\\d{2}\\.\\d{2}\\.\\d{4}"],
+  ["Doppelbuchstaben","(\\w)\\1","Das Schiff liegt im Hafen. Aaron kommt, Mutti kocht Kaffee."],
+  ["E-Mail","[\\w.]+@\\w+\\.\\w+"],
+  ["Telefon","\\d{3,4} ?/ ?\\d+"],
+  ["Haus oder Maus","[HM]aus\\b","Das Haus ist groß, die Maus ist klein, im Gewächshaus ist Aus."]
+];
+function renderPW(){
+  const rx=$("#pw-rx").value, fl=($("#pw-i").checked?"i":"")+($("#pw-m").checked?"m":"");
+  const text=$("#pw-text").value.slice(0,MAXTEXT);
+  const c=comp(rx,fl+"g");
+  $("#pw-err").textContent=c.err?"Fehler im Ausdruck: "+c.err+" (Meldung des Browsers)":"";
+  if(c.err||rx===""){
+    $("#pw-out").innerHTML=esc(text); $("#pw-zaehler").textContent=rx===""?"Gib oben ein Muster ein.":"";
+  }else{
+    const h=hl(text,c.re);
+    $("#pw-out").innerHTML=h.html;
+    $("#pw-zaehler").innerHTML=h.count?`<b>${h.count}</b> Treffer gefunden.`:"Keine Treffer.";
+  }
+  const toks=c.err?[]:tokenize(rx).slice(0,60);
+  $("#pw-tab").innerHTML=toks.length?`<tr><th>Teil</th><th>Bedeutung</th></tr>`+toks.map(k=>`<tr><td class="tk">${tokHTML(k.rx,k.cat)}</td><td>${k.desc}</td></tr>`).join(""):"";
+  // Details
+  let det="";
+  if(!c.err&&rx!==""){
+    const all=[...text.matchAll(c.re)].filter(m=>m[0]!=="").slice(0,100);
+    det=all.length?`<table><tr><th>#</th><th>Treffer</th><th>Position</th><th>Gruppen</th></tr>`+
+      all.map((m,i)=>`<tr><td>${i+1}</td><td class="mono">${esc(m[0])}</td><td>${m.index}</td><td class="mono">${m.length>1?m.slice(1).map((g,k)=>`${k+1}: ${g===undefined?"–":esc(g)}`).join("<br>"):"–"}</td></tr>`).join("")+`</table>`:"Keine Treffer.";
+  }
+  $("#pw-det").innerHTML=det;
+}
+{
+  const box=$("#pw-bsp");
+  BSP.forEach(([n,rx,txt])=>{ const b=document.createElement("button"); b.className="bsp"; b.textContent=n; b.title=rx;
+    b.onclick=()=>{ $("#pw-rx").value=rx; if(txt)$("#pw-text").value=txt; renderPW(); }; box.appendChild(b); });
+  ["#pw-rx","#pw-i","#pw-m","#pw-text"].forEach(s=>$(s).addEventListener("input",renderPW));
+}
+
+/* ---------- 2 Baukasten ---------- */
+const PAL=[
+  {name:"Zeichen",cat:"cls",items:[
+    ["\\d","Ziffer"],["\\w","Wortzeichen"],["\\s","Leerraum"],[".","beliebig"],
+    ["[a-z]","Kleinbuchstabe"],["[A-Z]","Großbuchstabe"],["[A-Za-zÄÖÜäöüß]","Buchstabe"],["[aeiouäöü]","Vokal"],["[0-9a-fA-F]","Hex-Ziffer"]]},
+  {name:"Wie oft?",cat:"quant",items:[["?","optional"],["*","beliebig oft"],["+","mind. 1×"]],extra:"quant"},
+  {name:"Position",cat:"anchor",items:[["^","Anfang"],["$","Ende"],["\\b","Wortgrenze"]]},
+  {name:"Gruppe & Oder",cat:"group",items:[["(","Gruppe auf"],[")","Gruppe zu"],["|","oder"],["(?:","Gruppe (ohne merken)"]]},
+  {name:"Profi: Bedingungen",cat:"group",items:[["(?=.*\\d)","enthält Ziffer"],["(?=.*[A-Z])","enthält Großbuchstabe"],["(?=.*[a-z])","enthält Kleinbuchstabe"],["(?!.*\\s)","kein Leerraum"]],
+    descs:{"(?=.*\\d)":"Irgendwo im Text muss eine Ziffer vorkommen","(?=.*[A-Z])":"Irgendwo im Text muss ein Großbuchstabe vorkommen","(?=.*[a-z])":"Irgendwo im Text muss ein Kleinbuchstabe vorkommen","(?!.*\\s)":"Im Text darf kein Leerraum vorkommen"}},
+];
+const REZ=[
+  ["Postleitzahl",["^","\\d","{5}","$"]],
+  ["Hex-Farbe",["^","#","[0-9a-fA-F]","{6}","$"]],
+  ["Uhrzeit",["^","([01]\\d|2[0-3])",":","[0-5]","\\d","$"]],
+  ["Kennzeichen",["^","[A-Z]","{1,3}","-","[A-Z]","{1,2}"," ","\\d","{1,4}","$"]],
+  ["Name",["\\b","[A-Z]","[a-zäöüß]","+"]]
+];
+let chips=[]; // {rx,cat,desc}
+function mkChip(rx,desc){
+  const t=tokenize(rx); const cat=t[0]?t[0].cat:"lit";
+  return {rx,cat,desc:desc||(t.length===1?t[0].desc:t.map(k=>k.desc.replace(/<[^>]+>/g,"")).join(" → "))};
+}
+function addChip(rx,desc){ chips.push(mkChip(rx,desc)); renderBK(); }
+function renderBK(){
+  const box=$("#ablage");
+  box.innerHTML="";
+  if(!chips.length){ box.innerHTML='<div class="leer">Noch leer — klicke links auf Bausteine.</div>'; }
+  chips.forEach((c,i)=>{
+    const d=document.createElement("div"); d.className="chip";
+    d.innerHTML=`${tokHTML(c.rx,c.cat,c.desc.replace(/<[^>]+>/g,""))}<div class="ctl"><button title="nach links" aria-label="nach links">◀</button><button class="x" title="entfernen" aria-label="entfernen">✕</button><button title="nach rechts" aria-label="nach rechts">▶</button></div>`;
+    const [l,x,r]=d.querySelectorAll("button");
+    l.onclick=()=>{ if(i>0){[chips[i-1],chips[i]]=[chips[i],chips[i-1]]; renderBK();} };
+    r.onclick=()=>{ if(i<chips.length-1){[chips[i+1],chips[i]]=[chips[i],chips[i+1]]; renderBK();} };
+    x.onclick=()=>{ chips.splice(i,1); renderBK(); };
+    box.appendChild(d);
+  });
+  const rx=chips.map(c=>c.rx).join("");
+  $("#bk-out").value=rx;
+  const chk=comp(rx,"");
+  $("#bk-err").textContent=chk.err?"Noch nicht vollständig: "+chk.err:"";
+  $("#bk-worten").innerHTML=chips.map(c=>`<li><code>${esc(vis(c.rx))}</code> — ${c.desc}</li>`).join("");
+  renderBKtest(rx,!!chk.err);
+}
+function renderBKtest(rx,bad){
+  const box=$("#bk-liste"); const ls=$("#bk-text").value.slice(0,MAXTEXT).split(/\r?\n/).slice(0,200);
+  if(!rx||bad){ box.innerHTML=`<p class="hinweis">${!rx?"Baue oben ein Muster, dann siehst du hier die Treffer.":"Dein Muster ist noch unvollständig."}</p>`; return; }
+  const c=comp(rx,"g"), f=$("#bk-ganz").checked?full(rx):comp(rx,"");
+  let ok=0, html="";
+  ls.forEach(z=>{ if(z==="")return; const pass=f.re.test(z); if(pass)ok++;
+    html+=`<div class="zl"><span class="ico ${pass?"ok":"no"}">${pass?"✓":"✗"}</span><span class="txt">${hl(z,c.re).html||esc(z)}</span></div>`; });
+  box.innerHTML=`<div class="zaehler"><b>${ok}</b> von ${ls.filter(x=>x!=="").length} Zeilen passen</div>`+html;
+}
+{
+  const pal=$("#palette");
+  PAL.forEach((g,gi)=>{
+    const d=document.createElement("details"); if(gi===0)d.open=true;
+    d.style.setProperty("--cc",`var(--c-${g.cat})`);
+    d.innerHTML=`<summary><i></i>${g.name}</summary><div class="inh"></div>`;
+    const inh=d.querySelector(".inh");
+    g.items.forEach(([rx,name])=>{
+      const b=document.createElement("button"); b.className="bb"; b.innerHTML=`<code>${esc(rx)}</code> ${esc(name)}`;
+      b.onclick=()=>addChip(rx,g.descs&&g.descs[rx]); inh.appendChild(b); });
+    if(g.name==="Zeichen"){
+      const w=document.createElement("div"); w.style.cssText="width:100%;display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px";
+      w.innerHTML=`<span class="hinweis">Eigene Klasse:</span><b class="mono">[</b><input type="text" id="kl-in" placeholder="abc-" spellcheck="false"><b class="mono">]</b>
+        <label class="hinweis"><input type="checkbox" id="kl-neg"> nicht</label><button class="bb" id="kl-go">+</button>`;
+      inh.appendChild(w);
+    }
+    if(g.extra==="quant"){
+      const w=document.createElement("div"); w.style.cssText="width:100%;display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px";
+      w.innerHTML=`<b class="mono">{</b><input type="number" id="q-min" value="2" min="0" max="99" aria-label="mindestens"><b class="mono">,</b><input type="number" id="q-max" value="4" min="0" max="99" aria-label="höchstens" placeholder="∞"><b class="mono">}</b><button class="bb" id="q-go">+</button><span class="hinweis" style="width:100%">Max leer lassen = unbegrenzt, gleiche Zahl = genau so oft.</span>`;
+      inh.appendChild(w);
+    }
+    pal.appendChild(d);
+  });
+  // Eigenen Text
+  const dt=document.createElement("details"); dt.style.setProperty("--cc","var(--c-lit)");
+  dt.innerHTML=`<summary><i></i>Festes Zeichen / Text</summary><div class="inh"><input type="text" id="tx-in" placeholder="z. B. # oder Haus" spellcheck="false"><button class="bb" id="tx-go">+</button><span class="hinweis" style="width:100%">Sonderzeichen werden automatisch mit \\ geschützt.</span></div>`;
+  pal.appendChild(dt);
+  pal.addEventListener("click",e=>{
+    const id=e.target.closest("button")?.id;
+    if(id==="kl-go"){ const v=$("#kl-in").value; if(!v)return; addChip(`[${$("#kl-neg").checked?"^":""}${v.replace(/[\]\\]/g,"\\$&")}]`); }
+    if(id==="q-go"){ const a=$("#q-min").value, b=$("#q-max").value; if(a==="")return;
+      addChip(b===""?`{${a},}`:(a===b?`{${a}}`:`{${a},${b}}`)); }
+    if(id==="tx-go"){ const v=$("#tx-in").value; if(!v)return; const e2=v.replace(/[.*+?^${}()|[\]\\\/]/g,"\\$&");
+      if(v.length===1) addChip(e2); else addChip(`(?:${e2})`,`Der Text „${esc(v)}“ genau so`); $("#tx-in").value=""; }
+  });
+  const rb=$("#rezepte");
+  REZ.forEach(([n,arr])=>{ const b=document.createElement("button"); b.className="bsp"; b.textContent=n;
+    b.onclick=()=>{ chips=arr.map(r=>mkChip(r)); renderBK(); }; rb.appendChild(b); });
+  $("#bk-clear").onclick=()=>{chips=[];renderBK();};
+  $("#bk-copy").onclick=e=>copy($("#bk-out").value,e.target);
+  $("#bk-spiel").onclick=()=>{ $("#pw-rx").value=$("#bk-out").value; renderPW(); $("#s1").scrollIntoView(); };
+  $("#bk-text").addEventListener("input",renderBK); $("#bk-ganz").addEventListener("change",renderBK);
+}
+
+/* ---------- 3 Generator ---------- */
+const SETS=[
+  ["klein","a–z","abcdefghijklmnopqrstuvwxyz",true],
+  ["gross","A–Z","ABCDEFGHIJKLMNOPQRSTUVWXYZ",false],
+  ["ziff","0–9","0123456789",false],
+  ["uml","äöüß","äöüßÄÖÜ",false],
+  ["sond","Sonderzeichen","-_.@#!?",false],
+  ["leer","Leerzeichen"," ",false]
+];
+let genListe=[];
+{
+  const box=$("#gen-sets");
+  SETS.forEach(([id,n,ch,on])=>{ const l=document.createElement("label"); l.className="pille";
+    l.innerHTML=`<input type="checkbox" data-s="${id}" ${on?"checked":""}> ${n} <code>${esc(ch.length>9?ch.slice(0,3)+"…":vis(ch))}</code>`; box.appendChild(l); });
+}
+function generate(){
+  let alpha=""; document.querySelectorAll("#gen-sets input:checked").forEach(i=>alpha+=SETS.find(s=>s[0]===i.dataset.s)[2]);
+  alpha+=$("#gen-eigen").value;
+  alpha=[...new Set([...alpha])]; // eindeutig
+  const cl=(v,a,b,d)=>Math.min(b,Math.max(a,parseInt(v,10)||d));
+  let mn=cl($("#gen-min").value,1,40,4), mx=cl($("#gen-max").value,1,40,8); if(mx<mn)[mn,mx]=[mx,mn];
+  const n=cl($("#gen-n").value,1,500,30), art=$("#gen-art").value, gross=$("#gen-gross").checked;
+  if(!alpha.length){ $("#gen-info").textContent="Wähle mindestens eine Zeichengruppe."; $("#gen-out").innerHTML=""; genListe=[]; return; }
+  const R=a=>a[Math.floor(Math.random()*a.length)];
+  let vok=alpha.filter(c=>"aeiouäöüAEIOU".includes(c)), kon=alpha.filter(c=>/\p{L}/u.test(c)&&!"aeiouäöüAEIOU".includes(c));
+  const silben=art==="silben"&&vok.length&&kon.length;
+  const out=[];
+  for(let k=0;k<n;k++){
+    const len=mn+Math.floor(Math.random()*(mx-mn+1)); let w="";
+    for(let i=0;i<len;i++) w+=silben?R(i%2===0?kon:vok):R(alpha);
+    if(gross&&w) w=w[0].toUpperCase()+w.slice(1);
+    out.push(w);
+  }
+  genListe=out;
+  $("#gen-info").innerHTML=`<b>${n}</b> Zeichenfolgen · Alphabet mit <b>${alpha.length}</b> Zeichen · Länge ${mn}–${mx}`+
+    (art==="silben"&&!silben?" · (für „aussprechbar“ braucht es Vokale und Konsonanten — es wurden zufällige Zeichen genommen)":"");
+  $("#gen-out").innerHTML=out.map(w=>`<span class="w">${esc(vis(w))}</span>`).join("");
+}
+$("#gen-go").onclick=generate;
+$("#gen-copy").onclick=e=>copy(genListe.join("\n"),e.target);
+$("#gen-ins-filter").onclick=()=>{ if(!genListe.length)generate(); $("#fl-liste").value=genListe.join("\n"); renderFL(); $("#s4").scrollIntoView(); };
+$("#gen-ins-text").onclick=()=>{ if(!genListe.length)generate(); $("#pw-text").value=genListe.join(" "); renderPW(); $("#s1").scrollIntoView(); };
+
+/* ---------- 4 Filter ---------- */
+const FL_DEFAULT=["Haus","Hund","Katze","Auto","Banane","Schule","Informatik","Computer","Tastatur","Maus","Bildschirm","Python","Regex","Muster","Zahl","anna","Anna","Otto","Radar","Ananas",
+  "max@web.de","lisa@gmx.net","kein-mail","2026-10-12","12.10.2026","42","007","A1B2C3","hallo123","Passwort1","x7","01067","1234","Hallo Welt"];
+const FLB=[["beginnt mit Großbuchstabe","^[A-Z]"],["enthält Ziffer","\\d"],["nur Ziffern","^\\d+$"],["endet auf a","a$"],["Doppelbuchstabe","(.)\\1"],
+  ["mit @","@"],["genau 5 Zeichen","^.{5}$"],["Anfang = Ende","^(.).*\\1$"],["ohne Vokal","^[^aeiouAEIOU]+$"]];
+function renderFL(){
+  const rx=$("#fl-rx").value, mod=document.querySelector("input[name=fl-mod]:checked").value, fl=$("#fl-i").checked?"i":"";
+  const items=lines($("#fl-liste").value).slice(0,MAXLIST);
+  const c=comp(rx,fl+"g"), t=mod==="ganz"?full(rx,fl):comp(rx,fl);
+  $("#fl-err").textContent=c.err?"Fehler im Ausdruck: "+c.err:"";
+  if(c.err||rx===""){ $("#fl-ja").innerHTML=""; $("#fl-nein").innerHTML=items.map(w=>`<span class="w">${esc(w)}</span>`).join("");
+    $("#fl-zaehler").textContent=rx===""?"Gib einen Filter ein.":""; window.__flJa=[]; return; }
+  const ja=[],nein=[];
+  items.forEach(w=>{ let m=t.re.test(w); if(mod==="nicht")m=!m; (m?ja:nein).push(w); });
+  window.__flJa=ja;
+  $("#fl-ja").innerHTML=ja.map(w=>`<span class="w treffer">${mod==="nicht"?esc(w):hl(w,c.re).html}</span>`).join("");
+  $("#fl-nein").innerHTML=nein.map(w=>`<span class="w nope">${esc(w)}</span>`).join("");
+  $("#fl-zaehler").innerHTML=`<b>${ja.length}</b> von ${items.length} Einträgen kommen durch.`;
+}
+{
+  $("#fl-liste").value=FL_DEFAULT.join("\n");
+  const b=$("#fl-bsp");
+  FLB.forEach(([n,rx])=>{ const x=document.createElement("button"); x.className="bsp"; x.textContent=n; x.title=rx; x.onclick=()=>{ $("#fl-rx").value=rx; renderFL(); }; b.appendChild(x); });
+  ["#fl-liste","#fl-rx","#fl-i"].forEach(s=>$(s).addEventListener("input",renderFL));
+  document.querySelectorAll("input[name=fl-mod]").forEach(r=>r.addEventListener("change",renderFL));
+  $("#fl-copy").onclick=e=>copy((window.__flJa||[]).join("\n"),e.target);
+}
+
+/* ---------- 5 Validieren ---------- */
+const AUF=[
+  {t:"Postleitzahl",s:1,a:"Eine deutsche Postleitzahl besteht aus genau <b>fünf Ziffern</b>.",
+   ja:["01067","09599","80331","10115"],nein:["1234","123456","0106a","  1067","abcde"],
+   tipp:"Du brauchst eine Zeichenklasse für Ziffern und einen Quantor für „genau 5-mal“.",lsg:"\\d{5}"},
+  {t:"Datum TT.MM.JJJJ",s:1,a:"Ein Datum im Format <code>12.10.2026</code>: zwei Ziffern, Punkt, zwei Ziffern, Punkt, vier Ziffern.",
+   ja:["01.01.2026","31.12.1999","12.10.2026"],nein:["1.1.2026","12.10.26","12-10-2026","12/10/2026","12.10.20266"],
+   tipp:"Der Punkt hat als Muster eine Sonderbedeutung („beliebiges Zeichen“). Schütze ihn mit <code>\\.</code>.",lsg:"\\d{2}\\.\\d{2}\\.\\d{4}"},
+  {t:"Hex-Farbe",s:1,a:"Eine Webfarbe wie <code>#FF00AA</code>: ein <code>#</code> und danach genau sechs Hex-Ziffern (0–9, a–f, A–F).",
+   ja:["#FF00AA","#1a2b3c","#000000","#abcdef"],nein:["FF00AA","#GG00AA","#12345","#1234567","# 123456"],
+   tipp:"Eine Zeichenklasse darf mehrere Bereiche enthalten: <code>[0-9a-f]</code>.",lsg:"#[0-9a-fA-F]{6}"},
+  {t:"Uhrzeit (24 h)",s:2,a:"Eine Uhrzeit wie <code>09:45</code> oder <code>23:59</code>. Stunden <code>00–23</code>, Minuten <code>00–59</code>, immer zweistellig.",
+   ja:["00:00","09:45","12:30","19:59","23:59"],nein:["24:00","12:60","9:45","12-30","1230","29:10"],
+   tipp:"Die Stunde hat zwei Fälle: beginnt sie mit 0 oder 1, folgt eine beliebige Ziffer; beginnt sie mit 2, folgt 0–3. Nutze eine Gruppe mit <code>|</code>.",lsg:"([01]\\d|2[0-3]):[0-5]\\d"},
+  {t:"Kfz-Kennzeichen",s:2,a:"Vereinfacht: 1–3 Großbuchstaben (Ort), Bindestrich, 1–2 Großbuchstaben, <b>ein Leerzeichen</b>, 1–4 Ziffern. Beispiel: <code>DD-AB 123</code>.",
+   ja:["DD-AB 123","B-MK 4711","FG-X 1","HAL-ZZ 99"],nein:["dd-AB 123","DD AB 123","DDDD-AB 123","DD-ABC 123","DD-AB","DD-AB 12345"],
+   tipp:"Setze Bereiche mit <code>{min,max}</code>. Das Leerzeichen schreibst du einfach als Leerzeichen.",lsg:"[A-Z]{1,3}-[A-Z]{1,2} \\d{1,4}"},
+  {t:"E-Mail (einfach)",s:2,a:"Eine einfache E-Mail-Adresse: Name (Buchstaben, Ziffern, Unterstrich, Punkt), dann <code>@</code>, Domain, Punkt und Endung mit mindestens 2 Kleinbuchstaben.",
+   ja:["max@web.de","anna.mueller@gmx.net","a@b.co","tom_99@mail.org"],nein:["max@web","@web.de","max web.de","max@.de","max@web.d"],
+   tipp:"In einer Zeichenklasse verliert der Punkt seine Sonderbedeutung: <code>[\\w.]</code> heißt „Wortzeichen oder Punkt“. Außerhalb muss er als <code>\\.</code> geschützt werden.",lsg:"[\\w.]+@\\w+\\.[a-z]{2,}"},
+  {t:"Passwort-Regel",s:3,a:"Mindestens <b>8 Zeichen</b>, dabei mindestens <b>eine Ziffer</b> und mindestens <b>ein Großbuchstabe</b>. Reihenfolge egal.",
+   ja:["Sonne2024","Abcdefg1","Regex4Ever!","1234567A"],nein:["sonne2024","Sonnenschein","Ab1","ABCDEFGH","12345678"],
+   tipp:"Dafür gibt es <b>Bedingungen</b> (Vorausschau): <code>(?=.*\\d)</code> prüft „irgendwo eine Ziffer“, ohne etwas zu verbrauchen. Reihe mehrere hintereinander und hänge dann die Längenangabe an. Im Baukasten unter „Profi“.",
+   lsg:"(?=.*\\d)(?=.*[A-Z]).{8,}"}
+];
+const erledigt=new Set(); let aktiv=0;
+function renderVAwahl(){
+  const box=$("#va-wahl"); box.innerHTML="";
+  AUF.forEach((a,i)=>{ const b=document.createElement("button"); b.className="btn"+(i===aktiv?" aktiv":"")+(erledigt.has(i)?" fertig":""); b.textContent=`${i+1}. ${a.t}`;
+    b.onclick=()=>{aktiv=i;renderVA(true);}; box.appendChild(b); });
+}
+function renderVA(neu){
+  renderVAwahl();
+  const a=AUF[aktiv];
+  if(neu){
+    $("#va-aufgabe").innerHTML=`<div><span class="schwer">${"●".repeat(a.s)}${"○".repeat(3-a.s)}</span> <b>${esc(a.t)}</b></div>
+      <p style="margin:6px 0 10px">${a.a}</p>
+      <div class="regexfeld"><span>/</span><input type="text" id="va-rx" spellcheck="false" autocomplete="off" aria-label="Dein Ausdruck"><span>/</span></div>
+      <p class="fehler" id="va-err"></p>
+      <div class="balken" id="va-bar"><i></i></div>
+      <div class="status" id="va-status"></div>
+      <div id="va-faelle"></div>
+      <details class="loesung"><summary>Tipp</summary><div class="inh">${a.tipp}</div></details>
+      <details class="loesung"><summary>Musterlösung ansehen (erst nach eigenem Versuch)</summary><div class="inh"><code>${esc(a.lsg)}</code></div></details>`;
+    $("#va-rx").addEventListener("input",()=>pruefeVA());
+  }
+  pruefeVA();
+}
+function pruefeVA(){
+  const a=AUF[aktiv], rx=$("#va-rx").value;
+  const fall=[...a.ja.map(t=>[t,true]),...a.nein.map(t=>[t,false])];
+  const f=full(rx);
+  $("#va-err").textContent=rx&&f.err?"Fehler im Ausdruck: "+f.err:"";
+  let ok=0, html="";
+  fall.forEach(([t,soll])=>{
+    if(!rx||f.err){ html+=`<div class="fall neutral"><span class="ico">·</span><span class="t">${esc(t)}</span><span class="soll">${soll?"soll passen":"soll nicht passen"}</span></div>`; return; }
+    const ist=f.re.test(t), gut=ist===soll; if(gut)ok++;
+    html+=`<div class="fall ${gut?"ok":"no"}"><span class="ico">${gut?"✓":"✗"}</span><span class="t">${esc(t)}</span><span class="soll">${soll?"soll passen":"soll nicht passen"}${gut?"":" — dein Ausdruck sagt: "+(ist?"passt":"passt nicht")}</span></div>`;
+  });
+  $("#va-faelle").innerHTML=html;
+  const alle=fall.length, ready=rx&&!f.err, fertig=ready&&ok===alle;
+  $("#va-bar").className="balken"+(fertig?" fertig":""); $("#va-bar").firstElementChild.style.width=(ready?ok/alle*100:0)+"%";
+  const st=$("#va-status");
+  if(!rx){st.className="status";st.textContent="Schreibe deinen Ausdruck in das Feld. Es werden Beginn und Ende der Eingabe automatisch geprüft.";}
+  else if(f.err){st.className="status bad";st.textContent="";}
+  else if(fertig){st.className="status ok";st.textContent=`Geschafft: alle ${alle} Fälle stimmen. ✓`;
+    if(!erledigt.has(aktiv)){erledigt.add(aktiv);renderVAwahl();}}
+  else {st.className="status";st.textContent=`${ok} von ${alle} Fällen richtig.`;}
+}
+{
+  const rx=$("#fp-rx"), inp=$("#fp-in");
+  const upd=()=>{
+    const f=full(rx.value); $("#fp-err").textContent=rx.value&&f.err?"Fehler im Ausdruck: "+f.err:"";
+    inp.className="gross"; $("#fp-urteil").textContent=""; $("#fp-urteil").style.color="";
+    if(!rx.value||f.err||inp.value===""){ $("#fp-status").className="status"; $("#fp-status").textContent=""; return; }
+    const ok=f.re.test(inp.value); inp.classList.add(ok?"ok":"no");
+    $("#fp-urteil").textContent=ok?"✓":"✗"; $("#fp-urteil").style.color=ok?"var(--ok)":"var(--bad)";
+    const st=$("#fp-status"); st.className="status "+(ok?"ok":"bad");
+    if(ok) st.textContent="Gültig: die ganze Eingabe passt zum Format.";
+    else st.textContent="Ungültig: die Eingabe passt nicht zum Format (zu kurz, zu lang oder falsche Zeichen).";
+  };
+  rx.addEventListener("input",upd); inp.addEventListener("input",upd);
+}
+
+/* ---------- 6 Spickzettel ---------- */
+{
+  const rows=[
+    ["Zeichen","\\d  \\w  \\s  .","Ziffer · Wortzeichen · Leerraum · beliebig","\\d\\d"],
+    ["Gegenteil","\\D  \\W  \\S","jeweils „alles außer …“","\\D+"],
+    ["Klasse","[abc]  [a-z]  [^0-9]","eines davon · Bereich · keines davon","[aeiou]"],
+    ["Wie oft","?  *  +","0–1× · beliebig oft · mind. 1×","colou?r"],
+    ["Genau","{3}  {2,4}  {3,}","genau 3× · 2 bis 4× · mind. 3×","\\d{3}"],
+    ["Position","^  $  \\b","Anfang · Ende · Wortgrenze","^Hallo"],
+    ["Oder","a|b","a oder b","Hund|Katze"],
+    ["Gruppe","( )  (?: )","zusammenfassen (und merken)","(ab)+"],
+    ["Rückbezug","\\1","wiederholt Gruppe 1 wörtlich","(\\w)\\1"],
+    ["Schützen","\\.  \\?  \\(","Sonderzeichen als normales Zeichen","3\\.5"],
+    ["Bedingung","(?=…)  (?!…)","danach muss / darf nicht folgen","\\w+(?=\\d)"],
+    ["Flags","i  m  g","Groß/klein egal · pro Zeile · alle Treffer","/abc/i"]
+  ];
+  $("#spick").innerHTML=`<tr><th>Thema</th><th>Muster</th><th>Bedeutung</th><th>Beispiel</th></tr>`+
+    rows.map(r=>`<tr><td><b>${r[0]}</b></td><td class="mono">${esc(r[1])}</td><td>${r[2]}</td><td><code>${esc(r[3])}</code></td></tr>`).join("");
+}
+
+/* ---------- Thema ---------- */
+$("#theme").addEventListener("click",()=>{
+  const d=document.body.dataset.theme==="dark"?"light":"dark";
+  document.body.dataset.theme=d; $("#theme").textContent=d==="dark"?"Hell":"Dunkel";
+  try{ localStorage.setItem("rx.theme",d); }catch(e){}
+});
+try{ const t=localStorage.getItem("rx.theme"); if(t){ document.body.dataset.theme=t; $("#theme").textContent=t==="dark"?"Hell":"Dunkel"; } }catch(e){}
+
+/* ---------- Start ---------- */
+renderPW(); renderBK(); generate(); renderFL(); renderVA(true);
+chips=REZ[0][1].map(r=>mkChip(r)); renderBK();
+})();
+</script>
+</body>
+</html>
