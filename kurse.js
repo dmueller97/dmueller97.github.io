@@ -314,6 +314,13 @@ const MATERIAL = [
     info:"Alphabet, Wort und Sprache, Syntax gegen Semantik, Grammatiken und Ableitungen, BNF/EBNF und Syntaxbäume. Mit Ableitungs-Spiel, Ausdrucks-Labor, Aufgaben mit Lösungen und Selbsttest.",
     stand:"2026-09", neu:true},
 
+   { fach:"informatik", klasse:10, bereich:"sprachen-regex",
+    titel:"RegEx-Labor: Muster bauen, filtern, validieren",
+    typ:"werkzeug",
+    url:"inf/seki/regex-labor.html",
+    info:"Reguläre Ausdrücke ausprobieren: Spielwiese mit Live-Markierung, Baukasten aus Mustersteinen, Zeichen-Generator für Testdaten, Listen-Filter und Validier-Aufgaben (PLZ, Datum, Uhrzeit, E-Mail, Passwort).",
+    stand:"2026-10", neu:true},
+
    { fach:"informatik", klasse:10, bereich:"latex",
     titel:"LaTeX — Selbstlernkurs",
     typ:"uebung",
