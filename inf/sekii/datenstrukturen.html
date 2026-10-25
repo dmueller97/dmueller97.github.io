@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2.2 Datenstrukturen — Listen in Python</title>
+<style>
+:root{
+  --bg:#0E1A1C; --panel:#142528; --panel2:#0F1F22; --line:#23393E; --line2:#2E4A50;
+  --ink:#DFEAEB; --ink2:#9FB6B9; --muted:#6F8A8F;
+  --brand:#2FB3A0; --hi:#FFC24B; --ok:#58C08C; --bad:#E4573D; --r:12px;
+  --code:#0A1416; --kw:#C792EA; --str:#C3E88D; --num:#F78C6C;
+}
+[data-theme="light"]{
+  --bg:#F2F4F3; --panel:#FFFFFF; --panel2:#F7F9F8; --line:#D8E0DF; --line2:#C2CFCE;
+  --ink:#14242A; --ink2:#4A6066; --muted:#7B8F94;
+  --brand:#17897A; --hi:#C97A00; --code:#F4F7F6; --kw:#8B2BB9; --str:#3B7A12; --num:#B4441E;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;font-size:15.5px;line-height:1.6}
+a{color:var(--brand)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.mono,code,pre,textarea.ed{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}
+code{background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:0 4px;font-size:.92em}
+
+header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-left:140px!important;
+  padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--line)}
+header b{font-size:17px;letter-spacing:-.2px}
+header span.sub{color:var(--muted);font-size:12.5px}
+.spacer{flex:1}
+.btn{background:var(--panel2);border:1px solid var(--line2);border-radius:9px;padding:6px 12px;transition:border-color .12s}
+.btn:hover{border-color:var(--brand)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#06211E;font-weight:600}
+.btn.small{padding:4px 9px;font-size:13px}
+
+.wrap{display:flex;gap:34px;max-width:1180px;margin:0 auto;padding:26px 20px 80px}
+nav.toc{position:sticky;top:64px;align-self:flex-start;width:225px;flex:0 0 auto;font-size:13.5px}
+nav.toc ol{list-style:none;margin:0;padding:0}
+nav.toc a{display:block;padding:5px 10px;border-left:2px solid var(--line);color:var(--ink2);text-decoration:none}
+nav.toc a:hover{color:var(--ink);border-left-color:var(--line2)}
+nav.toc a.aktiv{color:var(--ink);border-left-color:var(--brand);font-weight:600}
+main{flex:1;min-width:0;max-width:800px}
+
+h1{font-size:29px;margin:0 0 6px;letter-spacing:-.5px}
+h2{font-size:21px;margin:44px 0 12px;letter-spacing:-.3px;scroll-margin-top:70px}
+h3{font-size:16px;margin:26px 0 8px}
+p{margin:0 0 14px}
+p.lead{color:var(--ink2);font-size:17px;margin-bottom:26px}
+ul{margin:0 0 14px;padding-left:22px}
+li{margin-bottom:5px}
+.merk{border-left:3px solid var(--brand);background:var(--panel);border-radius:0 var(--r) var(--r) 0;padding:12px 16px;margin:18px 0}
+.merk b{color:var(--brand)}
+.karte{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin:18px 0}
+.aufgabe{border:1px solid var(--line2);border-radius:var(--r);padding:15px 18px;margin:20px 0;background:var(--panel2);scroll-margin-top:70px}
+.aufgabe .kopf{font-weight:650;color:var(--hi);font-size:13px;letter-spacing:.3px;margin-bottom:6px}
+details.loesung{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+details.loesung summary{cursor:pointer;color:var(--brand);font-size:13.5px;font-weight:600;list-style:none}
+details.loesung summary::-webkit-details-marker{display:none}
+details.loesung summary::before{content:"▸ "}
+details.loesung[open] summary::before{content:"▾ "}
+details.loesung .inhalt{margin-top:10px;font-size:14.5px;color:var(--ink2)}
+details.loesung .inhalt b{color:var(--ink)}
+
+table{border-collapse:collapse;width:100%;font-size:14px;margin:14px 0}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--panel2);font-weight:650;color:var(--ink2)}
+.scroll{overflow-x:auto}
+
+/* Code */
+.codebox{position:relative;margin:12px 0}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0;
+  overflow-x:auto;font-size:13.5px;line-height:1.55;counter-reset:z}
+pre .z{display:block;counter-increment:z}
+pre .z::before{content:counter(z);display:inline-block;width:2.2em;margin-right:10px;text-align:right;color:var(--muted);user-select:none}
+.kw{color:var(--kw)} .st{color:var(--str)} .nu{color:var(--num)}
+.codebox .laden{position:absolute;top:8px;right:8px}
+.fehler{color:var(--bad);border-color:rgba(228,87,61,.45)}
+
+/* Array-Schaubild */
+.arr{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 6px}
+.zelle{display:flex;flex-direction:column;align-items:center;gap:3px}
+.zelle .w{min-width:58px;padding:10px 6px;text-align:center;border:1.6px solid var(--line2);border-radius:9px;
+  background:var(--panel2);font-family:ui-monospace,monospace;font-weight:700;transition:all .15s}
+.zelle .i{font-size:12px;color:var(--muted);font-family:ui-monospace,monospace}
+.zelle.an .w{border-color:var(--hi);background:rgba(255,194,75,.16);color:var(--hi)}
+.zeile{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}
+.zeile input{width:auto}
+input.feld{background:var(--panel);border:1px solid var(--line2);border-radius:8px;padding:5px 9px;min-width:0}
+input.feld.richtig{border-color:var(--ok);background:rgba(88,192,140,.12)}
+input.feld.falsch{border-color:var(--bad);background:rgba(228,87,61,.10)}
+.ausgabe{font-family:ui-monospace,monospace;font-size:14px;color:var(--ink2)}
+
+/* Spurtabellen */
+.spur td{vertical-align:middle}
+.spur td.code{font-family:ui-monospace,monospace;font-size:13px;white-space:nowrap}
+.spur input.feld{width:100%;font-family:ui-monospace,monospace;font-size:13px}
+.lauf{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:8px 10px;align-items:center;max-width:420px;margin:10px 0}
+.lauf span{color:var(--ink2);font-family:ui-monospace,monospace;font-size:13.5px}
+.status{font-size:14px;color:var(--ink2);align-self:center}
+
+/* Auswahl Quadrate */
+.wahl{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:12px 0}
+.opt{background:var(--panel);border:1.6px solid var(--line2);border-radius:var(--r);padding:12px;display:flex;justify-content:center}
+.opt:hover{border-color:var(--brand)}
+.opt.gewaehlt{border-color:var(--brand);background:rgba(47,179,160,.12)}
+.opt.richtig{border-color:var(--ok)} .opt.falsch{border-color:var(--bad)}
+.opt svg{width:110px;height:110px}
+.bild{background:#fff;border-radius:10px;display:inline-block;padding:10px;margin:6px 0 12px}
+
+/* Konsole */
+.konsole{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:16px 0}
+.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:860px){.kgrid{grid-template-columns:1fr}}
+textarea.ed{width:100%;min-height:330px;background:var(--code);border:1px solid var(--line2);border-radius:10px;
+  padding:10px 12px;font-size:13.5px;line-height:1.5;resize:vertical;tab-size:4;white-space:pre;overflow-wrap:normal;overflow-x:auto}
+#leinwand{background:#fff;border-radius:10px;min-height:330px;overflow:hidden}
+#leinwand .platzhalter{display:block;padding:150px 0;text-align:center}
+#kaus{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-top:10px;
+  min-height:46px;max-height:180px;overflow:auto;font-size:13px;white-space:pre-wrap;margin-bottom:0}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;padding:16px 20px;text-align:center}
+@media(max-width:900px){nav.toc{display:none}.wrap{padding:18px 16px 60px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body data-theme="dark">
+<a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
+
+<header>
+  <b>2.2 Datenstrukturen</b>
+  <span class="sub">Informatik Klasse 11 · LB 2 Algorithmierung und Programmierung · Listen in Python</span>
+  <div class="spacer"></div>
+  <button class="btn small" id="theme">Hell</button>
+</header>
+
+<div class="wrap">
+<nav class="toc"><ol id="toc"></ol></nav>
+
+<main>
+<h1>Arrays und Listen</h1>
+<p class="lead">In vielen Programmen müssen mehrere zusammengehörige Informationen gespeichert und verarbeitet
+werden. Damit das übersichtlich und effizient möglich ist, organisiert man Daten in <b>Datenstrukturen</b>.
+Eine häufig verwendete Datenstruktur ist das Array. In diesem Kapitel lernst du Aufbau und Eigenschaften von
+Arrays kennen und setzt sie in Python als Listen um. Ganz unten findest du eine Python-Konsole mit Turtle —
+jeder Code auf dieser Seite lässt sich dort mit einem Klick laden und ausführen.</p>
+
+<!-- ============================================================ -->
+<h2 id="s1">Aufbau eines Arrays</h2>
+<p>Ein Array ist eine geordnete Sammlung von Elementen, die unter einem einzigen Namen gespeichert sind.
+Jedem Element ist neben seinem Wert ein <b>Index</b> zugeordnet, der die genaue Position angibt.
+Der Index beginnt immer bei <b>0</b>.</p>
+
+<div class="karte">
+  <div class="arr" id="arr"></div>
+  <div class="zeile">
+    <span class="mono">daten[</span>
+    <input class="feld mono" id="idx" type="text" inputmode="numeric" size="4" value="2" aria-label="Index">
+    <span class="mono">]</span>
+    <span class="ausgabe" id="idxAus"></span>
+  </div>
+  <p style="margin:10px 0 0;font-size:13.5px;color:var(--muted)">Probiere auch negative Indizes wie −1 oder einen
+  Index, den es nicht gibt.</p>
+</div>
+
+<div class="merk"><b>Eigenschaften.</b> Ein Array hat eine feste Länge (hier 5), die Indizes laufen von 0 bis
+Länge − 1, und alle Elemente haben denselben Datentyp. Über den Index kann man auf jedes Element direkt zugreifen.</div>
+
+<!-- ============================================================ -->
+<h2 id="s2">Implementierung in Python</h2>
+<p>Für die strikte Definition eines Arrays gibt es in Python das Modul NumPy. Die Standard-Datenstruktur für
+geordnete Aufzählungen ist aber die <b>Liste</b>. Sie unterscheidet sich von klassischen Arrays durch</p>
+<ul>
+  <li>eine <b>variable Länge</b> — Elemente können hinzugefügt und entfernt werden,</li>
+  <li>die Speicherung <b>verschiedener Datentypen</b> in derselben Liste.</li>
+</ul>
+<p>Wir betrachten deshalb nur Listen. Die vollständige Dokumentation findest du bei
+<a href="https://www.w3schools.com/python/python_lists.asp" target="_blank" rel="noopener">w3schools: Python Lists</a>.</p>
+
+<div class="scroll"><table>
+  <tr><th>Befehl</th><th>Verwendung</th></tr>
+  <tr><td class="mono">newList = []</td><td>Erstellt eine leere Liste.</td></tr>
+  <tr><td class="mono">newList2 = [2, "Hallo", 6.56, 90]</td><td>Erstellt eine Liste der Länge 4.</td></tr>
+  <tr><td class="mono">newList.append(35)</td><td>Fügt ein Element am Ende der Liste hinzu.</td></tr>
+  <tr><td class="mono">element = newList2[2]</td><td>Gibt das Element an Index 2 zurück; negative Indizes zählen von hinten.</td></tr>
+  <tr><td class="mono">teilliste = newList2[1:3]</td><td>Gibt die Teilliste mit den Elementen an Index 1 und 2 zurück; der Endwert 3 ist exklusiv.</td></tr>
+  <tr><td class="mono">newList2[3] = 1.9</td><td>Ändert den Wert an Index 3.</td></tr>
+  <tr><td class="mono">len(newList)</td><td>Gibt die Länge der Liste zurück.</td></tr>
+  <tr><td class="mono">newList.insert(0, 26.9)</td><td>Fügt ein Element an Stelle 0 ein und verschiebt alle nachfolgenden Elemente um einen Index nach hinten.</td></tr>
+  <tr><td class="mono">copyList = newList.copy()</td><td>Erstellt eine Kopie der Liste.</td></tr>
+  <tr><td class="mono">newList2.remove(2)</td><td>Entfernt das erste Vorkommen des <em>Wertes</em> 2 aus der Liste.</td></tr>
+  <tr><td class="mono">copyList.extend(newList2)</td><td>Hängt die Liste in Klammern an das Ende der ersten Liste an.</td></tr>
+  <tr><td class="mono">2 in newList2</td><td>Prüft, ob ein Element in der Liste vorhanden ist (True/False).</td></tr>
+</table></div>
+
+<div class="aufgabe" id="a221">
+  <div class="kopf">AUFGABE 2.2.1</div>
+  <p>Im Quellcode sind die grundlegenden Befehle beispielhaft angewandt. Gib für jede Zeile den Wert der
+  veränderten Variable bzw. die Ausgabe an. Schreibe Listen in Python-Schreibweise, z. B. <code>[1, 'a']</code>.
+  Überprüfe deine Lösung anschließend in der Konsole.</p>
+  <div class="scroll"><table class="spur" id="spur221">
+    <tr><th style="width:2.5em">Z.</th><th>Code</th><th>Wert / Ausgabe</th></tr>
+  </table></div>
+  <div class="zeile">
+    <button class="btn primary" data-pruef="221">Prüfen</button>
+    <button class="btn" data-laden="c221">In Konsole laden</button>
+    <span class="status" id="st221"></span>
+  </div>
+  <details class="loesung"><summary>Hinweis zu Zeile 10</summary><div class="inhalt">
+    <code>remove(2)</code> löscht den ersten Eintrag mit dem <b>Wert</b> 2 — nicht das Element an Index 2.
+    Dafür gäbe es <code>pop(2)</code> oder <code>del newList2[2]</code>.
+  </div></details>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s3">Listen mit Turtle</h2>
+<p>Listen eignen sich gut, um Farben zu verwalten. Statt die Farbe bei jedem Befehl auszuschreiben, greift man
+über den Index auf die Liste zu.</p>
+
+<div class="aufgabe" id="a222">
+  <div class="kopf">AUFGABE 2.2.2</div>
+  <p>Gegeben ist der folgende Beispielcode. Klicke die passende Ausgabe an und begründe deine Wahl.</p>
+  <div class="codebox" data-code="c222"><button class="btn small laden" data-laden="c222">▶ In Konsole</button><pre></pre></div>
+  <div class="wahl" id="wahl222"></div>
+  <div class="zeile">
+    <button class="btn primary" data-pruef="222">Prüfen</button>
+    <span class="status" id="st222"></span>
+  </div>
+</div>
+
+<div class="aufgabe" id="a223">
+  <div class="kopf">AUFGABE 2.2.3</div>
+  <p>Fülle die Lücken so aus, dass die folgende Ausgabe entsteht.</p>
+  <div class="bild"><svg width="110" height="110" viewBox="0 0 110 110" aria-label="Quadrat mit goldenem Rand und dunkelblauer Füllung">
+    <rect x="12" y="12" width="86" height="86" fill="darkblue" stroke="gold" stroke-width="9"/></svg></div>
+  <pre class="mono"><span class="z"><span class="kw">import</span> turtle</span><span class="z"> </span><span class="z">farben = [<span class="st">"darkred"</span>, <span class="st">"orange"</span>, <span class="st">"violet"</span>, <span class="st">"gold"</span>, <span class="st">"green"</span>, <span class="st">"darkblue"</span>]</span><span class="z"> </span><span class="z">t = turtle.Turtle()</span><span class="z">t.pencolor(<input class="feld mono" id="l1" size="11" aria-label="Lücke pencolor">)</span><span class="z">t.fillcolor(<input class="feld mono" id="l2" size="11" aria-label="Lücke fillcolor">)</span><span class="z">t.width(<span class="nu">10</span>)</span><span class="z">t.begin_fill()</span><span class="z"><span class="kw">for</span> i <span class="kw">in</span> range(<span class="nu">4</span>):</span><span class="z">    t.fd(<span class="nu">100</span>)</span><span class="z">    t.rt(<span class="nu">90</span>)</span><span class="z">t.end_fill()</span></pre>
+  <div class="zeile">
+    <button class="btn primary" data-pruef="223">Überprüfen</button>
+    <span class="status" id="st223"></span>
+  </div>
+</div>
+
+<div class="aufgabe" id="a224">
+  <div class="kopf">AUFGABE 2.2.4</div>
+  <p>Leider erscheint beim Ausführen dieses Quellcodes eine Fehlermeldung. Interpretiere die Fehlermeldung und
+  beschreibe, welcher Fehler gemacht wurde. Korrigiere das Programm.</p>
+  <div class="codebox" data-code="c224"><button class="btn small laden" data-laden="c224">▶ In Konsole</button><pre></pre></div>
+  <pre class="fehler">    t.pencolor(farben[6])
+IndexError: list index out of range</pre>
+  <details class="loesung"><summary>Lösung anzeigen</summary><div class="inhalt">
+    Die Liste <code>farben</code> hat 6 Elemente, die Indizes laufen also von <b>0 bis 5</b>. Mit
+    <code>farben[6]</code> wird auf ein Element zugegriffen, das es nicht gibt — deshalb der
+    <b>IndexError</b>. Korrektur: einen Index zwischen 0 und 5 verwenden, z. B. <code>farben[5]</code>
+    oder <code>farben[-1]</code> für das letzte Element.
+  </div></details>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s4">Iteration anhand des Index</h2>
+<p>Möchte man mit allen Werten einer Liste arbeiten, muss man die Liste durchlaufen. Dafür gibt es zwei
+Möglichkeiten: Iteration anhand des <b>Index</b> oder anhand des <b>Wertes</b>.</p>
+<div class="codebox" data-code="c_idx"><button class="btn small laden" data-laden="c_idx">▶ In Konsole</button><pre></pre></div>
+<div class="merk"><b>So funktioniert es.</b> <code>len()</code> liefert die Länge der Liste. Sie ist der Endwert
+von <code>range()</code>, der exklusiv ist. Hat die Liste 5 Elemente, durchläuft <code>i</code> die Werte 0 bis 4 —
+genau die Indizes. Mit <code>newList2[i]</code> erhält man den Wert an Stelle <code>i</code>.</div>
+
+<div class="aufgabe" id="a225">
+  <div class="kopf">AUFGABE 2.2.5</div>
+  <p>Trage für jeden Schleifendurchlauf die Werte für <code>i</code> und die Ausgabe von <code>print</code> ein.</p>
+  <div class="codebox" data-code="c225"><button class="btn small laden" data-laden="c225">▶ In Konsole</button><pre></pre></div>
+  <div class="lauf" id="lauf225"></div>
+  <div class="zeile">
+    <button class="btn primary" data-pruef="225">Überprüfen</button>
+    <span class="status" id="st225"></span>
+  </div>
+</div>
+
+<div class="aufgabe" id="a226">
+  <div class="kopf">AUFGABE 2.2.6</div>
+  <p>a) Übernimm den Quellcode in ein neues Python-Dokument und speichere es unter dem Dateinamen
+  <b>liste.py</b> ab.</p>
+  <p>b) Erweitere das Programm so, dass die Liste <code>farben</code> durchlaufen wird. Für jede Farbe soll ein
+  Quadrat gezeichnet werden. Die Startposition muss nicht angepasst werden, die Quadrate dürfen übereinander
+  liegen. Kommentiere deine Anpassungen mit deinen Überlegungen.</p>
+  <div class="codebox" data-code="c226"><button class="btn small laden" data-laden="c226">▶ In Konsole</button><pre></pre></div>
+  <details class="loesung"><summary>Lösungsvorschlag anzeigen</summary><div class="inhalt">
+    <div class="codebox" data-code="l226"><button class="btn small laden" data-laden="l226">▶ In Konsole</button><pre></pre></div>
+    Die Quadrate werden bei jedem Durchlauf etwas kleiner, damit alle Farben sichtbar bleiben.
+  </div></details>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s5">Iteration anhand des Wertes</h2>
+<div class="codebox" data-code="c_wert"><button class="btn small laden" data-laden="c_wert">▶ In Konsole</button><pre></pre></div>
+<div class="merk"><b>So funktioniert es.</b> Die Position des Elements spielt hier keine Rolle: Die
+Listenelemente selbst sind die Werte der Laufvariable. Der Durchlauf beginnt beim ersten Element, ein Zugriff
+über den Index ist nicht nötig.</div>
+
+<div class="aufgabe" id="a227">
+  <div class="kopf">AUFGABE 2.2.7</div>
+  <p>Trage für jeden Schleifendurchlauf die Werte für <code>i</code> und die Ausgabe von <code>print</code> ein.</p>
+  <div class="codebox" data-code="c227"><button class="btn small laden" data-laden="c227">▶ In Konsole</button><pre></pre></div>
+  <div class="lauf" id="lauf227"></div>
+  <div class="zeile">
+    <button class="btn primary" data-pruef="227">Überprüfen</button>
+    <span class="status" id="st227"></span>
+  </div>
+</div>
+
+<div class="merk"><b>Index oder Wert?</b> Brauchst du die Position (z. B. um ein Element zu ändern oder um
+zwei Listen gleichzeitig zu durchlaufen), nimm den Index. Brauchst du nur die Werte, ist die Iteration über
+den Wert kürzer und weniger fehleranfällig.</div>
+
+<!-- ============================================================ -->
+<h2 id="s6">Programmieraufgaben</h2>
+
+<div class="aufgabe" id="a228">
+  <div class="kopf">AUFGABE 2.2.8</div>
+  <p>a) Erweitere die Datei <b>liste.py</b>, sodass ein gleichseitiges Dreieck gezeichnet wird, beginnend bei der
+  Startposition (−200, 0). Wie beim Quadrat soll das Dreieck in jeder Farbe aus der Liste gezeichnet werden.
+  Verwende dabei eine Iteration über die Farbliste anhand des Wertes.</p>
+  <p>b) Passe das Programm so an, dass die Quadrate und Dreiecke immer an einer zufälligen Position gezeichnet
+  werden. Die zufälligen Koordinaten sollen im Bereich von −200 bis 200 liegen.</p>
+  <details class="loesung"><summary>Tipp</summary><div class="inhalt">
+    Ein gleichseitiges Dreieck hat drei gleich lange Seiten; die Turtle dreht sich an jeder Ecke um
+    <b>120°</b>. Zufallszahlen liefert <code>random.randint(-200, 200)</code> nach <code>import random</code>.
+  </div></details>
+  <details class="loesung"><summary>Lösungsvorschlag anzeigen</summary><div class="inhalt">
+    <div class="codebox" data-code="l228"><button class="btn small laden" data-laden="l228">▶ In Konsole</button><pre></pre></div>
+  </div></details>
+</div>
+
+<div class="aufgabe" id="a229">
+  <div class="kopf">AUFGABE 2.2.9</div>
+  <p>a) Schreibe ein Programm <b>liste_einlesen.py</b>, das die Anzahl der Farben vom Benutzer eingeben lässt.
+  Anschließend sollen die Farben eingelesen werden. Nutze dafür die folgende Schrittfolge:</p>
+  <ul>
+    <li>leere Liste definieren</li>
+    <li>Farbe einlesen</li>
+    <li>Farbe zur Liste hinzufügen</li>
+    <li>die letzten beiden Schritte entsprechend der Anzahl wiederholen</li>
+  </ul>
+  <p>b) Lass nun in jeder Farbe ein Fünfeck zeichnen, wobei jedes Fünfeck an einer zufälligen Position
+  platziert wird.</p>
+  <details class="loesung"><summary>Tipp</summary><div class="inhalt">
+    Englische Farbnamen funktionieren, z. B. <code>red</code>, <code>blue</code>, <code>orange</code>.
+    Beim Fünfeck dreht sich die Turtle an jeder Ecke um 360° / 5 = <b>72°</b>.
+  </div></details>
+  <details class="loesung"><summary>Lösungsvorschlag anzeigen</summary><div class="inhalt">
+    <div class="codebox" data-code="l229"><button class="btn small laden" data-laden="l229">▶ In Konsole</button><pre></pre></div>
+  </div></details>
+</div>
+
+<div class="aufgabe" id="a2210">
+  <div class="kopf">AUFGABE 2.2.10</div>
+  <p>Schreibe ein Programm <b>tannenbaum.py</b>, das den folgenden Tannenbaum zeichnet. Begonnen wird immer an
+  der Spitze des Dreiecks. Die x-Koordinate beträgt immer 0, die y-Koordinate nimmt nacheinander die Werte
+  <b class="mono">0, 30, 50, 60, 65</b> an. Die Seitenlängen sind ebenfalls fest und werden in dieser
+  Reihenfolge angenommen: <b class="mono">200, 150, 100, 50, 20</b>.</p>
+  <div class="bild" id="baumBild"></div>
+  <p>a) Definiere für die y-Koordinate und für die Längen jeweils eine Liste.<br>
+  b) Iteriere über beide Listen, um den Tannenbaum zu zeichnen.<br>
+  c) Zeichne den Stamm in der Größe 40 × 100 beginnend bei der Position (−20, −173).</p>
+  <details class="loesung"><summary>Tipp</summary><div class="inhalt">
+    Beide Listen haben dieselbe Länge. Iteriere deshalb über den <b>Index</b>:
+    <code>for i in range(len(hoehen)):</code> — dann gehören <code>hoehen[i]</code> und <code>laengen[i]</code>
+    zum selben Dreieck.
+  </div></details>
+  <details class="loesung"><summary>Lösungsvorschlag anzeigen</summary><div class="inhalt">
+    <div class="codebox" data-code="l2210"><button class="btn small laden" data-laden="l2210">▶ In Konsole</button><pre></pre></div>
+  </div></details>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="s7">Python-Konsole</h2>
+<p>Schreibe hier deinen Code oder lade ein Beispiel von oben. Die Turtle zeichnet rechts, Ausgaben von
+<code>print</code> erscheinen darunter, <code>input()</code> öffnet ein Eingabefenster. Die Konsole läuft im
+Browser (Skulpt) und kennt nicht jeden Befehl von Python — speichere deine Lösungen trotzdem in Thonny.</p>
+<div class="konsole" id="konsole">
+  <div class="zeile" style="margin:0 0 10px">
+    <button class="btn primary" id="kRun">▶ Ausführen</button>
+    <button class="btn" id="kStop">Stopp</button>
+    <button class="btn" id="kLeer">Leeren</button>
+    <span class="status" id="kStatus"></span>
+  </div>
+  <div class="kgrid">
+    <textarea class="ed" id="ed" spellcheck="false" aria-label="Python-Code"></textarea>
+    <div id="leinwand"><span class="platzhalter" style="color:#7B8F94;font-size:13px">Turtle-Ausgabe</span></div>
+  </div>
+  <pre id="kaus" aria-live="polite"></pre>
+</div>
+</main>
+</div>
+
+<footer id="foot"></footer>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+/* ---------- Code-Beispiele ---------- */
+const CODE = {
+c221:`newList = []
+newList2 = [2, 'Hallo', 6.56, 90]
+newList.append(35)
+element = newList2[2]
+teilliste = newList2[1:3]
+newList2[3] = 1.9
+print(len(newList))
+newList.insert(0, 26.9)
+copyList = newList.copy()
+newList2.remove(2)
+copyList.extend(newList2)
+print(2 in newList2)`,
+c222:`import turtle
+
+farben = ["darkred", "orange", "violet", "gold", "green", "darkblue"]
+
+t = turtle.Turtle()
+t.pencolor(farben[1])
+t.fillcolor(farben[4])
+t.width(10)
+t.begin_fill()
+for i in range(4):
+    t.fd(100)
+    t.rt(90)
+t.end_fill()`,
+c224:`import turtle
+
+farben = ["darkred", "orange", "violet", "gold", "green", "darkblue"]
+
+t = turtle.Turtle()
+t.pencolor(farben[6])
+t.fillcolor(farben[4])
+t.width(10)
+t.begin_fill()
+for i in range(4):
+    t.fd(100)
+    t.rt(90)
+t.end_fill()`,
+c_idx:`newList2 = [2, 'Hallo', 6.56, 90, 'Welt']
+for i in range(len(newList2)):
+    print(newList2[i])`,
+c225:`noten = [9, 14, 2, 10, 7, 6]
+for i in range(len(noten)):
+    print(noten[i])`,
+c226:`import turtle
+
+farben = ["darkred", "orange", "violet", "gold", "green", "darkblue"]
+
+t = turtle.Turtle()
+t.pencolor(farben[1])
+t.fillcolor(farben[4])
+t.width(10)
+t.begin_fill()
+for i in range(4):
+    t.fd(100)
+    t.rt(90)
+t.end_fill()`,
+l226:`import turtle
+
+farben = ["darkred", "orange", "violet", "gold", "green", "darkblue"]
+
+t = turtle.Turtle()
+t.width(10)
+# Iteration anhand des Index: i läuft von 0 bis len(farben) - 1
+for i in range(len(farben)):
+    t.pencolor(farben[i])
+    t.fillcolor(farben[i])
+    t.begin_fill()
+    for j in range(4):          # neue Laufvariable, i wird noch gebraucht
+        t.fd(200 - i * 30)      # jedes Quadrat etwas kleiner, damit alle sichtbar bleiben
+        t.rt(90)
+    t.end_fill()`,
+c_wert:`newList2 = [2, 'Hallo', 6.56, 90, 'Welt']
+for i in newList2:
+    print(i)`,
+c227:`noten = [9, 14, 2, 10, 7, 6]
+for i in noten:
+    print(i + 1)`,
+l228:`import turtle
+import random
+
+farben = ["darkred", "orange", "violet", "gold", "green", "darkblue"]
+
+t = turtle.Turtle()
+t.speed(0)
+t.width(5)
+
+# Quadrate (Iteration über den Index)
+for i in range(len(farben)):
+    t.penup()
+    t.goto(random.randint(-200, 200), random.randint(-200, 200))
+    t.pendown()
+    t.pencolor(farben[i])
+    t.fillcolor(farben[i])
+    t.begin_fill()
+    for j in range(4):
+        t.fd(80)
+        t.rt(90)
+    t.end_fill()
+
+# Dreiecke (Iteration über den Wert)
+for farbe in farben:
+    t.penup()
+    t.goto(random.randint(-200, 200), random.randint(-200, 200))   # a) ohne Zufall: t.goto(-200, 0)
+    t.pendown()
+    t.pencolor(farbe)
+    t.fillcolor(farbe)
+    t.begin_fill()
+    for j in range(3):
+        t.fd(80)
+        t.left(120)             # Außenwinkel des gleichseitigen Dreiecks
+    t.end_fill()`,
+l229:`import turtle
+import random
+
+# a) Farben einlesen
+farben = []
+anzahl = int(input("Wie viele Farben? "))
+for i in range(anzahl):
+    farbe = input("Farbe " + str(i + 1) + ": ")
+    farben.append(farbe)
+print(farben)
+
+# b) Fünfecke an zufälligen Positionen
+t = turtle.Turtle()
+t.speed(0)
+t.width(4)
+for farbe in farben:
+    t.penup()
+    t.goto(random.randint(-200, 200), random.randint(-200, 200))
+    t.pendown()
+    t.pencolor(farbe)
+    t.fillcolor(farbe)
+    t.begin_fill()
+    for j in range(5):
+        t.fd(60)
+        t.left(72)              # 360° / 5
+    t.end_fill()`,
+l2210:`import turtle
+
+hoehen = [0, 30, 50, 60, 65]          # y-Koordinate der Spitze
+laengen = [200, 150, 100, 50, 20]     # Seitenlänge des Dreiecks
+
+t = turtle.Turtle()
+t.speed(0)
+t.pencolor("darkgreen")
+t.fillcolor("green")
+
+for i in range(len(hoehen)):
+    t.penup()
+    t.goto(0, hoehen[i])               # an die Spitze springen
+    t.pendown()
+    t.begin_fill()
+    t.setheading(-60)                  # schräg nach rechts unten
+    t.fd(laengen[i])
+    t.setheading(180)                  # waagerecht nach links
+    t.fd(laengen[i])
+    t.goto(0, hoehen[i])               # zurück zur Spitze
+    t.end_fill()
+
+# Stamm 40 x 100, linke obere Ecke bei (-20, -173)
+t.penup()
+t.goto(-20, -173)
+t.pendown()
+t.pencolor("saddlebrown")
+t.fillcolor("saddlebrown")
+t.setheading(0)
+t.begin_fill()
+for j in range(2):
+    t.fd(40)
+    t.rt(90)
+    t.fd(100)
+    t.rt(90)
+t.end_fill()
+t.hideturtle()`
+};
+
+/* einfache Syntaxhervorhebung mit Zeilennummern */
+const KW = /\b(import|from|for|in|while|if|elif|else|def|return|and|or|not|True|False|None|class)\b/g;
+function farbig(code){
+  return code.split("\n").map(z=>{
+    let h = z.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+    // Strings zuerst schützen, damit Schlüsselwörter darin nicht eingefärbt werden
+    const st=[]; h=h.replace(/(["'])(?:(?!\1).)*\1/g,m=>{st.push(m);return "@@S"+(st.length-1)+"@@";});
+    const kom=h.indexOf("#"); let k="";
+    if(kom>=0){ k=h.slice(kom); h=h.slice(0,kom); }
+    h=h.replace(KW,'<span class="kw">$1</span>').replace(/\b(\d+(?:\.\d+)?)\b/g,'<span class="nu">$1</span>');
+    if(k) h+='<span style="color:var(--muted)">'+k+'</span>';
+    h=h.replace(/@@S(\d+)@@/g,(_,n)=>'<span class="st">'+st[n]+'</span>');
+    return '<span class="z">'+(h||" ")+'</span>';
+  }).join("");
+}
+$$(".codebox[data-code]").forEach(b=>{ b.querySelector("pre").innerHTML=farbig(CODE[b.dataset.code]); });
+
+/* ---------- Inhaltsverzeichnis und Hell/Dunkel ---------- */
+(function(){
+  const ol=$("#toc");
+  $$("h2[id]").forEach(h=>{
+    const li=document.createElement("li");
+    li.innerHTML=`<a href="#${h.id}" data-z="${h.id}">${h.textContent}</a>`;
+    ol.appendChild(li);
+  });
+  if("IntersectionObserver" in window){
+    const beob=new IntersectionObserver(es=>{
+      es.forEach(e=>{ if(e.isIntersecting){
+        $$("#toc a").forEach(a=>a.classList.toggle("aktiv", a.dataset.z===e.target.id));
+      }});
+    },{rootMargin:"-70px 0px -70% 0px"});
+    $$("h2[id]").forEach(h=>beob.observe(h));
+  }
+  $("#foot").textContent="Selbstlernkurs · Informatik Klasse 11 · LB 2 Algorithmierung und Programmierung · 2.2 Datenstrukturen";
+  const setze=d=>{ document.body.dataset.theme=d; $("#theme").textContent=d==="dark"?"Hell":"Dunkel"; };
+  $("#theme").addEventListener("click",()=>{
+    const d=document.body.dataset.theme==="dark"?"light":"dark"; setze(d);
+    try{ localStorage.setItem("ds.theme",d); }catch(e){}
+  });
+  try{ const t=localStorage.getItem("ds.theme"); if(t) setze(t); }catch(e){}
+})();
+
+/* ---------- Array-Schaubild ---------- */
+const DATEN=[12,35,7,42,56];
+$("#arr").innerHTML=DATEN.map((w,i)=>`<div class="zelle" data-i="${i}"><div class="w">${w}</div><div class="i">${i}</div></div>`).join("");
+function zeigeIndex(){
+  const roh=$("#idx").value.trim().replace("−","-"), n=Number(roh);
+  $$("#arr .zelle").forEach(z=>z.classList.remove("an"));
+  if(roh===""||!Number.isInteger(n)){ $("#idxAus").textContent="→ Index muss eine ganze Zahl sein"; return; }
+  if(n>=DATEN.length||n<-DATEN.length){ $("#idxAus").innerHTML='→ <span style="color:var(--bad)">IndexError: list index out of range</span>'; return; }
+  const p=n<0?DATEN.length+n:n;
+  $(`#arr .zelle[data-i="${p}"]`).classList.add("an");
+  $("#idxAus").textContent=`→ ${DATEN[p]}`+(n<0?`   (−${-n} zählt von hinten = Index ${p})`:"");
+}
+$("#idx").addEventListener("input",zeigeIndex); zeigeIndex();
+
+/* ---------- Vergleich von Schülereingaben ---------- */
+const norm = s => s.replace(/\s+/g,"").replace(/"/g,"'").replace(/−/g,"-").toLowerCase();
+function bewerte(feld, erlaubt){
+  const ok = erlaubt.map(norm).includes(norm(feld.value));
+  feld.classList.toggle("richtig",ok); feld.classList.toggle("falsch",!ok);
+  return ok;
+}
+const melde=(id,ok,gesamt,extra="")=>{
+  $(id).innerHTML = ok===gesamt
+    ? `<b style="color:var(--ok)">Alles richtig!</b> ${extra}`
+    : `${ok} von ${gesamt} richtig. Rot markierte Felder noch einmal prüfen.`;
+};
+
+/* 2.2.1 */
+const L221=[
+  ["newList = []",                    ["[]"]],
+  ["newList2 = [2, 'Hallo', 6.56, 90]",["[2,'Hallo',6.56,90]"]],
+  ["newList.append(35)",              ["[35]"]],
+  ["element = newList2[2]",           ["6.56"]],
+  ["teilliste = newList2[1:3]",       ["['Hallo',6.56]"]],
+  ["newList2[3] = 1.9",               ["[2,'Hallo',6.56,1.9]"]],
+  ["print(len(newList))",             ["1"]],
+  ["newList.insert(0, 26.9)",         ["[26.9,35]"]],
+  ["copyList = newList.copy()",       ["[26.9,35]"]],
+  ["newList2.remove(2)",              ["['Hallo',6.56,1.9]"]],
+  ["copyList.extend(newList2)",       ["[26.9,35,'Hallo',6.56,1.9]"]],
+  ["print(2 in newList2)",            ["False"]]
+];
+L221.forEach(([c],i)=>{
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td class="mono" style="color:var(--muted)">${i+1}</td><td class="code"></td><td><input class="feld" aria-label="Zeile ${i+1}"></td>`;
+  tr.querySelector(".code").textContent=c;
+  $("#spur221").appendChild(tr);
+});
+
+/* 2.2.2 */
+const OPT222=[
+  {rand:"darkred", fill:"gold"},
+  {rand:"orange",  fill:"green", richtig:true},
+  {rand:"darkred", fill:"darkred"},
+  {rand:"green",   fill:"green"}
+];
+let wahl222=null;
+OPT222.forEach((o,i)=>{
+  const b=document.createElement("button"); b.className="opt"; b.setAttribute("aria-label",`Rand ${o.rand}, Füllung ${o.fill}`);
+  b.innerHTML=`<svg viewBox="0 0 110 110"><rect x="12" y="12" width="86" height="86" fill="${o.fill}" stroke="${o.rand}" stroke-width="9"/></svg>`;
+  b.addEventListener("click",()=>{ wahl222=i; $$("#wahl222 .opt").forEach((x,j)=>{x.className="opt"+(j===i?" gewaehlt":"");}); $("#st222").textContent=""; });
+  $("#wahl222").appendChild(b);
+});
+
+/* 2.2.5 / 2.2.7 */
+const NOTEN=[9,14,2,10,7,6];
+function baueLauf(id){
+  $(id).innerHTML=NOTEN.map((_,k)=>`<span>i:</span><input class="feld mono" aria-label="i im Durchlauf ${k+1}"><span>print:</span><input class="feld mono" aria-label="Ausgabe im Durchlauf ${k+1}">`).join("");
+}
+baueLauf("#lauf225"); baueLauf("#lauf227");
+function pruefeLauf(id, iWerte, pWerte){
+  const f=$$(id+" input"); let ok=0;
+  NOTEN.forEach((_,k)=>{ ok+=bewerte(f[2*k],[String(iWerte[k])]); ok+=bewerte(f[2*k+1],[String(pWerte[k])]); });
+  return ok;
+}
+
+const PRUEF={
+  221(){ let ok=0; $$("#spur221 input").forEach((f,i)=>{ ok+=bewerte(f,L221[i][1]); });
+         melde("#st221",ok,L221.length,"Teste jetzt in der Konsole."); },
+  222(){ const st=$("#st222");
+    if(wahl222===null){ st.textContent="Wähle zuerst eine Ausgabe aus."; return; }
+    $$("#wahl222 .opt").forEach((x,j)=>{ x.className="opt"+(j===wahl222?(OPT222[j].richtig?" richtig":" falsch"):""); });
+    st.innerHTML = OPT222[wahl222].richtig
+      ? '<b style="color:var(--ok)">Richtig.</b> <code>farben[1]</code> ist "orange" (Rand), <code>farben[4]</code> ist "green" (Füllung) — die Zählung beginnt bei 0.'
+      : '<b style="color:var(--bad)">Noch nicht.</b> Zähle die Indizes in der Liste ab — beginne bei 0.'; },
+  223(){ let ok=0;
+    ok+=bewerte($("#l1"),["farben[3]","farben[-3]","'gold'"]);
+    ok+=bewerte($("#l2"),["farben[5]","farben[-1]","'darkblue'"]);
+    melde("#st223",ok,2, ok===2 && !/farben/.test($("#l1").value+$("#l2").value) ? "Versuche es auch mit einem Zugriff über die Liste <code>farben</code>." : ""); },
+  225(){ melde("#st225",pruefeLauf("#lauf225",[0,1,2,3,4,5],NOTEN),12); },
+  227(){ melde("#st227",pruefeLauf("#lauf227",NOTEN,NOTEN.map(n=>n+1)),12,
+         "Hier ist <code>i</code> direkt der Wert, nicht die Position."); }
+};
+$$("[data-pruef]").forEach(b=>b.addEventListener("click",()=>PRUEF[b.dataset.pruef]()));
+
+/* Tannenbaum-Vorschau (gleiche Geometrie wie die Lösung, y nach oben) */
+(function(){
+  const H=[0,30,50,60,65], L=[200,150,100,50,20], s=0.62, k=Math.sin(Math.PI/3);
+  const tx=x=>130+x*s, ty=y=>80-y*s;
+  let svg=`<svg width="260" height="250" viewBox="0 0 260 250" aria-label="Tannenbaum aus fünf Dreiecken mit Stamm">`;
+  svg+=`<rect x="${tx(-20)}" y="${ty(-173)}" width="${40*s}" height="${100*s}" fill="saddlebrown"/>`;
+  H.forEach((h,i)=>{ const l=L[i];
+    svg+=`<polygon points="${tx(0)},${ty(h)} ${tx(l/2)},${ty(h-l*k)} ${tx(-l/2)},${ty(h-l*k)}" fill="green" stroke="darkgreen" stroke-width="1.5"/>`; });
+  $("#baumBild").innerHTML=svg+"</svg>";
+})();
+
+/* ---------- Python-Konsole (Skulpt, wird erst bei Bedarf geladen) ---------- */
+const SK="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/";
+let skLaden=null, laeuft=false;
+function ladeSkript(src){ return new Promise((ok,nein)=>{ const s=document.createElement("script"); s.src=src; s.onload=ok; s.onerror=nein; document.head.appendChild(s); }); }
+function skulpt(){ return skLaden ||= ladeSkript(SK+"skulpt.min.js").then(()=>ladeSkript(SK+"skulpt-stdlib.js")); }
+
+$("#ed").value=CODE.c222;
+$("#ed").addEventListener("keydown",e=>{
+  if(e.key==="Tab"){ e.preventDefault(); const t=e.target, a=t.selectionStart;
+    t.setRangeText("    ",a,t.selectionEnd,"end"); }
+  if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); starte(); }
+});
+$$("[data-laden]").forEach(b=>b.addEventListener("click",()=>{
+  $("#ed").value=CODE[b.dataset.laden];
+  $("#konsole").scrollIntoView({block:"start"});
+  starte();
+}));
+// Turtle-Zustand zurücksetzen; Skulpt verwaltet seine Zeichenebenen selbst
+const turtleReset=()=>{ if(window.Sk&&Sk.TurtleGraphics&&Sk.TurtleGraphics.reset) Sk.TurtleGraphics.reset(); };
+$("#kLeer").addEventListener("click",()=>{ $("#kaus").textContent=""; turtleReset(); });
+$("#kStop").addEventListener("click",()=>{ if(!window.Sk) return; Sk.execLimit=1; if(Sk.TurtleGraphics&&Sk.TurtleGraphics.stop) Sk.TurtleGraphics.stop(); });
+$("#kRun").addEventListener("click",starte);
+
+async function starte(){
+  if(laeuft) return;
+  const aus=$("#kaus"), st=$("#kStatus");
+  aus.textContent=""; st.textContent="lädt …";
+  try{ await skulpt(); }
+  catch(e){ st.textContent="Die Konsole konnte nicht geladen werden (keine Internetverbindung?)."; skLaden=null; return; }
+  laeuft=true; st.textContent="läuft …";
+  turtleReset(); $("#leinwand .platzhalter")?.remove();
+  Sk.configure({
+    output: t=>{ aus.textContent+=t; aus.scrollTop=aus.scrollHeight; },
+    read: x=>{ if(!Sk.builtinFiles||Sk.builtinFiles.files[x]===undefined) throw "Datei nicht gefunden: "+x; return Sk.builtinFiles.files[x]; },
+    inputfun: p=>window.prompt(p)??"", inputfunTakesPrompt:true,
+    __future__: Sk.python3, execLimit: Number.POSITIVE_INFINITY, killableWhile:true, killableFor:true
+  });
+  // Leinwand so groß wie die Spalte, die Turtle-Welt bleibt immer -300 … 300
+  const px=Math.min($("#leinwand").clientWidth||500, 500);
+  Object.assign(Sk.TurtleGraphics ||= {}, {target:"leinwand", width:px, height:px, worldWidth:600, worldHeight:600});
+  try{
+    await Sk.misceval.asyncToPromise(()=>Sk.importMainWithBody("<stdin>",false,$("#ed").value,true));
+    st.textContent="fertig";
+  }catch(err){
+    aus.textContent+=(aus.textContent?"\n":"")+err.toString();
+    st.innerHTML='<span style="color:var(--bad)">Fehler</span>';
+  }finally{ laeuft=false; }
+}
+</script>
+</body>
+</html>

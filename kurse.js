@@ -186,6 +186,13 @@ const LEHRPLAN = {
              klasse darf auch eine Liste sein: klasse: [11, 12]
    ------------------------------------------------------------------- */
 const MATERIAL = [
+
+   { fach:"informatik", klasse:11, bereich:"algorithmierung",
+    titel:"2.2 Datenstrukturen — Listen in Python",
+    typ:"uebung",
+    url:"inf/sekii/datenstrukturen.html",
+    info:"Arrays und Listen: Listenbefehle, Iteration über Index und Wert, Aufgaben 2.2.1 bis 2.2.10 mit Sofortkontrolle und Lösungen. Mit Python-Konsole und Turtle direkt im Browser.",
+    stand:"2026-10", neu:true },
    
    { fach:"informatik", klasse:11, bereich:"technische-informatik",
     titel:"Zahlenformate",
