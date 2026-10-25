@@ -197,21 +197,18 @@ geordnete Aufzählungen ist aber die <b>Liste</b>. Sie unterscheidet sich von kl
 
 <div class="aufgabe" id="a221">
   <div class="kopf">AUFGABE 2.2.1</div>
-  <p>Im Quellcode sind die grundlegenden Befehle beispielhaft angewandt. Gib für jede Zeile den Wert der
-  veränderten Variable bzw. die Ausgabe an. Schreibe Listen in Python-Schreibweise, z. B. <code>[1, 'a']</code>.
+  <p>Im Quellcode sind die grundlegenden Befehle beispielhaft angewandt. Die Zeilen 1 und 2 legen die
+  Ausgangslisten fest. Gib für jede weitere Zeile an, <b>was danach in der genannten Variable steht</b> bzw.
+  <b>was ausgegeben wird</b>. Schreibe Listen in Python-Schreibweise, z. B. <code>[1, 'a']</code>.
   Überprüfe deine Lösung anschließend in der Konsole.</p>
   <div class="scroll"><table class="spur" id="spur221">
-    <tr><th style="width:2.5em">Z.</th><th>Code</th><th>Wert / Ausgabe</th></tr>
+    <tr><th style="width:2.5em">Z.</th><th>Code</th><th style="width:7.5em">Gefragt</th><th>Wert nach der Zeile</th></tr>
   </table></div>
   <div class="zeile">
     <button class="btn primary" data-pruef="221">Prüfen</button>
     <button class="btn" data-laden="c221">In Konsole laden</button>
     <span class="status" id="st221"></span>
   </div>
-  <details class="loesung"><summary>Hinweis zu Zeile 10</summary><div class="inhalt">
-    <code>remove(2)</code> löscht den ersten Eintrag mit dem <b>Wert</b> 2 — nicht das Element an Index 2.
-    Dafür gäbe es <code>pop(2)</code> oder <code>del newList2[2]</code>.
-  </div></details>
 </div>
 
 <!-- ============================================================ -->
@@ -651,23 +648,33 @@ const melde=(id,ok,gesamt,extra="")=>{
 
 /* 2.2.1 */
 const L221=[
-  ["newList = []",                    ["[]"]],
-  ["newList2 = [2, 'Hallo', 6.56, 90]",["[2,'Hallo',6.56,90]"]],
-  ["newList.append(35)",              ["[35]"]],
-  ["element = newList2[2]",           ["6.56"]],
-  ["teilliste = newList2[1:3]",       ["['Hallo',6.56]"]],
-  ["newList2[3] = 1.9",               ["[2,'Hallo',6.56,1.9]"]],
-  ["print(len(newList))",             ["1"]],
-  ["newList.insert(0, 26.9)",         ["[26.9,35]"]],
-  ["copyList = newList.copy()",       ["[26.9,35]"]],
-  ["newList2.remove(2)",              ["['Hallo',6.56,1.9]"]],
-  ["copyList.extend(newList2)",       ["[26.9,35,'Hallo',6.56,1.9]"]],
-  ["print(2 in newList2)",            ["False"]]
+  // [Code, gefragte Variable oder null für Ausgabe, Lösung, Tipp]; Zeilen 1–2 sind vorgegeben
+  ["newList = []",                     "newList",   "[]",                            ""],
+  ["newList2 = [2, 'Hallo', 6.56, 90]","newList2",  "[2, 'Hallo', 6.56, 90]",        ""],
+  ["newList.append(35)",               "newList",   "[35]",                          "append hängt an das Ende der (leeren) Liste an."],
+  ["element = newList2[2]",            "element",   "6.56",                          "Der Index beginnt bei 0: newList2[0] ist 2."],
+  ["teilliste = newList2[1:3]",        "teilliste", "['Hallo', 6.56]",               "Der Endwert 3 ist exklusiv: nur Index 1 und 2."],
+  ["newList2[3] = 1.9",                "newList2",  "[2, 'Hallo', 6.56, 1.9]",       "Der Wert an Index 3 (90) wird überschrieben."],
+  ["print(len(newList))",              null,        "1",                             "newList enthält bisher nur die 35."],
+  ["newList.insert(0, 26.9)",          "newList",   "[26.9, 35]",                    "insert(0, …) setzt das Element an den Anfang."],
+  ["copyList = newList.copy()",        "copyList",  "[26.9, 35]",                    "copy() erzeugt eine neue Liste mit denselben Elementen."],
+  ["newList2.remove(2)",               "newList2",  "['Hallo', 6.56, 1.9]",          "remove entfernt den WERT 2, nicht das Element an Index 2."],
+  ["copyList.extend(newList2)",        "copyList",  "[26.9, 35, 'Hallo', 6.56, 1.9]","extend hängt alle Elemente von newList2 an — in ihrem aktuellen Zustand."],
+  ["print(2 in newList2)",             null,        "False",                         "Die 2 wurde in Zeile 10 entfernt."]
 ];
-L221.forEach(([c],i)=>{
+const VORGABE221=2;
+L221.forEach(([c,v,l],i)=>{
   const tr=document.createElement("tr");
-  tr.innerHTML=`<td class="mono" style="color:var(--muted)">${i+1}</td><td class="code"></td><td><input class="feld" aria-label="Zeile ${i+1}"></td>`;
+  tr.innerHTML=`<td class="mono" style="color:var(--muted)">${i+1}</td><td class="code"></td>
+    <td class="mono" style="font-size:13px;color:var(--ink2);white-space:nowrap">${v?v+" =":"Ausgabe:"}</td><td></td>`;
   tr.querySelector(".code").textContent=c;
+  const zelle=tr.lastElementChild;
+  if(i<VORGABE221){
+    zelle.innerHTML=`<span class="mono" style="font-size:13px;color:var(--muted)"></span> <small style="color:var(--muted)">(vorgegeben)</small>`;
+    zelle.firstChild.textContent=l;
+  }else{
+    zelle.innerHTML=`<input class="feld" aria-label="Zeile ${i+1}: ${v?v:"Ausgabe"}"><div class="tipp" style="display:none;font-size:12.5px;color:var(--bad);margin-top:3px"></div>`;
+  }
   $("#spur221").appendChild(tr);
 });
 
@@ -699,8 +706,10 @@ function pruefeLauf(id, iWerte, pWerte){
 }
 
 const PRUEF={
-  221(){ let ok=0; $$("#spur221 input").forEach((f,i)=>{ ok+=bewerte(f,L221[i][1]); });
-         melde("#st221",ok,L221.length,"Teste jetzt in der Konsole."); },
+  221(){ let ok=0;
+    $$("#spur221 input").forEach((f,k)=>{ const z=L221[k+VORGABE221], r=bewerte(f,[z[2]]), t=f.nextElementSibling;
+      ok+=r; t.textContent=z[3]; t.style.display=r?"none":"block"; });
+    melde("#st221",ok,L221.length-VORGABE221,"Teste jetzt in der Konsole."); },
   222(){ const st=$("#st222");
     if(wahl222===null){ st.textContent="Wähle zuerst eine Ausgabe aus."; return; }
     $$("#wahl222 .opt").forEach((x,j)=>{ x.className="opt"+(j===wahl222?(OPT222[j].richtig?" richtig":" falsch"):""); });
