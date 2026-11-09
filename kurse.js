@@ -278,6 +278,13 @@ const MATERIAL = [
     info:"Übung zum Selbstlernen.",
     stand:"2026-09", neu:true},
 
+   { fach:"englisch", klasse:5, bereich:"unit2-5",
+    titel:"a or an — Family Challenge",
+    typ:"uebung",
+    url:"eng/seki/a-an-family.html",
+    info:"Lernspiel zum unbestimmten Artikel mit family words: vier Level vom einfachen Wort bis zu den Klangfallen (an hour, a uniform). Drei Leben, Serienbonus, Bestwert und eine Fehlerliste zum Nacharbeiten.",
+    stand:"2026-11", neu:true},
+
    { fach:"englisch", klasse:5, bereich:"leadin-5",
     titel:"Vokabel-Wordle",
     typ:"werkzeug",
