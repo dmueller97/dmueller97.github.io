@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>a or an – Family Challenge | Klasse 5</title>
+<style>
+  :root {
+    --paper: #FDFDF8; --grid: #DCE7F2; --ink: #1F3A68; --ink-soft: #5A6F92;
+    --marker: #FFE45C; --red: #C8322B; --green: #2E7D4F; --tile: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Andika", "Comic Sans MS", system-ui, -apple-system, Segoe UI, sans-serif;
+    color: var(--ink); background-color: var(--paper);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px; min-height: 100vh; line-height: 1.5;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 20px 48px; }
+  h1 { font-size: 2.2rem; line-height: 1.1; margin: 0 0 4px; }
+  h2 { font-size: 1.3rem; margin: 0 0 10px; }
+  .intro { margin: 0 0 20px; color: var(--ink-soft); font-size: 1.05rem; }
+  .sheet { background: var(--paper); border: 2px solid var(--ink); border-radius: 6px; padding: 24px; box-shadow: 5px 5px 0 var(--ink); margin-bottom: 20px; }
+  .btn { font: inherit; font-size: 1.1rem; font-weight: 700; color: var(--paper); background: var(--ink); border: 2px solid var(--ink); border-radius: 8px; padding: 9px 20px; cursor: pointer; }
+  .btn:hover { background: #2B4E8A; }
+  .btn.secondary { background: var(--paper); color: var(--ink); }
+  .btn.secondary:hover { background: #FFF8CC; }
+  :focus-visible { outline: 3px solid var(--marker); outline-offset: 2px; }
+
+  /* Regelkasten */
+  details.regel { border: 2px dashed var(--ink-soft); border-radius: 6px; padding: 12px 16px; margin-bottom: 20px; background: var(--tile); }
+  details.regel summary { font-weight: 700; cursor: pointer; font-size: 1.05rem; }
+  details.regel p { margin: 10px 0 0; }
+  .hl { background: var(--marker); padding: 0 3px; border-radius: 3px; font-weight: 700; }
+  .merke { border-left: 5px solid var(--marker); padding-left: 12px; margin-top: 12px; }
+
+  /* Level-Auswahl */
+  .level-liste { display: grid; gap: 12px; }
+  .level {
+    display: flex; gap: 14px; align-items: center; text-align: left; width: 100%;
+    font: inherit; color: var(--ink); background: var(--tile);
+    border: 2px solid var(--ink); border-radius: 8px; padding: 14px 16px; cursor: pointer;
+  }
+  .level:hover { background: #FFF8CC; }
+  .level .nr { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-weight: 700; font-size: 1.1rem; }
+  .level b { display: block; font-size: 1.1rem; }
+  .level span { color: var(--ink-soft); font-size: .95rem; }
+  .level .best { margin-left: auto; flex: 0 0 auto; font-size: .9rem; color: var(--green); font-weight: 700; }
+
+  /* Spielfeld */
+  .hud { display: flex; flex-wrap: wrap; gap: 10px 18px; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 1.05rem; color: var(--ink-soft); }
+  .hud b { color: var(--ink); }
+  .leben { letter-spacing: 3px; font-size: 1.3rem; }
+  .balken { height: 10px; border: 2px solid var(--ink); border-radius: 6px; overflow: hidden; background: var(--tile); margin-bottom: 18px; }
+  .balken i { display: block; height: 100%; background: var(--ink); width: 0; transition: width .25s; }
+
+  .karte {
+    background: var(--tile); border: 2px solid var(--ink); border-radius: 10px;
+    padding: 30px 16px; text-align: center; margin-bottom: 18px; box-shadow: 4px 4px 0 var(--grid);
+  }
+  .karte .luecke { font-size: 2.1rem; font-weight: 700; line-height: 1.25; }
+  .karte .luecke u { text-decoration: none; border-bottom: 4px dotted var(--ink-soft); padding: 0 .5em; }
+  .karte .de { color: var(--ink-soft); margin: 10px 0 0; font-size: 1.05rem; }
+  .karte.richtig { border-color: var(--green); background: #EDF7F0; }
+  .karte.falsch { border-color: var(--red); background: #FBEFEE; animation: shake .3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+
+  .wahl { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .wahl button {
+    font: inherit; font-size: 2rem; font-weight: 700; color: var(--ink); background: var(--tile);
+    border: 3px solid var(--ink); border-radius: 10px; padding: 16px 0; cursor: pointer;
+    box-shadow: 4px 4px 0 var(--ink); transition: transform .08s;
+  }
+  .wahl button:hover { background: var(--marker); }
+  .wahl button:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--ink); }
+  .wahl button kbd { display: block; font-size: .8rem; font-weight: 400; color: var(--ink-soft); font-family: inherit; margin-top: 4px; }
+  .wahl button[disabled] { opacity: .5; cursor: default; }
+
+  .feedback { min-height: 3.2em; margin: 16px 0 0; font-size: 1.05rem; text-align: center; }
+  .feedback.ok { color: var(--green); font-weight: 700; }
+  .feedback.no { color: var(--red); }
+  .feedback em { display: block; font-style: normal; color: var(--ink); font-size: .98rem; margin-top: 4px; }
+
+  /* Ende */
+  .punkte { font-size: 2.6rem; font-weight: 700; text-align: center; margin: 0 0 4px; }
+  .punkte-info { text-align: center; color: var(--ink-soft); margin: 0 0 18px; }
+  .fehlerliste { list-style: none; padding: 0; margin: 0 0 18px; display: grid; gap: 8px; }
+  .fehlerliste li { border: 2px solid var(--red); border-radius: 8px; padding: 8px 12px; background: #FBEFEE; }
+  .fehlerliste b { font-size: 1.1rem; }
+  .fehlerliste span { display: block; color: var(--ink-soft); font-size: .95rem; }
+  .ende-knoepfe { display: flex; flex-wrap: wrap; gap: 10px; }
+
+  [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  @media (max-width: 480px) {
+    h1 { font-size: 1.8rem; }
+    .sheet { padding: 16px; }
+    .karte { padding: 22px 10px; }
+    .karte .luecke { font-size: 1.6rem; }
+    .wahl button { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+<a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
+
+<main>
+  <h1>a or an?</h1>
+  <p class="intro">Family Challenge — entscheide bei jedem Wort blitzschnell: <b>a</b> oder <b>an</b>? Du hast drei Leben. Je länger deine Serie, desto mehr Punkte.</p>
+
+  <details class="regel">
+    <summary>Die Regel — kurz erklärt</summary>
+    <p>Vor einem Wort, das mit einem <span class="hl">Konsonanten</span> beginnt, steht <b>a</b>:<br>
+       <i>a cousin, a brother, a dog, a book</i></p>
+    <p>Vor einem Wort, das mit einem <span class="hl">Vokal</span> (a, e, i, o, u) beginnt, steht <b>an</b>:<br>
+       <i>an uncle, an aunt, an apple, an egg</i></p>
+    <p class="merke"><b>Wichtig:</b> Es zählt das Wort, das <u>direkt</u> dahinter steht — nicht das Hauptwort.<br>
+       <i>an aunt</i>, aber <i>a <b>young</b> aunt</i>. <i>a brother</i>, aber <i>an <b>older</b> brother</i>.</p>
+    <p class="merke"><b>Für Profis:</b> Entscheidend ist der <u>Klang</u>, nicht der Buchstabe.
+       <i>an hour</i> (das h ist stumm, man hört „auer“), aber <i>a uniform</i> (man hört „juniform“).</p>
+  </details>
+
+  <!-- Level-Auswahl -->
+  <section class="sheet" id="setup">
+    <h2>Wähle dein Level</h2>
+    <div class="level-liste" id="levelListe"></div>
+  </section>
+
+  <!-- Spiel -->
+  <section class="sheet" id="spiel" hidden>
+    <div class="hud">
+      <span>Wort <b id="hudNr">1</b> von <b id="hudGesamt">12</b></span>
+      <span>Punkte: <b id="hudPunkte">0</b></span>
+      <span>Serie: <b id="hudSerie">0</b></span>
+      <span class="leben" id="hudLeben" aria-label="Leben">♥♥♥</span>
+    </div>
+    <div class="balken"><i id="balken"></i></div>
+
+    <div class="karte" id="karte">
+      <p class="luecke" id="luecke"></p>
+      <p class="de" id="de"></p>
+    </div>
+
+    <div class="wahl">
+      <button type="button" id="btnA">a<kbd>Taste A</kbd></button>
+      <button type="button" id="btnAn">an<kbd>Taste N</kbd></button>
+    </div>
+
+    <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+  </section>
+
+  <!-- Ende -->
+  <section class="sheet" id="ende" hidden>
+    <h2 id="endeTitel"></h2>
+    <p class="punkte" id="endePunkte"></p>
+    <p class="punkte-info" id="endeInfo"></p>
+    <div id="fehlerBereich" hidden>
+      <h2>Diese übst du am besten noch einmal</h2>
+      <ul class="fehlerliste" id="fehlerliste"></ul>
+    </div>
+    <div class="ende-knoepfe">
+      <button type="button" class="btn" id="nochmal">Noch einmal</button>
+      <button type="button" class="btn secondary" id="zurueck">Anderes Level</button>
+    </div>
+  </section>
+</main>
+
+<script>
+"use strict";
+
+/* ------------------------------------------------------------------
+   Wortlisten.  art: "a" oder "an" — immer ausgeschrieben, damit auch
+   Klang-Ausnahmen (an hour, a uniform) richtig bleiben.
+   tip: nur dort, wo die Begründung nicht selbsterklärend ist.
+   ------------------------------------------------------------------ */
+const WOERTER = {
+  1: {
+    name: "Einfache Wörter",
+    info: "Dinge, Tiere und Schulsachen — zum Warmwerden",
+    liste: [
+      { w:"book",     art:"a",  de:"Buch" },
+      { w:"dog",      art:"a",  de:"Hund" },
+      { w:"cat",      art:"a",  de:"Katze" },
+      { w:"pen",      art:"a",  de:"Stift" },
+      { w:"bag",      art:"a",  de:"Tasche" },
+      { w:"ruler",    art:"a",  de:"Lineal" },
+      { w:"table",    art:"a",  de:"Tisch" },
+      { w:"house",    art:"a",  de:"Haus" },
+      { w:"bike",     art:"a",  de:"Fahrrad" },
+      { w:"school",   art:"a",  de:"Schule" },
+      { w:"pencil",   art:"a",  de:"Bleistift" },
+      { w:"poster",   art:"a",  de:"Poster" },
+      { w:"garden",   art:"a",  de:"Garten" },
+      { w:"ball",     art:"a",  de:"Ball" },
+      { w:"apple",    art:"an", de:"Apfel" },
+      { w:"egg",      art:"an", de:"Ei" },
+      { w:"orange",   art:"an", de:"Orange" },
+      { w:"elephant", art:"an", de:"Elefant" },
+      { w:"umbrella", art:"an", de:"Regenschirm" },
+      { w:"animal",   art:"an", de:"Tier" },
+      { w:"idea",     art:"an", de:"Idee" },
+      { w:"eraser",   art:"an", de:"Radiergummi" },
+      { w:"ice cream",art:"an", de:"Eis" },
+      { w:"insect",   art:"an", de:"Insekt" },
+      { w:"email",    art:"an", de:"E-Mail" },
+      { w:"envelope", art:"an", de:"Briefumschlag" }
+    ]
+  },
+  2: {
+    name: "Family words",
+    info: "Die ganze Familie — mit der Stolperfalle aunt / uncle",
+    liste: [
+      { w:"cousin",      art:"a",  de:"Cousin / Cousine" },
+      { w:"sister",      art:"a",  de:"Schwester" },
+      { w:"brother",     art:"a",  de:"Bruder" },
+      { w:"mother",      art:"a",  de:"Mutter" },
+      { w:"father",      art:"a",  de:"Vater" },
+      { w:"grandmother", art:"a",  de:"Großmutter" },
+      { w:"grandfather", art:"a",  de:"Großvater" },
+      { w:"son",         art:"a",  de:"Sohn" },
+      { w:"daughter",    art:"a",  de:"Tochter" },
+      { w:"baby",        art:"a",  de:"Baby" },
+      { w:"family",      art:"a",  de:"Familie" },
+      { w:"nephew",      art:"a",  de:"Neffe" },
+      { w:"niece",       art:"a",  de:"Nichte" },
+      { w:"twin",        art:"a",  de:"Zwilling" },
+      { w:"parent",      art:"a",  de:"Elternteil" },
+      { w:"pet",         art:"a",  de:"Haustier" },
+      { w:"uncle",       art:"an", de:"Onkel" },
+      { w:"aunt",        art:"an", de:"Tante" },
+      { w:"only child",  art:"an", de:"Einzelkind" },
+      { w:"adult",       art:"an", de:"Erwachsener" },
+      { w:"old grandmother", art:"an", de:"alte Großmutter",
+        tip:"Nach dem Artikel kommt <b>old</b> — und o ist ein Vokal." },
+      { w:"older brother",   art:"an", de:"älterer Bruder",
+        tip:"Nicht <i>brother</i> entscheidet, sondern <b>older</b>." },
+      { w:"English teacher", art:"an", de:"Englischlehrer(in)",
+        tip:"<b>English</b> beginnt mit e — also <i>an</i>." },
+      { w:"young aunt",  art:"a",  de:"junge Tante",
+        tip:"Sonst heißt es <i>an aunt</i> — aber hier steht <b>young</b> davor." },
+      { w:"big family",  art:"a",  de:"große Familie" },
+      { w:"nice cousin", art:"a",  de:"netter Cousin" }
+    ]
+  },
+  3: {
+    name: "Alles gemischt",
+    info: "Dinge und Familie durcheinander — der echte Test",
+    liste: []   // wird unten aus Level 1 und 2 zusammengesetzt
+  },
+  4: {
+    name: "Profi-Level: Klang statt Buchstabe",
+    info: "Hier hilft nur Hinhören — an hour, aber a uniform",
+    liste: [
+      { w:"hour",       art:"an", de:"Stunde",
+        tip:"Das h ist stumm. Man hört „auer“ — also wie ein Vokal." },
+      { w:"uniform",    art:"a",  de:"Uniform",
+        tip:"Man hört „<b>j</b>uniform“ — das ist ein Konsonant, trotz u." },
+      { w:"university", art:"a",  de:"Universität",
+        tip:"Auch hier hört man „<b>j</b>u“ — also <i>a university</i>." },
+      { w:"honest girl",art:"an", de:"ehrliches Mädchen",
+        tip:"Das h in <i>honest</i> ist stumm: man hört „onest“." },
+      { w:"hotel",      art:"a",  de:"Hotel",
+        tip:"Hier hört man das h ganz normal — also <i>a hotel</i>." },
+      { w:"house",      art:"a",  de:"Haus",
+        tip:"Das h hört man deutlich, anders als bei <i>hour</i>." },
+      { w:"umbrella",   art:"an", de:"Regenschirm",
+        tip:"Hier hört man das u wirklich als Vokal: „ambrella“." },
+      { w:"European country", art:"a", de:"europäisches Land",
+        tip:"Man hört „<b>j</b>uropean“ — also <i>a European country</i>." }
+    ]
+  }
+};
+WOERTER[3].liste = WOERTER[1].liste.concat(WOERTER[2].liste);
+
+const RUNDE = 12;          // Wörter pro Spiel
+const LEBEN_START = 3;
+
+/* ---------------- Hilfsfunktionen ---------------- */
+const $ = id => document.getElementById(id);
+const esc = t => String(t == null ? "" : t)
+  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+function mischen(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function bestLesen(lvl) {
+  try { return Number(localStorage.getItem("aan.best." + lvl)) || 0; }
+  catch (e) { return 0; }
+}
+function bestSchreiben(lvl, p) {
+  try { localStorage.setItem("aan.best." + lvl, String(p)); } catch (e) {}
+}
+
+/* Automatische Begründung, wenn kein eigener Tipp hinterlegt ist. */
+function begruendung(eintrag) {
+  if (eintrag.tip) return eintrag.tip;
+  const erstesWort = eintrag.w.split(" ")[0];
+  const b = erstesWort.charAt(0).toLowerCase();
+  const art = "aeiou".includes(b) ? "Vokal" : "Konsonant";
+  return `<b>${esc(erstesWort)}</b> beginnt mit „${esc(b)}“ — das ist ein ${art}.`;
+}
+
+/* ---------------- Spielzustand ---------------- */
+let level = 1, folge = [], index = 0, punkte = 0, serie = 0, leben = LEBEN_START;
+let fehler = [], gesperrt = false;
+
+/* ---------------- Level-Auswahl aufbauen ---------------- */
+function levelListeBauen() {
+  const ziel = $("levelListe");
+  ziel.innerHTML = "";
+  Object.keys(WOERTER).forEach(nr => {
+    const l = WOERTER[nr];
+    const best = bestLesen(nr);
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "level";
+    b.innerHTML = `<span class="nr">${esc(nr)}</span>
+      <span><b>${esc(l.name)}</b><span>${esc(l.info)}</span></span>
+      ${best ? `<span class="best">Bestwert ${best}</span>` : ""}`;
+    b.addEventListener("click", () => starten(Number(nr)));
+    ziel.appendChild(b);
+  });
+}
+
+/* ---------------- Spiel ---------------- */
+function starten(lvl) {
+  level = lvl;
+  folge = mischen(WOERTER[lvl].liste).slice(0, RUNDE);
+  index = 0; punkte = 0; serie = 0; leben = LEBEN_START; fehler = [];
+  $("setup").hidden = true;
+  $("ende").hidden = true;
+  $("spiel").hidden = false;
+  $("hudGesamt").textContent = folge.length;
+  zeigen();
+  $("btnA").focus();
+}
+
+function zeigen() {
+  const e = folge[index];
+  gesperrt = false;
+  $("karte").className = "karte";
+  $("luecke").innerHTML = `<u>?</u> ${esc(e.w)}`;
+  $("de").textContent = e.de;
+  $("feedback").textContent = "";
+  $("feedback").className = "feedback";
+  $("hudNr").textContent = index + 1;
+  $("hudPunkte").textContent = punkte;
+  $("hudSerie").textContent = serie;
+  $("hudLeben").textContent = "♥".repeat(leben) + "♡".repeat(LEBEN_START - leben);
+  $("balken").style.width = (index / folge.length * 100) + "%";
+  $("btnA").disabled = false;
+  $("btnAn").disabled = false;
+}
+
+function antwort(wahl) {
+  if (gesperrt) return;
+  gesperrt = true;
+  $("btnA").disabled = true;
+  $("btnAn").disabled = true;
+
+  const e = folge[index];
+  const richtig = (wahl === e.art);
+  const fb = $("feedback");
+
+  $("luecke").innerHTML = `<u>${esc(e.art)}</u> ${esc(e.w)}`;
+
+  if (richtig) {
+    serie++;
+    const bonus = Math.min(serie, 5);          // Serie bringt bis zu 5 Zusatzpunkte
+    punkte += 10 + (bonus - 1) * 2;
+    $("karte").className = "karte richtig";
+    fb.className = "feedback ok";
+    fb.innerHTML = (serie >= 3 ? `Richtig! Serie von ${serie} 🔥` : "Richtig!") +
+      `<em>${begruendung(e)}</em>`;
+  } else {
+    serie = 0;
+    leben--;
+    fehler.push(e);
+    $("karte").className = "karte falsch";
+    fb.className = "feedback no";
+    fb.innerHTML = `Leider nicht. Richtig ist <b>${esc(e.art)} ${esc(e.w)}</b>.` +
+      `<em>${begruendung(e)}</em>`;
+  }
+
+  $("hudPunkte").textContent = punkte;
+  $("hudSerie").textContent = serie;
+  $("hudLeben").textContent = "♥".repeat(Math.max(leben, 0)) + "♡".repeat(LEBEN_START - Math.max(leben, 0));
+
+  setTimeout(() => {
+    index++;
+    if (leben <= 0 || index >= folge.length) beenden();
+    else zeigen();
+  }, richtig ? 1100 : 2400);
+}
+
+function beenden() {
+  $("spiel").hidden = true;
+  $("ende").hidden = false;
+
+  const geschafft = (leben > 0);
+  const best = bestLesen(level);
+  if (punkte > best) bestSchreiben(level, punkte);
+
+  $("endeTitel").textContent = geschafft
+    ? "Geschafft!"
+    : "Alle Leben verbraucht";
+  $("endePunkte").textContent = punkte + " Punkte";
+
+  const geloest = index - fehler.length;
+  let info = `${geloest} von ${Math.min(index, folge.length)} richtig.`;
+  if (punkte > best) info += " Neuer Bestwert!";
+  else if (best) info += ` Dein Bestwert: ${best}.`;
+  $("endeInfo").textContent = info;
+
+  if (fehler.length) {
+    $("fehlerBereich").hidden = false;
+    $("fehlerliste").innerHTML = fehler.map(e =>
+      `<li><b>${esc(e.art)} ${esc(e.w)}</b> <span>${esc(e.de)} — ${begruendung(e).replace(/<[^>]+>/g, "")}</span></li>`
+    ).join("");
+  } else {
+    $("fehlerBereich").hidden = true;
+  }
+  $("nochmal").focus();
+}
+
+function zurSetupAnsicht() {
+  $("ende").hidden = true;
+  $("spiel").hidden = true;
+  $("setup").hidden = false;
+  levelListeBauen();
+}
+
+/* ---------------- Bedienung ---------------- */
+$("btnA").addEventListener("click", () => antwort("a"));
+$("btnAn").addEventListener("click", () => antwort("an"));
+$("nochmal").addEventListener("click", () => starten(level));
+$("zurueck").addEventListener("click", zurSetupAnsicht);
+
+document.addEventListener("keydown", ev => {
+  if ($("spiel").hidden) return;
+  const k = ev.key.toLowerCase();
+  if (k === "a") { ev.preventDefault(); antwort("a"); }
+  else if (k === "n") { ev.preventDefault(); antwort("an"); }
+});
+
+levelListeBauen();
+</script>
+</body>
+</html>
