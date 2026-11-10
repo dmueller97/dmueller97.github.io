@@ -178,7 +178,6 @@
 
   <section class="sheet" id="game" hidden>
     <div class="topline" id="topline">
-      <span class="chip" id="themaChip"></span>
       <button class="btn secondary small" id="hintBtn" type="button">Hinweis (Deutsch)</button>
     </div>
     <p id="hintText" hidden></p>
@@ -281,12 +280,9 @@
 
   function startGame(word, eintrag){
     aktuellerEintrag = eintrag || null;
-    const chip = $("themaChip");
-    chip.hidden = !aktuellerEintrag;
     $("hintBtn").hidden = !aktuellerEintrag;
     $("hintText").hidden = true;
     if(aktuellerEintrag){
-      chip.textContent = "Thema: " + (THEMEN[aktuellerEintrag.thema] || "") + (aktuellerEintrag.unit === 1 && aktuellerEintrag.thema !== "unit1" ? " · Unit 1" : "");
       $("hintText").textContent = "Deutsch: " + aktuellerEintrag.de;
     }
     $("topline").hidden = !aktuellerEintrag;
