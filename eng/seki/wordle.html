@@ -151,7 +151,7 @@
 <a href="../../index.html" style="position:fixed;top:10px;left:10px;z-index:999;background:#1F3A68;color:#fff;padding:6px 12px;border-radius:8px;font:14px/1 system-ui,sans-serif;text-decoration:none;opacity:.85;">← Startseite</a>
 <main>
   <h1>Vokabel-Wordle</h1>
-  <p class="intro">Errate das englische Wort in 6 Versuchen. Grün = richtiger Buchstabe an richtiger Stelle, Gelb = Buchstabe kommt vor, ist aber an der falschen Stelle, Grau = Buchstabe kommt nicht vor. Die Wörter kommen aus: Numbers, Days of the week, Months, Colours, Animals, Pencil case und Unit 1.</p>
+  <p class="intro">Errate das englische Wort in 6 Versuchen. Grün = richtiger Buchstabe an richtiger Stelle, Gelb = Buchstabe kommt vor, ist aber an der falschen Stelle, Grau = Buchstabe kommt nicht vor. Die Wörter kommen aus: Numbers, Days of the week, Months, Colours, Animals, Pencil case, Family und Unit 1.</p>
 
   <section class="sheet setup" id="setup">
     <div class="setup-row">
@@ -195,7 +195,7 @@
 <script src="vokabeln-data.js"></script>
 <script>
   // Wortliste: nur Einzelwörter aus diesen Themen (Quelle: vokabeln-data.js)
-  const WORDLE_THEMEN = ["zahlen","wochentage","monate","farben","tiere","federmaeppchen","unit1"];
+  const WORDLE_THEMEN = ["zahlen","wochentage","monate","farben","tiere","federmaeppchen","familie","unit1"];
   const imWordle = e => /^[a-z]+$/i.test(e.en) && e.en.length >= 3 && (WORDLE_THEMEN.includes(e.thema) || e.unit === 1);
   const WORDLISTE = VOKABELN.filter(imWordle);
   const WORDPOOL = WORDLISTE.map(e => e.en.toLowerCase());
