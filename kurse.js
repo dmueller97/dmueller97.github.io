@@ -226,7 +226,7 @@ const MATERIAL = [
     titel:"Lerntheke Unit 1",
     typ:"uebung",
     url:"eng/seki/unit1-lerntheke.html",
-    info:"Sieben Stationen für die Klassenarbeit: Reading, a/an, forms of be, Verneinung, Fragen mit be, possessive determiners und Vokabeln im Satz. Mit Sofortauswertung, Sternen und Lernpass auf der Übersichtsseite.",
+    info:"Zehn Stationen für die Klassenarbeit: Reading, a/an, personal pronouns, forms of be, Verneinung, Fragen mit be, Kurzantworten, possessive determiners, Wortfelder mit Zahlen und Vokabeln im Satz. Mit Sofortauswertung, Sternen und Lernpass auf der Übersichtsseite.",
     stand:"2026-11", neu:true},
 
    { fach:"englisch", klasse:5, bereich:"kap1-5",

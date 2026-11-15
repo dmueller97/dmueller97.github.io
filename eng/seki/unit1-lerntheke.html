@@ -111,10 +111,14 @@
    Pro Durchgang werden aus jedem Topf n Aufgaben zufällig gezogen.
    ===================================================================== */
 const BE = ["am","is","are"], NOT = ["am not","isn't","aren't"], POSS = ["my","your","his","her","its","our","their"],
-      QW = ["What","Who","Where","When","Why"];
+      QW = ["What","Who","Where","When","Why"], PRON = ["I","You","He","She","It","We","They"], pron = ["I","you","he","she","it","we","they"],
+      FELD = ["family","pets","colours","school things"];
 const c  = (q,o,a,x) => Object.assign({t:"c",q,o,a},x||{});
 const w  = (q,ok,x)  => Object.assign({t:"w",q,ok:[].concat(ok)},x||{});
 const b  = (w_,a,x)  => Object.assign({t:"b",w:w_,a},x||{});
+const feld = (q,a) => ({t:"c",q,o:FELD,a});
+const wort = (q,ok,lab) => ({t:"w",q,ok:[].concat(ok),wort:true,lab:lab||"Schreibe das englische Wort."});
+const ka = (q,o,why) => ({t:"c",lab:"Welche Kurzantwort ist richtig?",q,o,a:o[0],mix:true,why});
 const tf = (q,a,why) => ({t:"c",lab:"Richtig oder falsch?",q,o:["true","false"],a:a?"true":"false",why});
 const mc = (q,o,why) => ({t:"c",lab:"Wähle die richtige Antwort.",q,o,a:o[0],mix:true,why});
 const art = (q,a,k,why) => ({t:"c",q,o:["a","an"],a,why: why || (a==="an"
@@ -122,7 +126,7 @@ const art = (q,a,k,why) => ({t:"c",q,o:["a","an"],a,why: why || (a==="an"
   : "„"+k+"“ beginnt nicht mit einem Vokal-Klang → a.")});
 
 const STATIONEN = [
-/* ------------------------------------------------------------------ 1 */
+/* -------------------------------------------------------------------- */
 { id:"reading", ico:"📖", name:"Reading", desc:"Lies einen Text und zeige, dass du ihn verstanden hast.",
   rule:`<p><b>So gehst du vor:</b> Lies den Text zuerst einmal ganz. Lies dann jede Frage genau und suche die passende Stelle im Text. Der Text bleibt die ganze Zeit sichtbar.</p><p>Du musst nicht jedes Wort kennen, um die Fragen zu beantworten.</p>`,
   texte:[
@@ -165,7 +169,7 @@ const STATIONEN = [
      ]}
   ], n:8 },
 
-/* ------------------------------------------------------------------ 2 */
+/* -------------------------------------------------------------------- */
 { id:"aan", ico:"🍎", name:"a or an?", desc:"Ein Apfel oder eine Uniform – welcher Artikel passt?", lab:"a oder an?",
   rule:`<p><b>an</b> steht vor Wörtern, die mit einem <b>Vokal-Klang</b> beginnen (a, e, i, o, u): <i>an apple, an elephant, an uncle</i>.</p>
 <p><b>a</b> steht vor allen anderen Wörtern: <i>a tree, a cousin, a sister</i>.</p>
@@ -198,7 +202,42 @@ const STATIONEN = [
     art("This is ___ house in my street.","a","house","Das h in „house“ hörst du → a.")
   ]}] },
 
-/* ------------------------------------------------------------------ 3 */
+/* -------------------------------------------------------------------- */
+{ id:"pron", ico:"👥", name:"Personal pronouns", desc:"I, you, he, she, it, we, they – wer ist gemeint?", lab:"Ersetze den Anfang durch ein Pronomen.",
+  rule:`<table><tr><th>Einzahl</th><th></th><th>Mehrzahl</th><th></th></tr>
+<tr><td><b>I</b></td><td>ich</td><td><b>we</b></td><td>wir</td></tr><tr><td><b>you</b></td><td>du</td><td><b>you</b></td><td>ihr</td></tr>
+<tr><td><b>he</b></td><td>er</td><td><b>they</b></td><td>sie (mehrere)</td></tr><tr><td><b>she</b></td><td>sie (eine Person)</td><td></td><td></td></tr>
+<tr><td><b>it</b></td><td>es</td><td></td><td></td></tr></table>
+<p>Sachen und Tiere sind <b>it</b>. Sobald <mark>… and I</mark> dabeisteht, ist es <b>we</b>.</p>`,
+  toepfe:[
+   {n:9, items:[
+    c("Tom is my friend. → ___ is my friend.",PRON,"He",{why:"Tom ist ein Junge → he."}),
+    c("My mum is at home. → ___ is at home.",PRON,"She",{why:"My mum ist eine Frau → she."}),
+    c("The parcel is big. → ___ is big.",PRON,"It",{why:"Eine Sache → it."}),
+    c("Mia and Ben are upstairs. → ___ are upstairs.",PRON,"They",{why:"Zwei Personen → they."}),
+    c("My brother and I are in the garden. → ___ are in the garden.",PRON,"We",{why:"… and I → we."}),
+    c("The cats are black. → ___ are black.",PRON,"They",{why:"Mehrere Tiere → they."}),
+    c("My uncle is very nice. → ___ is very nice.",PRON,"He",{why:"My uncle ist ein Mann → he."}),
+    c("Mrs Lee teaches art. → ___ teaches art.",PRON,"She",{why:"Mrs Lee ist eine Frau → she."}),
+    c("The doorbell is new. → ___ is new.",PRON,"It",{why:"Eine Sache → it."}),
+    c("My parents are divorced. → ___ are divorced.",PRON,"They",{why:"Zwei Personen → they."}),
+    c("Lucy and I are friends. → ___ are friends.",PRON,"We",{why:"… and I → we."}),
+    c("The rabbit is white. → ___ is white.",PRON,"It",{why:"Ein Tier → it."}),
+    c("My grandma lives in London. → ___ lives in London.",PRON,"She",{why:"My grandma ist eine Frau → she."}),
+    c("Mr Green is my class teacher. → ___ is my class teacher.",PRON,"He",{why:"Mr Green ist ein Mann → he."}),
+    c("The books are for Ben. → ___ are for Ben.",PRON,"They",{why:"Mehrere Sachen → they."}),
+    c("Brighton is by the sea. → ___ is by the sea.",PRON,"It",{why:"Eine Stadt ist eine Sache → it."}),
+    c("My friends and I like music. → ___ like music.",PRON,"We",{why:"… and I → we."}),
+    c("My aunt has a budgie. → ___ has a budgie.",PRON,"She",{why:"My aunt ist eine Frau → she."})
+   ]},
+   {n:3, items:[
+    c("wir → ___",pron,"we",{lab:"Wie heißt das Pronomen auf Englisch?"}), c("ich → ___",pron,"I",{lab:"Wie heißt das Pronomen auf Englisch?",why:"I wird immer großgeschrieben."}),
+    c("er → ___",pron,"he",{lab:"Wie heißt das Pronomen auf Englisch?"}), c("es → ___",pron,"it",{lab:"Wie heißt das Pronomen auf Englisch?"}),
+    c("sie (ein Mädchen) → ___",pron,"she",{lab:"Wie heißt das Pronomen auf Englisch?"}), c("sie (mehrere Kinder) → ___",pron,"they",{lab:"Wie heißt das Pronomen auf Englisch?"}),
+    c("ihr (mehrere Kinder) → ___",pron,"you",{lab:"Wie heißt das Pronomen auf Englisch?",why:"you heißt du und auch ihr."}), c("du → ___",pron,"you",{lab:"Wie heißt das Pronomen auf Englisch?"})
+   ]}
+  ] },
+
 { id:"be", ico:"🐝", name:"Forms of be", desc:"am, is oder are – und die Kurzformen.", lab:"Setze ein: am, is oder are?",
   rule:`<table><tr><th>Langform</th><th>Kurzform</th><th>Deutsch</th></tr>
 <tr><td>I <b>am</b></td><td>I'm</td><td>ich bin</td></tr><tr><td>you <b>are</b></td><td>you're</td><td>du bist</td></tr>
@@ -228,7 +267,7 @@ const STATIONEN = [
    ]}
   ] },
 
-/* ------------------------------------------------------------------ 4 */
+/* -------------------------------------------------------------------- */
 { id:"neg", ico:"🚫", name:"Verneinung mit be", desc:"am not, isn't, aren't – sag, was nicht stimmt.", lab:"Was passt in die Lücke?",
   rule:`<p>Für die Verneinung setzt du <b>not</b> hinter die Form von be.</p>
 <table><tr><th>Langform</th><th>Kurzform</th></tr>
@@ -256,21 +295,20 @@ const STATIONEN = [
    ]}
   ] },
 
-/* ------------------------------------------------------------------ 5 */
-{ id:"fragen", ico:"❓", name:"Fragen mit be", desc:"Fragen bauen, Fragewörter wählen, kurz antworten.",
+/* -------------------------------------------------------------------- */
+{ id:"fragen", ico:"❓", name:"Fragen mit be", desc:"Fragen bauen, Fragewörter wählen, Sätze in Fragen verwandeln.",
   rule:`<p>Bei Fragen mit be <b>tauschen</b> Verb und Person den Platz:<br><i>He is my friend.</i> → <i><b>Is he</b> my friend?</i></p>
 <p>Ein <b>Fragewort</b> steht ganz vorn: <i><b>Where</b> is my book?</i></p>
-<table><tr><td><b>what</b></td><td>was</td><td><b>who</b></td><td>wer</td></tr><tr><td><b>where</b></td><td>wo, woher</td><td><b>when</b></td><td>wann</td></tr><tr><td><b>why</b></td><td>warum</td><td></td><td></td></tr></table>
-<p>Kurzantworten: <i>Are you sure? – Yes, I am. / No, I'm not.</i> &nbsp; <i>Is she at home? – No, she isn't.</i></p>`,
+<table><tr><td><b>what</b></td><td>was</td><td><b>who</b></td><td>wer</td></tr><tr><td><b>where</b></td><td>wo, woher</td><td><b>when</b></td><td>wann</td></tr><tr><td><b>why</b></td><td>warum</td><td></td><td></td></tr></table>`,
   toepfe:[
-   {n:3, items:[
+   {n:4, items:[
     b(["is","your","family","big"],"Is your family big?"), b(["are","your","friends","nice"],"Are your friends nice?"),
     b(["is","your","dad","at","home"],"Is your dad at home?"), b(["are","you","from","England"],"Are you from England?"),
     b(["where","is","my","pencil case"],"Where is my pencil case?"), b(["what","is","in","the","parcel"],"What is in the parcel?"),
     b(["who","is","your","class teacher"],"Who is your class teacher?"), b(["why","are","you","here"],"Why are you here?"),
     b(["is","the","postman","downstairs"],"Is the postman downstairs?"), b(["where","are","your","parents"],"Where are your parents?")
    ]},
-   {n:3, items:[
+   {n:4, items:[
     c("___ is in the parcel? – Two books.",QW,"What",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einer Sache → What (was)."}),
     c("___ is your friend? – Tom.",QW,"Who",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einer Person → Who (wer)."}),
     c("___ are you from? – I'm from Germany.",QW,"Where",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einem Ort → Where (wo, woher)."}),
@@ -283,25 +321,55 @@ const STATIONEN = [
     c("___ are your parents? – They're at home.",QW,"Where",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einem Ort → Where (wo)."}),
     c("___ is Ben upstairs? – Because his room is upstairs.",QW,"Why",{lab:"Welches Fragewort passt?",why:"Die Antwort beginnt mit Because (weil) → Why (warum)."})
    ]},
-   {n:3, items:[
+   {n:4, items:[
     w("She is in my class.","Is she in my class?",{lab:"Mache aus dem Satz eine Frage."}), w("They are your friends.","Are they your friends?",{lab:"Mache aus dem Satz eine Frage."}),
     w("He is at home.","Is he at home?",{lab:"Mache aus dem Satz eine Frage."}), w("It is your book.","Is it your book?",{lab:"Mache aus dem Satz eine Frage."}),
     w("You are from Germany.","Are you from Germany?",{lab:"Mache aus dem Satz eine Frage."}), w("The dog is in the garden.","Is the dog in the garden?",{lab:"Mache aus dem Satz eine Frage."}),
     w("Mia and Ben are upstairs.","Are Mia and Ben upstairs?",{lab:"Mache aus dem Satz eine Frage."}), w("I am lucky.","Am I lucky?",{lab:"Mache aus dem Satz eine Frage."})
-   ]},
-   {n:3, items:[
-    c("Are you from England? – No, I ___.",NOT,"am not",{lab:"Ergänze die Kurzantwort."}),
-    c("Is your sister nice? – Yes, she ___.",BE,"is",{lab:"Ergänze die Kurzantwort."}),
-    c("Are they your friends? – Yes, they ___.",BE,"are",{lab:"Ergänze die Kurzantwort."}),
-    c("Is the parcel big? – No, it ___.",NOT,"isn't",{lab:"Ergänze die Kurzantwort."}),
-    c("Are your parents at home? – No, they ___.",NOT,"aren't",{lab:"Ergänze die Kurzantwort."}),
-    c("Am I in your class? – Yes, you ___.",BE,"are",{lab:"Ergänze die Kurzantwort."}),
-    c("Is Ben your brother? – Yes, he ___.",BE,"is",{lab:"Ergänze die Kurzantwort."}),
-    c("Are you eleven? – Yes, I ___.",BE,"am",{lab:"Ergänze die Kurzantwort."})
    ]}
   ] },
 
-/* ------------------------------------------------------------------ 6 */
+/* -------------------------------------------------------------------- */
+{ id:"kurz", ico:"💬", name:"Kurzantworten", desc:"Yes, I am. – No, she isn't. Antworte kurz und richtig.", lab:"Ergänze die Kurzantwort.",
+  rule:`<p>Eine Kurzantwort besteht aus <b>Yes / No</b>, dem <b>Pronomen</b> und der <b>Form von be</b>.</p>
+<table><tr><th>Frage</th><th>Ja</th><th>Nein</th></tr>
+<tr><td>Are you sure?</td><td>Yes, I <b>am</b>.</td><td>No, I<b>'m not</b>.</td></tr>
+<tr><td>Is she at home?</td><td>Yes, she <b>is</b>.</td><td>No, she <b>isn't</b>.</td></tr>
+<tr><td>Are they your friends?</td><td>Yes, they <b>are</b>.</td><td>No, they <b>aren't</b>.</td></tr></table>
+<p>Achtung: Bei <mark>Yes</mark> gibt es keine Kurzform – also nie <i>Yes, I'm.</i> Und aus <i>you</i> in der Frage wird <i>I</i> in der Antwort.</p>`,
+  toepfe:[
+   {n:4, items:[
+    c("Are you from England? – No, I ___.",NOT,"am not"), c("Is your sister nice? – Yes, she ___.",BE,"is"),
+    c("Are they your friends? – Yes, they ___.",BE,"are"), c("Is the parcel big? – No, it ___.",NOT,"isn't"),
+    c("Are your parents at home? – No, they ___.",NOT,"aren't"), c("Am I in your class? – Yes, you ___.",BE,"are"),
+    c("Is Ben your brother? – Yes, he ___.",BE,"is"), c("Are you eleven? – Yes, I ___.",BE,"am"),
+    c("Are we in the kitchen? – No, we ___.",NOT,"aren't"), c("Is it cold today? – No, it ___.",NOT,"isn't")
+   ]},
+   {n:4, items:[
+    ka("Is your dad at home? – Yes, …",["Yes, he is.","Yes, he are.","Yes, she is."],"your dad = he → Yes, he is."),
+    ka("Are Mia and Ben upstairs? – No, …",["No, they aren't.","No, they isn't.","No, we aren't."],"Mia and Ben = they → No, they aren't."),
+    ka("Is the rabbit white? – Yes, …",["Yes, it is.","Yes, it are.","Yes, they are."],"the rabbit = it → Yes, it is."),
+    ka("Are you eleven? – No, …",["No, I'm not.","No, I aren't.","No, you aren't."],"Aus you in der Frage wird I in der Antwort → No, I'm not."),
+    ka("Is Mrs Lee your teacher? – Yes, …",["Yes, she is.","Yes, he is.","Yes, she are."],"Mrs Lee = she → Yes, she is."),
+    ka("Are you and Tom friends? – Yes, …",["Yes, we are.","Yes, they are.","Yes, we is."],"you and Tom → in der Antwort we → Yes, we are."),
+    ka("Am I in your class? – No, …",["No, you aren't.","No, I'm not.","No, you isn't."],"Aus I in der Frage wird you in der Antwort → No, you aren't."),
+    ka("Are the books for Ben? – Yes, …",["Yes, they are.","Yes, it is.","Yes, they is."],"the books = they → Yes, they are."),
+    ka("Is your uncle from Germany? – No, …",["No, he isn't.","No, he aren't.","No, she isn't."],"your uncle = he → No, he isn't.")
+   ]},
+   {n:4, items:[
+    w("Is Tom your friend? – Yes, …","Yes, he is.",{lab:"Schreibe die ganze Kurzantwort.",exact:true,why:"In der Kurzantwort mit Yes steht immer die Langform – nie eine Kurzform wie I'm."}),
+    w("Is your sister nine? – Yes, …","Yes, she is.",{lab:"Schreibe die ganze Kurzantwort.",exact:true,why:"In der Kurzantwort mit Yes steht immer die Langform – nie eine Kurzform wie I'm."}),
+    w("Are you lucky? – Yes, …","Yes, I am.",{lab:"Schreibe die ganze Kurzantwort.",exact:true,why:"In der Kurzantwort mit Yes steht immer die Langform – nie eine Kurzform wie I'm."}),
+    w("Are the cats in the garden? – Yes, …","Yes, they are.",{lab:"Schreibe die ganze Kurzantwort.",exact:true,why:"In der Kurzantwort mit Yes steht immer die Langform – nie eine Kurzform wie I'm."}),
+    w("Is Mr Green nice? – Yes, …","Yes, he is.",{lab:"Schreibe die ganze Kurzantwort.",exact:true,why:"In der Kurzantwort mit Yes steht immer die Langform – nie eine Kurzform wie I'm."}),
+    w("Are your parents at home? – No, …","No, they are not.",{lab:"Schreibe die ganze Kurzantwort."}),
+    w("Are you from England? – No, …","No, I am not.",{lab:"Schreibe die ganze Kurzantwort."}),
+    w("Is the parcel small? – No, …","No, it is not.",{lab:"Schreibe die ganze Kurzantwort."}),
+    w("Are you and Mia in class 7B? – No, …","No, we are not.",{lab:"Schreibe die ganze Kurzantwort.",why:"you and Mia → in der Antwort we."}),
+    w("Is your aunt in London? – No, …","No, she is not.",{lab:"Schreibe die ganze Kurzantwort."})
+   ]}
+  ] },
+
 { id:"poss", ico:"🎒", name:"Possessive determiners", desc:"my, your, his, her … – wem gehört was?", lab:"Welches Wort passt?",
   rule:`<table><tr><th>Person</th><th>Besitz</th><th>Deutsch</th></tr>
 <tr><td>I</td><td><b>my</b></td><td>mein/e</td></tr><tr><td>you</td><td><b>your</b></td><td>dein/e, euer/eure</td></tr>
@@ -341,7 +409,37 @@ const STATIONEN = [
    ]}
   ] },
 
-/* ------------------------------------------------------------------ 7 */
+/* -------------------------------------------------------------------- */
+{ id:"feld", ico:"☂️", name:"Wortfelder & Zahlen", desc:"Family, pets, colours, school things – und die Zahlen bis zwölf.", lab:"Zu welchem Regenschirm-Wort (umbrella word) gehört das Wort?",
+  rule:`<p>Wörter, die zusammengehören, bilden ein <b>Wortfeld</b>. Das Wort darüber ist das <b>umbrella word</b>: <i>brother, aunt, cousin</i> → <mark>family</mark>.</p>
+<p>In der Klassenarbeit brauchst du diese Wortfelder: <b>family</b>, <b>pets</b>, <b>colours</b>, <b>school things</b> und die <b>numbers</b> von 1 bis 12.</p>
+<p>Beim Schreiben zählt hier die genaue Schreibweise. Ein Artikel davor (<i>the aunt</i>) ist in Ordnung.</p>`,
+  toepfe:[
+   {n:5, items:[
+    feld("aunt","family"), feld("uncle","family"), feld("cousin","family"), feld("grandpa","family"), feld("parents","family"), feld("sister","family"),
+    feld("budgie","pets"), feld("guinea pig","pets"), feld("hamster","pets"), feld("rabbit","pets"), feld("parrot","pets"), feld("snake","pets"),
+    feld("purple","colours"), feld("grey","colours"), feld("yellow","colours"), feld("pink","colours"), feld("brown","colours"), feld("white","colours"),
+    feld("rubber","school things"), feld("ruler","school things"), feld("sharpener","school things"), feld("exercise book","school things"),
+    feld("pencil case","school things"), feld("glue stick","school things"), feld("marker","school things")
+   ]},
+   {n:4, items:[
+    wort("die Tante","aunt"), wort("der Onkel","uncle"), wort("die Eltern","parents"), wort("der Cousin / die Cousine","cousin"),
+    wort("die Oma","grandma"), wort("der Opa","grandpa"), wort("der Bruder","brother"),
+    wort("der Wellensittich","budgie"), wort("das Meerschweinchen","guinea pig"), wort("das Kaninchen","rabbit"), wort("die Schlange","snake"), wort("die Spinne","spider"),
+    wort("der Anspitzer","sharpener"), wort("das Lineal","ruler"), wort("der Radiergummi","rubber"), wort("das Federmäppchen","pencil case"),
+    wort("das Schulheft","exercise book"), wort("der Bleistift","pencil"),
+    wort("lila",["purple"]), wort("grau",["grey"]), wort("gelb","yellow"), wort("weiß","white"), wort("braun","brown")
+   ]},
+   {n:3, items:[
+    wort("7 + 4 =","eleven","Rechne und schreibe die Zahl als englisches Wort."), wort("3 + 5 =","eight","Rechne und schreibe die Zahl als englisches Wort."),
+    wort("6 + 6 =","twelve","Rechne und schreibe die Zahl als englisches Wort."), wort("9 − 2 =","seven","Rechne und schreibe die Zahl als englisches Wort."),
+    wort("10 − 1 =","nine","Rechne und schreibe die Zahl als englisches Wort."), wort("2 + 2 =","four","Rechne und schreibe die Zahl als englisches Wort."),
+    wort("5 + 5 =","ten","Rechne und schreibe die Zahl als englisches Wort."), wort("4 − 1 =","three","Rechne und schreibe die Zahl als englisches Wort."),
+    wort("12 − 6 =","six","Rechne und schreibe die Zahl als englisches Wort."), wort("1 + 4 =","five","Rechne und schreibe die Zahl als englisches Wort."),
+    wort("8 − 6 =","two","Rechne und schreibe die Zahl als englisches Wort."), wort("11 − 10 =","one","Rechne und schreibe die Zahl als englisches Wort.")
+   ]}
+  ] },
+
 { id:"vok", ico:"📚", name:"Vokabeln im Satz", desc:"Wörter im Zusammenhang und ganze Sätze übersetzen.",
   rule:`<p><b>So gehst du vor:</b> Erst suchst du das Wort, das in den Satz passt. Dann übersetzt du ganze Sätze ins Englische.</p>
 <p>Denk beim Schreiben an den <mark>großen Satzanfang</mark>, an <mark>I</mark> (immer groß) und an das Satzzeichen am Ende. Kurz- und Langformen (<i>I'm</i> / <i>I am</i>) sind beide richtig.</p>`,
@@ -522,9 +620,9 @@ function werte(given) {
   const it = lauf.items[lauf.i]; let ok, tips = [], loesung;
   if (it.t === "c") { ok = given === it.a; loesung = it.q.includes("___") ? it.q.replace(/___/g, it.a) : it.a; }
   else if (it.t === "w") {
-    const f = it.exact ? norm : canon;
+    const f = it.wort ? (x => norm(x).replace(/^(the|a|an) /,"")) : it.exact ? norm : canon;
     ok = it.ok.some(a => f(a) === f(given)); loesung = it.ok[0];
-    if (ok && !it.exact) {
+    if (ok && !it.exact && !it.wort) {
       const g = given.trim();
       if (/^[a-zäöü]/.test(g)) tips.push("Der Satzanfang wird großgeschrieben.");
       if (/(^|\s)i(\s|'|$)/.test(g)) tips.push("I (ich) wird immer großgeschrieben.");
