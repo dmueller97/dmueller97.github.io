@@ -43,8 +43,11 @@
   .stand .nr { background:var(--marker); border:2px solid var(--ink); border-radius:999px; padding:0 10px; font-weight:700; font-size:.85rem; }
   .stand .ico { font-size:1.6rem; line-height:1; }
   .stand b { font-size:1.1rem; } .stand .desc { color:var(--ink-soft); font-size:.92rem; flex:1; }
-  .stand .mini { height:10px; border:2px solid var(--ink); border-radius:6px; overflow:hidden; background:var(--paper); }
+  .stand .mini { position:relative; height:10px; border:2px solid var(--ink); border-radius:6px; overflow:hidden; background:var(--paper); }
   .stand .mini i { display:block; height:100%; background:var(--green); }
+  .stand .mini::after { content:""; position:absolute; left:80%; top:0; bottom:0; border-left:2px dashed var(--ink); }
+  .stand:disabled { opacity:.6; cursor:not-allowed; box-shadow:none; background:var(--paper); } .stand:disabled:hover { transform:none; background:var(--paper); }
+  .stand.meister { grid-column:1/-1; }
   .stand .stat { display:flex; justify-content:space-between; font-size:.88rem; color:var(--ink-soft); }
   .stand.done { border-color:var(--green); box-shadow:0 4px 0 var(--green); }
   .stand.done::after { content:"✓ geschafft"; position:absolute; top:-11px; right:10px; background:var(--green); color:#fff; font-size:.75rem; font-weight:700; padding:1px 8px; border-radius:999px; transform:rotate(3deg); }
@@ -93,7 +96,7 @@
 <a class="home-link" href="../../index.html">← Startseite</a>
 <main>
   <h1><mark>Lerntheke</mark> Unit 1</h1>
-  <p class="intro">Fit für die Klassenarbeit: Hol dir an der Theke eine Station, löse die Aufgaben und sammle Sterne. Die Reihenfolge bestimmst du selbst.</p>
+  <p class="intro">Fit für die Klassenarbeit: Hol dir an der Theke eine Station, löse die Aufgaben und sammle Sterne. Die Reihenfolge bestimmst du selbst. Wer alle zehn Stationen schafft, darf in die Meisterprüfung.</p>
   <div id="app"></div>
 </main>
 
@@ -128,7 +131,7 @@ const art = (q,a,k,why) => ({t:"c",q,o:["a","an"],a,why: why || (a==="an"
 const STATIONEN = [
 /* -------------------------------------------------------------------- */
 { id:"reading", ico:"📖", name:"Reading", desc:"Lies einen Text und zeige, dass du ihn verstanden hast.",
-  rule:`<p><b>So gehst du vor:</b> Lies den Text zuerst einmal ganz. Lies dann jede Frage genau und suche die passende Stelle im Text. Der Text bleibt die ganze Zeit sichtbar.</p><p>Du musst nicht jedes Wort kennen, um die Fragen zu beantworten.</p>`,
+  rule:`<p><b>So gehst du vor:</b> Lies den Text zuerst einmal ganz. Lies dann jede Frage genau und suche die passende Stelle im Text. Der Text bleibt die ganze Zeit sichtbar. In dieser Station liest du <b>zwei Texte</b> nacheinander.</p><p>Du musst nicht jedes Wort kennen, um die Fragen zu beantworten.</p>`,
   texte:[
    { titel:"A parcel for Mia",
      html:`<p>Hello! My name is Mia. I'm eleven years old and I'm from Brighton. Brighton is a city in England. It is by the sea. I live in a small house in Park Road with my mum, my dad and my brother Ben. Ben is fourteen. He can be weird sometimes, but he is OK.</p>
@@ -167,14 +170,14 @@ const STATIONEN = [
       mc("Who does Tom swim with on Sundays?",["his uncle and his cousin","his mum and his sister","his dad"],"Im Text steht: Then I swim with my uncle and my cousin."),
       tf("Tom can speak German.",true,"Im Text steht: … so I can speak German too.")
      ]}
-  ], n:8 },
+  ], n:7 },
 
 /* -------------------------------------------------------------------- */
 { id:"aan", ico:"🍎", name:"a or an?", desc:"Ein Apfel oder eine Uniform – welcher Artikel passt?", lab:"a oder an?",
   rule:`<p><b>an</b> steht vor Wörtern, die mit einem <b>Vokal-Klang</b> beginnen (a, e, i, o, u): <i>an apple, an elephant, an uncle</i>.</p>
 <p><b>a</b> steht vor allen anderen Wörtern: <i>a tree, a cousin, a sister</i>.</p>
 <p>Achtung, es zählt, was du <mark>hörst</mark>: <i>an hour</i> (das h ist stumm), aber <i>a uniform</i> (klingt wie „ju“). Und es zählt das Wort <mark>direkt danach</mark>: <i>an old car</i>, <i>a big elephant</i>.</p>`,
-  toepfe:[{n:12, items:[
+  toepfe:[{n:16, items:[
     art("I have ___ uncle in London.","an","uncle"),
     art("There's ___ apple in my schoolbag.","an","apple"),
     art("Look, ___ elephant!","an","elephant"),
@@ -210,7 +213,7 @@ const STATIONEN = [
 <tr><td><b>it</b></td><td>es</td><td></td><td></td></tr></table>
 <p>Sachen und Tiere sind <b>it</b>. Sobald <mark>… and I</mark> dabeisteht, ist es <b>we</b>.</p>`,
   toepfe:[
-   {n:9, items:[
+   {n:11, items:[
     c("Tom is my friend. → ___ is my friend.",PRON,"He",{why:"Tom ist ein Junge → he."}),
     c("My mum is at home. → ___ is at home.",PRON,"She",{why:"My mum ist eine Frau → she."}),
     c("The parcel is big. → ___ is big.",PRON,"It",{why:"Eine Sache → it."}),
@@ -230,7 +233,7 @@ const STATIONEN = [
     c("My friends and I like music. → ___ like music.",PRON,"We",{why:"… and I → we."}),
     c("My aunt has a budgie. → ___ has a budgie.",PRON,"She",{why:"My aunt ist eine Frau → she."})
    ]},
-   {n:3, items:[
+   {n:4, items:[
     c("wir → ___",pron,"we",{lab:"Wie heißt das Pronomen auf Englisch?"}), c("ich → ___",pron,"I",{lab:"Wie heißt das Pronomen auf Englisch?",why:"I wird immer großgeschrieben."}),
     c("er → ___",pron,"he",{lab:"Wie heißt das Pronomen auf Englisch?"}), c("es → ___",pron,"it",{lab:"Wie heißt das Pronomen auf Englisch?"}),
     c("sie (ein Mädchen) → ___",pron,"she",{lab:"Wie heißt das Pronomen auf Englisch?"}), c("sie (mehrere Kinder) → ___",pron,"they",{lab:"Wie heißt das Pronomen auf Englisch?"}),
@@ -246,7 +249,7 @@ const STATIONEN = [
 <tr><td>they <b>are</b></td><td>they're</td><td>sie sind</td></tr></table>
 <p>Tipp: Ersetze Namen durch ein Pronomen. <i>Tom and I</i> = <i>we</i> → are. <i>My sister</i> = <i>she</i> → is.</p>`,
   toepfe:[
-   {n:9, items:[
+   {n:11, items:[
     c("I ___ eleven years old.",BE,"am"), c("My sister ___ in class 7L.",BE,"is",{why:"My sister = she → is."}),
     c("We ___ at school today.",BE,"are"), c("The cats ___ in the garden.",BE,"are",{why:"The cats = they → are."}),
     c("You ___ my friend.",BE,"are"), c("It ___ a big parcel.",BE,"is"),
@@ -257,7 +260,7 @@ const STATIONEN = [
     c("Mia and Ben ___ in the kitchen.",BE,"are",{why:"Mia and Ben = they → are."}), c("She ___ lucky.",BE,"is"),
     c("His rabbits ___ white.",BE,"are",{why:"His rabbits = they → are."}), c("I ___ in my bedroom.",BE,"am")
    ]},
-   {n:3, items:[
+   {n:5, items:[
     w("I am",["I'm"],{lab:"Schreibe die Kurzform.",exact:true}), w("you are",["you're"],{lab:"Schreibe die Kurzform.",exact:true}),
     w("he is",["he's"],{lab:"Schreibe die Kurzform.",exact:true}), w("she is",["she's"],{lab:"Schreibe die Kurzform.",exact:true}),
     w("it is",["it's"],{lab:"Schreibe die Kurzform.",exact:true,why:"it's (mit Apostroph) = it is. Ohne Apostroph (its) heißt es „sein/ihr“."}),
@@ -276,14 +279,14 @@ const STATIONEN = [
 <tr><td>we / you / they are <b>not</b></td><td>we / you / they aren't</td></tr></table>
 <p>Beim Schreiben sind hier Lang- und Kurzform beide richtig.</p>`,
   toepfe:[
-   {n:5, items:[
+   {n:6, items:[
     c("I ___ from London. I'm from Brighton.",NOT,"am not"), c("Ben ___ at home. He's at school.",NOT,"isn't"),
     c("We ___ sisters. We're friends.",NOT,"aren't"), c("The parcel ___ small. It's very big.",NOT,"isn't"),
     c("My parents ___ divorced.",NOT,"aren't",{why:"My parents = they → aren't."}), c("You ___ in my class.",NOT,"aren't"),
     c("It ___ Monday today. It's Sunday.",NOT,"isn't"), c("I ___ twelve. I'm eleven.",NOT,"am not"),
     c("The cats ___ blue. They're black.",NOT,"aren't",{why:"The cats = they → aren't."}), c("My grandma ___ in Brighton.",NOT,"isn't",{why:"My grandma = she → isn't."})
    ]},
-   {n:5, items:[
+   {n:8, items:[
     w("They are at home.","They are not at home.",{lab:"Verneine den Satz."}), w("She is my sister.","She is not my sister.",{lab:"Verneine den Satz."}),
     w("I am from England.","I am not from England.",{lab:"Verneine den Satz."}), w("The dog is in the garden.","The dog is not in the garden.",{lab:"Verneine den Satz."}),
     w("We are in the kitchen.","We are not in the kitchen.",{lab:"Verneine den Satz."}), w("It is cold today.","It is not cold today.",{lab:"Verneine den Satz."}),
@@ -301,14 +304,14 @@ const STATIONEN = [
 <p>Ein <b>Fragewort</b> steht ganz vorn: <i><b>Where</b> is my book?</i></p>
 <table><tr><td><b>what</b></td><td>was</td><td><b>who</b></td><td>wer</td></tr><tr><td><b>where</b></td><td>wo, woher</td><td><b>when</b></td><td>wann</td></tr><tr><td><b>why</b></td><td>warum</td><td></td><td></td></tr></table>`,
   toepfe:[
-   {n:4, items:[
+   {n:5, items:[
     b(["is","your","family","big"],"Is your family big?"), b(["are","your","friends","nice"],"Are your friends nice?"),
     b(["is","your","dad","at","home"],"Is your dad at home?"), b(["are","you","from","England"],"Are you from England?"),
     b(["where","is","my","pencil case"],"Where is my pencil case?"), b(["what","is","in","the","parcel"],"What is in the parcel?"),
     b(["who","is","your","class teacher"],"Who is your class teacher?"), b(["why","are","you","here"],"Why are you here?"),
     b(["is","the","postman","downstairs"],"Is the postman downstairs?"), b(["where","are","your","parents"],"Where are your parents?")
    ]},
-   {n:4, items:[
+   {n:5, items:[
     c("___ is in the parcel? – Two books.",QW,"What",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einer Sache → What (was)."}),
     c("___ is your friend? – Tom.",QW,"Who",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einer Person → Who (wer)."}),
     c("___ are you from? – I'm from Germany.",QW,"Where",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einem Ort → Where (wo, woher)."}),
@@ -321,7 +324,7 @@ const STATIONEN = [
     c("___ are your parents? – They're at home.",QW,"Where",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einem Ort → Where (wo)."}),
     c("___ is Ben upstairs? – Because his room is upstairs.",QW,"Why",{lab:"Welches Fragewort passt?",why:"Die Antwort beginnt mit Because (weil) → Why (warum)."})
    ]},
-   {n:4, items:[
+   {n:5, items:[
     w("She is in my class.","Is she in my class?",{lab:"Mache aus dem Satz eine Frage."}), w("They are your friends.","Are they your friends?",{lab:"Mache aus dem Satz eine Frage."}),
     w("He is at home.","Is he at home?",{lab:"Mache aus dem Satz eine Frage."}), w("It is your book.","Is it your book?",{lab:"Mache aus dem Satz eine Frage."}),
     w("You are from Germany.","Are you from Germany?",{lab:"Mache aus dem Satz eine Frage."}), w("The dog is in the garden.","Is the dog in the garden?",{lab:"Mache aus dem Satz eine Frage."}),
@@ -338,14 +341,14 @@ const STATIONEN = [
 <tr><td>Are they your friends?</td><td>Yes, they <b>are</b>.</td><td>No, they <b>aren't</b>.</td></tr></table>
 <p>Achtung: Bei <mark>Yes</mark> gibt es keine Kurzform – also nie <i>Yes, I'm.</i> Und aus <i>you</i> in der Frage wird <i>I</i> in der Antwort.</p>`,
   toepfe:[
-   {n:4, items:[
+   {n:5, items:[
     c("Are you from England? – No, I ___.",NOT,"am not"), c("Is your sister nice? – Yes, she ___.",BE,"is"),
     c("Are they your friends? – Yes, they ___.",BE,"are"), c("Is the parcel big? – No, it ___.",NOT,"isn't"),
     c("Are your parents at home? – No, they ___.",NOT,"aren't"), c("Am I in your class? – Yes, you ___.",BE,"are"),
     c("Is Ben your brother? – Yes, he ___.",BE,"is"), c("Are you eleven? – Yes, I ___.",BE,"am"),
     c("Are we in the kitchen? – No, we ___.",NOT,"aren't"), c("Is it cold today? – No, it ___.",NOT,"isn't")
    ]},
-   {n:4, items:[
+   {n:5, items:[
     ka("Is your dad at home? – Yes, …",["Yes, he is.","Yes, he are.","Yes, she is."],"your dad = he → Yes, he is."),
     ka("Are Mia and Ben upstairs? – No, …",["No, they aren't.","No, they isn't.","No, we aren't."],"Mia and Ben = they → No, they aren't."),
     ka("Is the rabbit white? – Yes, …",["Yes, it is.","Yes, it are.","Yes, they are."],"the rabbit = it → Yes, it is."),
@@ -356,7 +359,7 @@ const STATIONEN = [
     ka("Are the books for Ben? – Yes, …",["Yes, they are.","Yes, it is.","Yes, they is."],"the books = they → Yes, they are."),
     ka("Is your uncle from Germany? – No, …",["No, he isn't.","No, he aren't.","No, she isn't."],"your uncle = he → No, he isn't.")
    ]},
-   {n:4, items:[
+   {n:5, items:[
     w("Is Tom your friend? – Yes, …","Yes, he is.",{lab:"Schreibe die ganze Kurzantwort.",exact:true,why:"In der Kurzantwort mit Yes steht immer die Langform – nie eine Kurzform wie I'm."}),
     w("Is your sister nine? – Yes, …","Yes, she is.",{lab:"Schreibe die ganze Kurzantwort.",exact:true,why:"In der Kurzantwort mit Yes steht immer die Langform – nie eine Kurzform wie I'm."}),
     w("Are you lucky? – Yes, …","Yes, I am.",{lab:"Schreibe die ganze Kurzantwort.",exact:true,why:"In der Kurzantwort mit Yes steht immer die Langform – nie eine Kurzform wie I'm."}),
@@ -378,7 +381,7 @@ const STATIONEN = [
 <tr><td>they</td><td><b>their</b></td><td>ihr/e</td></tr></table>
 <p>Frage dich immer: <mark>Wem</mark> gehört es? Und: <i>its</i> schreibt man ohne Apostroph.</p>`,
   toepfe:[
-   {n:9, items:[
+   {n:12, items:[
     c("This is Emma. ___ brother is called Ben.",POSS,"her",{why:"Emma = she → her."}),
     c("This is Tom. ___ sister is nine.",POSS,"his",{why:"Tom = he → his."}),
     c("I am Mia. ___ hometown is Brighton.",POSS,"my",{why:"I → my."}),
@@ -398,7 +401,7 @@ const STATIONEN = [
     c("The cats are in the garden. ___ names are Salt and Pepper.",POSS,"their",{why:"The cats = they → their."}),
     c("We live in Park Road. ___ house is small.",POSS,"our",{why:"we → our."})
    ]},
-   {n:3, items:[
+   {n:4, items:[
     c("unser Klassenzimmer → ___ classroom",POSS,"our",{lab:"Übersetze das Wort in der Lücke."}),
     c("ihre Namen (von Tom und Mia) → ___ names",POSS,"their",{lab:"Übersetze das Wort in der Lücke."}),
     c("seine Katze (von Ben) → ___ cat",POSS,"his",{lab:"Übersetze das Wort in der Lücke."}),
@@ -415,14 +418,14 @@ const STATIONEN = [
 <p>In der Klassenarbeit brauchst du diese Wortfelder: <b>family</b>, <b>pets</b>, <b>colours</b>, <b>school things</b> und die <b>numbers</b> von 1 bis 12.</p>
 <p>Beim Schreiben zählt hier die genaue Schreibweise. Ein Artikel davor (<i>the aunt</i>) ist in Ordnung.</p>`,
   toepfe:[
-   {n:5, items:[
+   {n:7, items:[
     feld("aunt","family"), feld("uncle","family"), feld("cousin","family"), feld("grandpa","family"), feld("parents","family"), feld("sister","family"),
     feld("budgie","pets"), feld("guinea pig","pets"), feld("hamster","pets"), feld("rabbit","pets"), feld("parrot","pets"), feld("snake","pets"),
     feld("purple","colours"), feld("grey","colours"), feld("yellow","colours"), feld("pink","colours"), feld("brown","colours"), feld("white","colours"),
     feld("rubber","school things"), feld("ruler","school things"), feld("sharpener","school things"), feld("exercise book","school things"),
     feld("pencil case","school things"), feld("glue stick","school things"), feld("marker","school things")
    ]},
-   {n:4, items:[
+   {n:6, items:[
     wort("die Tante","aunt"), wort("der Onkel","uncle"), wort("die Eltern","parents"), wort("der Cousin / die Cousine","cousin"),
     wort("die Oma","grandma"), wort("der Opa","grandpa"), wort("der Bruder","brother"),
     wort("der Wellensittich","budgie"), wort("das Meerschweinchen","guinea pig"), wort("das Kaninchen","rabbit"), wort("die Schlange","snake"), wort("die Spinne","spider"),
@@ -430,7 +433,7 @@ const STATIONEN = [
     wort("das Schulheft","exercise book"), wort("der Bleistift","pencil"),
     wort("lila",["purple"]), wort("grau",["grey"]), wort("gelb","yellow"), wort("weiß","white"), wort("braun","brown")
    ]},
-   {n:3, items:[
+   {n:4, items:[
     wort("7 + 4 =","eleven","Rechne und schreibe die Zahl als englisches Wort."), wort("3 + 5 =","eight","Rechne und schreibe die Zahl als englisches Wort."),
     wort("6 + 6 =","twelve","Rechne und schreibe die Zahl als englisches Wort."), wort("9 − 2 =","seven","Rechne und schreibe die Zahl als englisches Wort."),
     wort("10 − 1 =","nine","Rechne und schreibe die Zahl als englisches Wort."), wort("2 + 2 =","four","Rechne und schreibe die Zahl als englisches Wort."),
@@ -444,7 +447,7 @@ const STATIONEN = [
   rule:`<p><b>So gehst du vor:</b> Erst suchst du das Wort, das in den Satz passt. Dann übersetzt du ganze Sätze ins Englische.</p>
 <p>Denk beim Schreiben an den <mark>großen Satzanfang</mark>, an <mark>I</mark> (immer groß) und an das Satzzeichen am Ende. Kurz- und Langformen (<i>I'm</i> / <i>I am</i>) sind beide richtig.</p>`,
   toepfe:[
-   {n:6, items:[
+   {n:8, items:[
     c("The ___ rings. Maybe it's the postman.",["doorbell","umbrella","glass","sandwich"],"doorbell",{lab:"Welches Wort passt?",mix:true,why:"the doorbell = die Türklingel"}),
     c("My mother's sister is my ___.",["aunt","uncle","cousin","grandma"],"aunt",{lab:"Welches Wort passt?",mix:true,why:"aunt = die Tante"}),
     c("My father's brother is my ___.",["uncle","aunt","sister","grandpa"],"uncle",{lab:"Welches Wort passt?",mix:true,why:"uncle = der Onkel"}),
@@ -462,7 +465,7 @@ const STATIONEN = [
     c("I have a ruler, a rubber and a ___ in my pencil case.",["sharpener","seagull","blazer","palace"],"sharpener",{lab:"Welches Wort passt?",mix:true,why:"sharpener = der Anspitzer"}),
     c("I don't ___ this word. Can you help me?",["understand","dance","live","teach"],"understand",{lab:"Welches Wort passt?",mix:true,why:"(to) understand = verstehen"})
    ]},
-   {n:6, items:[
+   {n:8, items:[
     w("Ich bin elf Jahre alt.",["I am eleven years old.","I am eleven."],{lab:"Übersetze ins Englische."}),
     w("Mein Name ist Tom.",["My name is Tom."],{lab:"Übersetze ins Englische."}),
     w("Ich komme aus Deutschland.",["I am from Germany.","I come from Germany."],{lab:"Übersetze ins Englische."}),
@@ -491,6 +494,10 @@ const STATIONEN = [
   ] }
 ];
 
+const MEISTER = { id:"meister", ico:"🏆", name:"Meisterprüfung", mixed:true, proStation:3,
+  desc:"Alles gemischt wie in der Klassenarbeit: Aufgaben aus allen Stationen, bunt durcheinander.",
+  rule:`<p><b>Jetzt zeigst du, was du kannst.</b> Die Aufgaben kommen aus allen Stationen und sind gemischt – genau wie in der Klassenarbeit. Lies bei jeder Aufgabe genau, was du tun sollst.</p><p>Die Merkzettel gibt es hier nicht mehr. Wenn dir etwas schwerfällt, geh danach noch einmal an die passende Station.</p>` };
+
 /* =====================================================================
    LOGIK — ab hier musst du nichts ändern.
    ===================================================================== */
@@ -502,7 +509,8 @@ const norm = s => String(s).toLowerCase().replace(/[‘’´`ʼ]/g,"'").replace(
 /* Kurz- und Langformen gleichsetzen */
 const canon = s => norm(s).replace(/\bisn't\b/g,"is not").replace(/\baren't\b/g,"are not").replace(/\bdon't\b/g,"do not")
   .replace(/(\w)'m\b/g,"$1 am").replace(/(\w)'re\b/g,"$1 are").replace(/(\w)'s\b/g,"$1 is").replace(/\s+/g," ").trim();
-const sterne = p => p>=90?3 : p>=70?2 : p>=50?1 : 0;
+const GESCHAFFT = 80;  // ab so viel Prozent gilt eine Station als geschafft
+const sterne = p => p>=100?3 : p>=90?2 : p>=GESCHAFFT?1 : 0;
 const sternHtml = n => `<span class="stars" aria-label="${n} von 3 Sternen">${[0,1,2].map(i=>`<span class="${i<n?"on":""}">★</span>`).join("")}</span>`;
 const LOB = ["Richtig!","Super!","Genau!","Well done!","Great!","Stark!"];
 
@@ -510,19 +518,23 @@ const LOB = ["Richtig!","Super!","Genau!","Well done!","Great!","Stark!"];
 const KEY = "u1.lerntheke";
 let stand = {};
 try { stand = JSON.parse(sessionStorage.getItem(KEY) || "{}") || {}; } catch (e) { stand = {}; }
+const titel = st => st.mixed ? st.name : "Station " + (STATIONEN.indexOf(st)+1) + ": " + st.name;
 const merke = () => { try { sessionStorage.setItem(KEY, JSON.stringify(stand)); } catch (e) {} };
 
 let lauf = null; // { st, items, i, res:[], text }
 
 function ziehe(st) {
-  const s = stand[st.id] || {};
-  if (st.texte) {
-    const t = st.texte[(s.n || 0) % st.texte.length];
-    return { text:t, items: shuffle(t.items).slice(0, st.n) };
+    let items = [];
+  if (st.texte) st.texte.forEach(t => { items = items.concat(shuffle(t.items).slice(0, st.n).map(it => Object.assign({}, it, { text:t }))); });
+  else if (st.mixed) {
+    STATIONEN.filter(x => x.toepfe).forEach(x => {
+      const alle = [].concat.apply([], x.toepfe.map(tp => tp.items));
+      items = items.concat(shuffle(alle).slice(0, st.proStation).map(it => Object.assign({}, it, { lab: it.lab || x.lab })));
+    });
+    items = shuffle(items);
   }
-  let items = [];
-  st.toepfe.forEach(tp => { items = items.concat(shuffle(tp.items).slice(0, tp.n)); });
-  return { text:null, items };
+  else st.toepfe.forEach(tp => { items = items.concat(shuffle(tp.items).slice(0, tp.n)); });
+  return { items };
 }
 
 /* ------------------------------------------------------------ Übersicht */
@@ -534,10 +546,12 @@ function zeigeTheke() {
   const pct = Math.round(sum / max * 100);
   let next = STATIONEN.find(st => !stand[st.id]);
   if (!next) next = STATIONEN.slice().sort((a,b) => stand[a.id].best - stand[b.id].best)[0];
-  const fertig = sum === max;
-  const tipp = fertig ? "Alle Sterne gesammelt – du bist bereit für die Klassenarbeit!"
-    : gespielt === 0 ? "Such dir eine Station aus und leg los."
-    : (stand[next.id] ? "Tipp: Übe noch einmal an Station " : "Tipp: Probiere als Nächstes Station ") + (STATIONEN.indexOf(next)+1) + " – " + next.name + ".";
+  const alle = geschafft === STATIONEN.length, m = stand.meister, mOk = m && m.best >= GESCHAFFT;
+  const tipp = gespielt === 0 ? "Such dir eine Station aus und leg los."
+    : !alle ? (stand[next.id] ? "Tipp: Übe noch einmal an Station " : "Tipp: Probiere als Nächstes Station ") + (STATIONEN.indexOf(next)+1) + " – " + next.name + "."
+    : !mOk ? "Alle Stationen geschafft! Jetzt wartet die Meisterprüfung."
+    : sum < max ? "Meisterprüfung bestanden! Hol dir noch die fehlenden Sterne, zum Beispiel an Station " + (STATIONEN.indexOf(next)+1) + "."
+    : "Alle Sterne und die Meisterprüfung – du bist bereit für die Klassenarbeit!";
   app.innerHTML = `
   <section class="sheet" aria-label="Dein Fortschritt">
     <div class="pass">
@@ -552,7 +566,7 @@ function zeigeTheke() {
   </section>
   <section class="sheet">
     <h2>Die Stationen</h2>
-    <p class="hint">Ab der Hälfte der Punkte gibt es den ersten Stern, ab 70 % zwei, ab 90 % drei. Es zählt dein bestes Ergebnis.</p>
+    <p class="hint">Geschafft ist eine Station ab <b>${GESCHAFFT} %</b> (gestrichelte Linie). Dafür gibt es den ersten Stern, ab 90 % den zweiten und für 100 % den dritten. Es zählt dein bestes Ergebnis.</p>
     <div class="stands">${STATIONEN.map((st,i) => {
       const s = stand[st.id], n = s ? sterne(s.best) : 0;
       return `<button type="button" class="stand${n?" done":""}" data-id="${st.id}">
@@ -563,27 +577,37 @@ function zeigeTheke() {
         <span class="stat"><span>${s ? "Bestes Ergebnis: "+s.best+" %" : "Noch nicht geübt"}</span><span>${s ? s.n+"× geübt" : ""}</span></span>
       </button>`; }).join("")}</div>
   </section>
+  <section class="sheet">
+    <h2>Zum Schluss</h2>
+    <div class="stands"><button type="button" class="stand meister${mOk?" done":""}" data-id="meister"${alle?"":" disabled"}>
+      <span class="top"><span class="nr">${alle ? "Bonus" : "🔒 gesperrt"}</span><span class="ico" aria-hidden="true">${MEISTER.ico}</span></span>
+      <b>${MEISTER.name}</b><span class="desc">${alle ? esc(MEISTER.desc) : "Wird frei, sobald du alle "+STATIONEN.length+" Stationen geschafft hast. Dir fehlen noch "+(STATIONEN.length-geschafft)+"."}</span>
+      ${sternHtml(m ? sterne(m.best) : 0)}
+      <span class="mini"><i style="width:${m?m.best:0}%"></i></span>
+      <span class="stat"><span>${m ? "Bestes Ergebnis: "+m.best+" %" : "Noch nicht versucht"}</span><span>${m ? m.n+"× versucht" : ""}</span></span>
+    </button></div>
+  </section>
   <p class="hint">Dein Fortschritt wird nicht gespeichert. Er bleibt nur, solange dieses Browserfenster offen ist. ${gespielt ? '<button type="button" class="btn ghost" id="reset" style="font-size:.9rem;padding:3px 12px;margin-left:6px">Fortschritt löschen</button>' : ""}</p>`;
   window.scrollTo(0,0);
 }
 
 /* ------------------------------------------------------------- Einstieg */
 function zeigeIntro(st) {
-  const nr = STATIONEN.indexOf(st) + 1, z = ziehe(st);
-  lauf = { st, items:z.items, text:z.text, i:0, res:[] };
+  const z = ziehe(st);
+  lauf = { st, items:z.items, i:0, res:[] };
   app.innerHTML = `<section class="sheet">
-    <div class="bar"><h2>${st.ico} Station ${nr}: ${esc(st.name)}</h2><button type="button" class="btn ghost" data-go="theke">← Zur Theke</button></div>
+    <div class="bar"><h2>${st.ico} ${esc(titel(st))}</h2><button type="button" class="btn ghost" data-go="theke">← Zur Theke</button></div>
     <p>${esc(st.desc)} Dich erwarten <b>${lauf.items.length} Aufgaben</b>.</p>
-    <div class="rule"><p class="hint" style="margin-bottom:4px">Merkzettel</p>${st.rule}</div>
+    <div class="rule"><p class="hint" style="margin-bottom:4px">${st.mixed ? "So läuft es" : "Merkzettel"}</p>${st.rule}</div>
     <p><button type="button" class="btn" id="los">Los geht's!</button></p></section>`;
-  window.scrollTo(0,0); $("#los").focus();
+  window.scrollTo(0,0); $("#los").focus({ preventScroll:true });
 }
 
 /* --------------------------------------------------------------- Aufgabe */
 const frage = (q, fill, cls) => esc(q).replace(/___/g, `<span class="gap ${cls||""}">${fill ? esc(fill) : "&nbsp;"}</span>`);
 
 function zeigeAufgabe() {
-  const { st, items, i, res, text } = lauf, it = items[i], nr = STATIONEN.indexOf(st) + 1;
+  const { st, items, i, res } = lauf, it = items[i], text = it.text;
   const lab = it.lab || st.lab || (it.t === "b" ? "Baue die Frage: Tippe die Wörter in der richtigen Reihenfolge an." : "");
   let body;
   if (it.t === "c") {
@@ -598,7 +622,7 @@ function zeigeAufgabe() {
       <div class="row"><button type="button" class="btn" id="check" disabled>Prüfen</button><button type="button" class="btn ghost" id="clear">Zurücksetzen</button></div>`;
   }
   app.innerHTML = `<section class="sheet">
-    <div class="bar"><b>${st.ico} Station ${nr}: ${esc(st.name)}</b><button type="button" class="btn ghost" data-go="theke">← Zur Theke</button></div>
+    <div class="bar"><b>${st.ico} ${esc(titel(st))}</b><button type="button" class="btn ghost" data-go="theke">← Zur Theke</button></div>
     <div class="dots" aria-label="Aufgabe ${i+1} von ${items.length}">${items.map((_,k) => `<i class="${k<res.length?(res[k].ok?"ok":"bad"):k===i?"now":""}"></i>`).join("")}</div>
     ${text ? `<div class="text"><h3>${esc(text.titel)}</h3>${text.html}</div>` : ""}
     <p class="lab">Aufgabe ${i+1} von ${items.length}${lab ? " · " + esc(lab) : ""}</p>
@@ -606,7 +630,7 @@ function zeigeAufgabe() {
     <div id="fb" aria-live="polite"></div></section>`;
   if (it.t === "w") $("#inp").focus();
   if (it.t === "b") malBau();
-  if (!text || i === 0) window.scrollTo(0,0);
+  if (!text || i === 0 || items[i-1].text !== text) window.scrollTo(0,0);
 }
 
 function malBau() {
@@ -671,7 +695,9 @@ function zeigeEnde() {
   const { st, res } = lauf, richtig = res.filter(r => r.ok).length, pct = Math.round(richtig / res.length * 100), n = sterne(pct);
   const alt = stand[st.id], rekord = !alt || pct > alt.best;
   stand[st.id] = { best: alt ? Math.max(alt.best, pct) : pct, last:pct, n: (alt ? alt.n : 0) + 1 }; merke();
-  const msg = n === 3 ? "Perfekt vorbereitet! Diese Station sitzt." : n === 2 ? "Sehr gut! Schau dir deine Fehler noch einmal an." : n === 1 ? "Geschafft! Mit einer zweiten Runde holst du noch mehr Sterne." : "Das üben wir noch einmal. Lies den Merkzettel und versuche es erneut.";
+  const msg = n === 3 ? "Perfekt, alles richtig! Das sitzt." : n === 2 ? "Geschafft – sehr gut! Schau dir deine Fehler noch einmal an." : n === 1 ? "Geschafft! Mit einer zweiten Runde holst du noch mehr Sterne."
+    : pct >= 60 ? "Knapp! Für „geschafft“ brauchst du " + GESCHAFFT + " %. Schau dir deine Fehler an und versuche es gleich noch einmal."
+    : "Das üben wir noch einmal. Für „geschafft“ brauchst du " + GESCHAFFT + " %. Lies den Merkzettel genau und versuche es erneut.";
   const fehler = res.filter(r => !r.ok);
   app.innerHTML = `<section class="sheet end">
     <h2>${st.ico} ${esc(st.name)} – Auswertung</h2>
@@ -687,7 +713,7 @@ function zeigeEnde() {
 /* --------------------------------------------------------------- Ereignisse */
 app.addEventListener("click", e => {
   const t = e.target.closest("button"); if (!t) return;
-  if (t.classList.contains("stand")) return zeigeIntro(STATIONEN.find(s => s.id === t.dataset.id));
+  if (t.classList.contains("stand")) return zeigeIntro(t.dataset.id === "meister" ? MEISTER : STATIONEN.find(s => s.id === t.dataset.id));
   if (t.dataset.go === "theke") return zeigeTheke();
   if (t.dataset.go === "nochmal") return zeigeIntro(lauf.st);
   if (t.id === "reset") { stand = {}; merke(); return zeigeTheke(); }
