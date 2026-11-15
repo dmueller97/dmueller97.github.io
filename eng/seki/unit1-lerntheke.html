@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lerntheke Unit 1 – Klassenarbeitsvorbereitung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --paper:#FDFDF8; --grid:#DCE7F2; --ink:#1F3A68; --ink-soft:#5A6F92; --marker:#FFE45C; --red:#C8322B; --green:#2E7D4F; --tile:#fff; --hover:#FFF8CC; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; }
+  body { font-family:"Andika","Comic Sans MS",system-ui,sans-serif; color:var(--ink); background-color:var(--paper);
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px); background-size:24px 24px; min-height:100vh; line-height:1.55; }
+  main { max-width:860px; margin:0 auto; padding:48px 20px 60px; }
+  h1 { font-size:2.3rem; line-height:1.1; margin:0 0 4px; }
+  h1 mark { background:var(--marker); color:inherit; padding:0 .2em; border-radius:4px; }
+  h2 { font-size:1.4rem; margin:0 0 10px; }
+  p { margin:0 0 10px; }
+  [hidden] { display:none!important; }
+  .intro { color:var(--ink-soft); font-size:1.08rem; max-width:62ch; margin-bottom:22px; }
+  .hint { color:var(--ink-soft); font-size:.95rem; }
+  .sheet { background:var(--paper); border:2px solid var(--ink); border-radius:8px; padding:22px; box-shadow:5px 5px 0 var(--ink); margin-bottom:24px; }
+  .btn { font:inherit; font-size:1.02rem; font-weight:700; color:var(--paper); background:var(--ink); border:2px solid var(--ink); border-radius:8px; padding:8px 18px; cursor:pointer; text-decoration:none; display:inline-block; }
+  .btn:hover { background:#2B4E8A; } .btn:disabled { opacity:.45; cursor:default; }
+  .btn.ghost { background:var(--paper); color:var(--ink); } .btn.ghost:hover { background:var(--hover); }
+  .btn:focus-visible, .tile:focus-visible, .stand:focus-visible, input:focus-visible { outline:3px solid #E0A458; outline-offset:2px; }
+  .home-link { position:fixed; top:10px; left:10px; z-index:9; background:var(--ink); color:#fff; padding:6px 12px; border-radius:8px; font:14px/1 system-ui,sans-serif; text-decoration:none; opacity:.85; }
+
+  /* Übersicht */
+  .pass { display:grid; grid-template-columns:auto 1fr; gap:18px; align-items:center; }
+  .ring { width:112px; height:112px; border-radius:50%; border:2px solid var(--ink); display:grid; place-items:center; background:conic-gradient(var(--green) calc(var(--p)*1%), var(--tile) 0); }
+  .ring div { width:82px; height:82px; border-radius:50%; background:var(--paper); border:2px solid var(--ink); display:grid; place-items:center; text-align:center; line-height:1.1; }
+  .ring b { font-size:1.5rem; display:block; } .ring small { font-size:.72rem; color:var(--ink-soft); }
+  .meter { height:16px; border:2px solid var(--ink); border-radius:8px; background:var(--tile); overflow:hidden; margin:6px 0 10px; }
+  .meter i { display:block; height:100%; width:0; background:var(--green); transition:width .4s; }
+  .tipp { background:var(--marker); border:2px solid var(--ink); border-radius:8px; padding:6px 12px; display:inline-block; font-weight:700; }
+  .stands { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; }
+  .stand { font:inherit; text-align:left; display:flex; flex-direction:column; gap:5px; border:2px solid var(--ink); border-radius:10px; padding:14px; background:var(--tile); color:var(--ink); cursor:pointer; box-shadow:0 4px 0 var(--ink); position:relative; }
+  .stand:hover { background:var(--hover); transform:translateY(-2px); }
+  .stand .top { display:flex; justify-content:space-between; align-items:center; }
+  .stand .nr { background:var(--marker); border:2px solid var(--ink); border-radius:999px; padding:0 10px; font-weight:700; font-size:.85rem; }
+  .stand .ico { font-size:1.6rem; line-height:1; }
+  .stand b { font-size:1.1rem; } .stand .desc { color:var(--ink-soft); font-size:.92rem; flex:1; }
+  .stand .mini { height:10px; border:2px solid var(--ink); border-radius:6px; overflow:hidden; background:var(--paper); }
+  .stand .mini i { display:block; height:100%; background:var(--green); }
+  .stand .stat { display:flex; justify-content:space-between; font-size:.88rem; color:var(--ink-soft); }
+  .stand.done { border-color:var(--green); box-shadow:0 4px 0 var(--green); }
+  .stand.done::after { content:"✓ geschafft"; position:absolute; top:-11px; right:10px; background:var(--green); color:#fff; font-size:.75rem; font-weight:700; padding:1px 8px; border-radius:999px; transform:rotate(3deg); }
+  .stars { letter-spacing:2px; font-size:1.15rem; color:#C9CFDA; } .stars .on { color:#E0A000; }
+
+  /* Station */
+  .bar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+  .dots { display:flex; gap:5px; flex-wrap:wrap; margin:0 0 16px; }
+  .dots i { width:22px; height:10px; border:2px solid var(--ink); border-radius:5px; background:var(--tile); }
+  .dots i.ok { background:var(--green); } .dots i.bad { background:var(--red); } .dots i.now { background:var(--marker); }
+  .rule { background:var(--tile); border:2px dashed var(--ink); border-radius:10px; padding:14px 16px; margin:12px 0 16px; }
+  .rule table { border-collapse:collapse; margin:6px 0; } .rule td, .rule th { padding:3px 14px 3px 0; text-align:left; }
+  .rule th { color:var(--ink-soft); font-size:.82rem; text-transform:uppercase; letter-spacing:.04em; }
+  .rule b, .rule mark { background:var(--marker); padding:0 .2em; border-radius:3px; color:inherit; }
+  .text { background:var(--tile); border-left:6px solid var(--marker); padding:12px 16px; margin:0 0 16px; border-radius:0 8px 8px 0; font-size:1.05rem; max-height:46vh; overflow:auto; }
+  .text h3 { margin:0 0 6px; font-size:1.15rem; } .text p { margin:0 0 8px; }
+  .lab { color:var(--ink-soft); font-size:.95rem; margin:0 0 4px; }
+  .qt { font-weight:700; font-size:1.3rem; margin:0 0 14px; line-height:1.5; }
+  .gap { display:inline-block; min-width:3.2em; border-bottom:3px solid var(--ink); text-align:center; padding:0 .3em; margin:0 .1em; }
+  .gap.ok { color:var(--green); border-color:var(--green); } .gap.bad { color:var(--red); border-color:var(--red); }
+  .tiles { display:flex; flex-wrap:wrap; gap:10px; }
+  .tile { font:inherit; font-weight:700; font-size:1.1rem; color:var(--ink); background:var(--tile); border:2px solid var(--ink); border-radius:8px; padding:8px 16px; cursor:pointer; box-shadow:0 3px 0 var(--ink); }
+  .tile:hover:not(:disabled) { background:var(--hover); } .tile:disabled { cursor:default; opacity:.55; }
+  .tile.right { background:#DDF1E4; border-color:var(--green); box-shadow:0 3px 0 var(--green); opacity:1; }
+  .tile.wrong { background:#FBE1DE; border-color:var(--red); box-shadow:0 3px 0 var(--red); opacity:1; }
+  .tile.used { visibility:hidden; }
+  .line { min-height:54px; border:2px dashed var(--ink); border-radius:10px; padding:8px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:12px; background:var(--tile); }
+  .line .end { font-weight:700; font-size:1.3rem; }
+  input[type=text] { font:inherit; font-weight:700; font-size:1.1rem; padding:9px 12px; border:2px solid var(--ink); border-radius:8px; width:100%; color:var(--ink); background:var(--tile); }
+  input.ok { background:#DDF1E4; border-color:var(--green); } input.bad { background:#FBE1DE; border-color:var(--red); }
+  .row { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  .fb { margin-top:14px; padding:10px 14px; border-radius:10px; border:2px solid; }
+  .fb.ok { background:#DDF1E4; border-color:var(--green); } .fb.bad { background:#FBE1DE; border-color:var(--red); }
+  .fb strong { font-size:1.1rem; } .fb p { margin:4px 0 0; }
+  .end { text-align:center; }
+  .end .stars { font-size:3rem; letter-spacing:8px; display:block; }
+  .end .stars .on { display:inline-block; animation:pop .5s backwards; } .end .stars .on:nth-child(2){animation-delay:.2s;} .end .stars .on:nth-child(3){animation-delay:.4s;}
+  @keyframes pop { from { transform:scale(0) rotate(-40deg); } 70% { transform:scale(1.3); } }
+  .score { font-size:2rem; font-weight:700; margin:6px 0; }
+  .miss { text-align:left; margin:16px 0; } .miss li { margin-bottom:8px; } .miss s { color:var(--red); } .miss b { color:var(--green); }
+  @media (max-width:520px) { h1 { font-size:1.8rem; } .sheet { padding:16px; } .pass { grid-template-columns:1fr; justify-items:center; text-align:center; } .qt { font-size:1.15rem; } }
+  @media (prefers-reduced-motion:reduce) { * { animation:none!important; transition:none!important; } }
+</style>
+</head>
+<body>
+<a class="home-link" href="../../index.html">← Startseite</a>
+<main>
+  <h1><mark>Lerntheke</mark> Unit 1</h1>
+  <p class="intro">Fit für die Klassenarbeit: Hol dir an der Theke eine Station, löse die Aufgaben und sammle Sterne. Die Reihenfolge bestimmst du selbst.</p>
+  <div id="app"></div>
+</main>
+
+<script>
+"use strict";
+/* =====================================================================
+   INHALT — hier pflegst du die Aufgaben.
+   Aufgabentypen:
+     t:"c"  Auswahl      { q, o:[Optionen], a:"richtig", why?, lab?, mix? }
+     t:"w"  Schreiben    { q, ok:[akzeptierte Antworten], why?, lab?, exact? }
+            (Kurz- und Langformen wie isn't / is not gelten automatisch
+             als gleich; mit exact:true wird wörtlich verglichen)
+     t:"b"  Satz bauen   { w:[Wörter], a:"Lösung", lab? }
+   "___" in q wird als Lücke dargestellt.
+   Pro Durchgang werden aus jedem Topf n Aufgaben zufällig gezogen.
+   ===================================================================== */
+const BE = ["am","is","are"], NOT = ["am not","isn't","aren't"], POSS = ["my","your","his","her","its","our","their"],
+      QW = ["What","Who","Where","When","Why"];
+const c  = (q,o,a,x) => Object.assign({t:"c",q,o,a},x||{});
+const w  = (q,ok,x)  => Object.assign({t:"w",q,ok:[].concat(ok)},x||{});
+const b  = (w_,a,x)  => Object.assign({t:"b",w:w_,a},x||{});
+const tf = (q,a,why) => ({t:"c",lab:"Richtig oder falsch?",q,o:["true","false"],a:a?"true":"false",why});
+const mc = (q,o,why) => ({t:"c",lab:"Wähle die richtige Antwort.",q,o,a:o[0],mix:true,why});
+const art = (q,a,k,why) => ({t:"c",q,o:["a","an"],a,why: why || (a==="an"
+  ? "„"+k+"“ beginnt mit einem Vokal-Klang → an."
+  : "„"+k+"“ beginnt nicht mit einem Vokal-Klang → a.")});
+
+const STATIONEN = [
+/* ------------------------------------------------------------------ 1 */
+{ id:"reading", ico:"📖", name:"Reading", desc:"Lies einen Text und zeige, dass du ihn verstanden hast.",
+  rule:`<p><b>So gehst du vor:</b> Lies den Text zuerst einmal ganz. Lies dann jede Frage genau und suche die passende Stelle im Text. Der Text bleibt die ganze Zeit sichtbar.</p><p>Du musst nicht jedes Wort kennen, um die Fragen zu beantworten.</p>`,
+  texte:[
+   { titel:"A parcel for Mia",
+     html:`<p>Hello! My name is Mia. I'm eleven years old and I'm from Brighton. Brighton is a city in England. It is by the sea. I live in a small house in Park Road with my mum, my dad and my brother Ben. Ben is fourteen. He can be weird sometimes, but he is OK.</p>
+<p>It is Saturday morning. I'm upstairs in my bedroom. The doorbell rings. Maybe it's my friend Tom? I go downstairs. No, it isn't Tom. It's the postman. “Good morning. Here's a parcel for you,” he says. The parcel is very big. It's from my grandma. She isn't in Brighton – she lives in London.</p>
+<p>What's in the parcel? There are two books, a blue pencil case and a letter. The books aren't for me. They are for Ben. But the pencil case is for me. It's awesome! I'm so lucky.</p>`,
+     items:[
+      tf("Mia is twelve years old.",false,"Im Text steht: I'm eleven years old."),
+      tf("Brighton is by the sea.",true,"Im Text steht: It is by the sea."),
+      tf("Ben is Mia's brother.",true,"Im Text steht: … and my brother Ben."),
+      mc("Where is Mia when the doorbell rings?",["upstairs in her bedroom","downstairs in the kitchen","in the garden"],"Im Text steht: I'm upstairs in my bedroom."),
+      mc("Who is at the door?",["the postman","her friend Tom","her grandma"],"Im Text steht: No, it isn't Tom. It's the postman."),
+      tf("The parcel is small.",false,"Im Text steht: The parcel is very big."),
+      mc("Where does Mia's grandma live?",["in London","in Brighton","in Germany"],"Im Text steht: She isn't in Brighton – she lives in London."),
+      mc("Who are the books for?",["for Ben","for Mia","for Tom"],"Im Text steht: The books aren't for me. They are for Ben."),
+      mc("What colour is the pencil case?",["blue","red","black"],"Im Text steht: a blue pencil case."),
+      mc("What day is it?",["Saturday","Sunday","Monday"],"Im Text steht: It is Saturday morning."),
+      mc("How many books are in the parcel?",["two","three","ten"],"Im Text steht: There are two books …"),
+      tf("Mia lives in a big house.",false,"Im Text steht: I live in a small house.")
+     ]},
+   { titel:"Tom, his family and their pets",
+     html:`<p>Hi, I'm Tom. I'm twelve and I'm in class 7B at Hill School. My class teacher is Mr Green. He teaches art and he is very nice.</p>
+<p>My family is small. There's my mum, my sister Lucy and me. My parents are divorced. My dad lives in Germany, so I can speak German too. Lucy is nine. She is at primary school.</p>
+<p>We have a lot of pets. Our dog is called Rocky. He is big and brown. Our two cats are black. Their names are Salt and Pepper. Lucy has a rabbit too. Its name is Snow because it is white. I don't like spiders or snakes – they are scary!</p>
+<p>Today is Friday. I hang out with my friend Mia at my place. We sit in the garden and listen to music. On Sundays there's no school. Then I swim with my uncle and my cousin.</p>`,
+     items:[
+      tf("Tom is in class 7B.",true,"Im Text steht: I'm in class 7B at Hill School."),
+      mc("What does Mr Green teach?",["art","history","French"],"Im Text steht: He teaches art."),
+      tf("Tom's family is big.",false,"Im Text steht: My family is small."),
+      mc("Where does Tom's dad live?",["in Germany","in England","in Brighton"],"Im Text steht: My dad lives in Germany."),
+      mc("How old is Lucy?",["nine","eleven","twelve"],"Im Text steht: Lucy is nine."),
+      mc("What colour are the cats?",["black","brown","white"],"Im Text steht: Our two cats are black."),
+      mc("What is the rabbit's name?",["Snow","Rocky","Pepper"],"Im Text steht: Its name is Snow."),
+      tf("Tom likes spiders.",false,"Im Text steht: I don't like spiders or snakes."),
+      tf("Rocky is a cat.",false,"Im Text steht: Our dog is called Rocky."),
+      mc("Who is Mia?",["Tom's friend","Tom's sister","Tom's cousin"],"Im Text steht: … my friend Mia."),
+      mc("Who does Tom swim with on Sundays?",["his uncle and his cousin","his mum and his sister","his dad"],"Im Text steht: Then I swim with my uncle and my cousin."),
+      tf("Tom can speak German.",true,"Im Text steht: … so I can speak German too.")
+     ]}
+  ], n:8 },
+
+/* ------------------------------------------------------------------ 2 */
+{ id:"aan", ico:"🍎", name:"a or an?", desc:"Ein Apfel oder eine Uniform – welcher Artikel passt?", lab:"a oder an?",
+  rule:`<p><b>an</b> steht vor Wörtern, die mit einem <b>Vokal-Klang</b> beginnen (a, e, i, o, u): <i>an apple, an elephant, an uncle</i>.</p>
+<p><b>a</b> steht vor allen anderen Wörtern: <i>a tree, a cousin, a sister</i>.</p>
+<p>Achtung, es zählt, was du <mark>hörst</mark>: <i>an hour</i> (das h ist stumm), aber <i>a uniform</i> (klingt wie „ju“). Und es zählt das Wort <mark>direkt danach</mark>: <i>an old car</i>, <i>a big elephant</i>.</p>`,
+  toepfe:[{n:12, items:[
+    art("I have ___ uncle in London.","an","uncle"),
+    art("There's ___ apple in my schoolbag.","an","apple"),
+    art("Look, ___ elephant!","an","elephant"),
+    art("See you in ___ hour.","an","hour","Das h in „hour“ ist stumm – du hörst zuerst einen Vokal → an."),
+    art("I need ___ umbrella.","an","umbrella"),
+    art("This is ___ exercise book.","an","exercise"),
+    art("It's ___ orange pencil case.","an","orange"),
+    art("A dog is ___ animal.","an","animal"),
+    art("That's ___ awesome song.","an","awesome"),
+    art("I have ___ answer.","an","answer"),
+    art("“Hello” is ___ English word.","an","English"),
+    art("She has ___ aunt in Germany.","an","aunt"),
+    art("He is ___ old postman.","an","old"),
+    art("We have ___ uniform at school.","a","uniform","„uniform“ klingt am Anfang wie „ju“ – das ist kein Vokal-Klang → a."),
+    art("This is ___ useful phrase.","a","useful","„useful“ klingt am Anfang wie „ju“ – das ist kein Vokal-Klang → a."),
+    art("She has ___ cousin in Germany.","a","cousin"),
+    art("There's ___ hamster under the desk.","a","hamster"),
+    art("I have ___ sister.","a","sister"),
+    art("I need ___ ruler.","a","ruler"),
+    art("Brighton is ___ city.","a","city"),
+    art("Tom has ___ rabbit.","a","rabbit"),
+    art("It's ___ big elephant.","a","big","Es zählt das Wort direkt danach: „big“ beginnt nicht mit einem Vokal-Klang → a."),
+    art("We have ___ new teacher.","a","new"),
+    art("It's ___ yellow umbrella.","a","yellow","Es zählt das Wort direkt danach: „yellow“ beginnt nicht mit einem Vokal-Klang → a."),
+    art("This is ___ house in my street.","a","house","Das h in „house“ hörst du → a.")
+  ]}] },
+
+/* ------------------------------------------------------------------ 3 */
+{ id:"be", ico:"🐝", name:"Forms of be", desc:"am, is oder are – und die Kurzformen.", lab:"Setze ein: am, is oder are?",
+  rule:`<table><tr><th>Langform</th><th>Kurzform</th><th>Deutsch</th></tr>
+<tr><td>I <b>am</b></td><td>I'm</td><td>ich bin</td></tr><tr><td>you <b>are</b></td><td>you're</td><td>du bist</td></tr>
+<tr><td>he / she / it <b>is</b></td><td>he's / she's / it's</td><td>er / sie / es ist</td></tr>
+<tr><td>we <b>are</b></td><td>we're</td><td>wir sind</td></tr><tr><td>you <b>are</b></td><td>you're</td><td>ihr seid</td></tr>
+<tr><td>they <b>are</b></td><td>they're</td><td>sie sind</td></tr></table>
+<p>Tipp: Ersetze Namen durch ein Pronomen. <i>Tom and I</i> = <i>we</i> → are. <i>My sister</i> = <i>she</i> → is.</p>`,
+  toepfe:[
+   {n:9, items:[
+    c("I ___ eleven years old.",BE,"am"), c("My sister ___ in class 7L.",BE,"is",{why:"My sister = she → is."}),
+    c("We ___ at school today.",BE,"are"), c("The cats ___ in the garden.",BE,"are",{why:"The cats = they → are."}),
+    c("You ___ my friend.",BE,"are"), c("It ___ a big parcel.",BE,"is"),
+    c("Tom and I ___ good friends.",BE,"are",{why:"Tom and I = we → are."}), c("My parents ___ at home.",BE,"are",{why:"My parents = they → are."}),
+    c("Brighton ___ a city in England.",BE,"is",{why:"Brighton = it → is."}), c("I ___ from Germany.",BE,"am"),
+    c("The postman ___ downstairs.",BE,"is",{why:"The postman = he → is."}), c("They ___ awesome.",BE,"are"),
+    c("My uncle ___ very nice.",BE,"is",{why:"My uncle = he → is."}), c("Our classroom ___ upstairs.",BE,"is",{why:"Our classroom = it → is."}),
+    c("Mia and Ben ___ in the kitchen.",BE,"are",{why:"Mia and Ben = they → are."}), c("She ___ lucky.",BE,"is"),
+    c("His rabbits ___ white.",BE,"are",{why:"His rabbits = they → are."}), c("I ___ in my bedroom.",BE,"am")
+   ]},
+   {n:3, items:[
+    w("I am",["I'm"],{lab:"Schreibe die Kurzform.",exact:true}), w("you are",["you're"],{lab:"Schreibe die Kurzform.",exact:true}),
+    w("he is",["he's"],{lab:"Schreibe die Kurzform.",exact:true}), w("she is",["she's"],{lab:"Schreibe die Kurzform.",exact:true}),
+    w("it is",["it's"],{lab:"Schreibe die Kurzform.",exact:true,why:"it's (mit Apostroph) = it is. Ohne Apostroph (its) heißt es „sein/ihr“."}),
+    w("we are",["we're"],{lab:"Schreibe die Kurzform.",exact:true}), w("they are",["they're"],{lab:"Schreibe die Kurzform.",exact:true}),
+    w("they're",["they are"],{lab:"Schreibe die Langform.",exact:true}), w("she's",["she is"],{lab:"Schreibe die Langform.",exact:true}),
+    w("I'm",["I am"],{lab:"Schreibe die Langform.",exact:true})
+   ]}
+  ] },
+
+/* ------------------------------------------------------------------ 4 */
+{ id:"neg", ico:"🚫", name:"Verneinung mit be", desc:"am not, isn't, aren't – sag, was nicht stimmt.", lab:"Was passt in die Lücke?",
+  rule:`<p>Für die Verneinung setzt du <b>not</b> hinter die Form von be.</p>
+<table><tr><th>Langform</th><th>Kurzform</th></tr>
+<tr><td>I am <b>not</b></td><td>I'm not</td></tr><tr><td>you are <b>not</b></td><td>you aren't</td></tr>
+<tr><td>he / she / it is <b>not</b></td><td>he / she / it isn't</td></tr>
+<tr><td>we / you / they are <b>not</b></td><td>we / you / they aren't</td></tr></table>
+<p>Beim Schreiben sind hier Lang- und Kurzform beide richtig.</p>`,
+  toepfe:[
+   {n:5, items:[
+    c("I ___ from London. I'm from Brighton.",NOT,"am not"), c("Ben ___ at home. He's at school.",NOT,"isn't"),
+    c("We ___ sisters. We're friends.",NOT,"aren't"), c("The parcel ___ small. It's very big.",NOT,"isn't"),
+    c("My parents ___ divorced.",NOT,"aren't",{why:"My parents = they → aren't."}), c("You ___ in my class.",NOT,"aren't"),
+    c("It ___ Monday today. It's Sunday.",NOT,"isn't"), c("I ___ twelve. I'm eleven.",NOT,"am not"),
+    c("The cats ___ blue. They're black.",NOT,"aren't",{why:"The cats = they → aren't."}), c("My grandma ___ in Brighton.",NOT,"isn't",{why:"My grandma = she → isn't."})
+   ]},
+   {n:5, items:[
+    w("They are at home.","They are not at home.",{lab:"Verneine den Satz."}), w("She is my sister.","She is not my sister.",{lab:"Verneine den Satz."}),
+    w("I am from England.","I am not from England.",{lab:"Verneine den Satz."}), w("The dog is in the garden.","The dog is not in the garden.",{lab:"Verneine den Satz."}),
+    w("We are in the kitchen.","We are not in the kitchen.",{lab:"Verneine den Satz."}), w("It is cold today.","It is not cold today.",{lab:"Verneine den Satz."}),
+    w("You are boring.","You are not boring.",{lab:"Verneine den Satz."}), w("He is upstairs.","He is not upstairs.",{lab:"Verneine den Satz."}),
+    w("My pets are quiet.","My pets are not quiet.",{lab:"Verneine den Satz."}), w("Tom is eleven.","Tom is not eleven.",{lab:"Verneine den Satz."}),
+    w("He not is here.","He is not here.",{lab:"Hier ist ein Fehler. Schreibe den Satz richtig.",why:"not steht hinter der Form von be."}),
+    w("They isn't quiet.","They are not quiet.",{lab:"Hier ist ein Fehler. Schreibe den Satz richtig.",why:"they → are not / aren't."}),
+    w("We isn't at home.","We are not at home.",{lab:"Hier ist ein Fehler. Schreibe den Satz richtig.",why:"we → are not / aren't."})
+   ]}
+  ] },
+
+/* ------------------------------------------------------------------ 5 */
+{ id:"fragen", ico:"❓", name:"Fragen mit be", desc:"Fragen bauen, Fragewörter wählen, kurz antworten.",
+  rule:`<p>Bei Fragen mit be <b>tauschen</b> Verb und Person den Platz:<br><i>He is my friend.</i> → <i><b>Is he</b> my friend?</i></p>
+<p>Ein <b>Fragewort</b> steht ganz vorn: <i><b>Where</b> is my book?</i></p>
+<table><tr><td><b>what</b></td><td>was</td><td><b>who</b></td><td>wer</td></tr><tr><td><b>where</b></td><td>wo, woher</td><td><b>when</b></td><td>wann</td></tr><tr><td><b>why</b></td><td>warum</td><td></td><td></td></tr></table>
+<p>Kurzantworten: <i>Are you sure? – Yes, I am. / No, I'm not.</i> &nbsp; <i>Is she at home? – No, she isn't.</i></p>`,
+  toepfe:[
+   {n:3, items:[
+    b(["is","your","family","big"],"Is your family big?"), b(["are","your","friends","nice"],"Are your friends nice?"),
+    b(["is","your","dad","at","home"],"Is your dad at home?"), b(["are","you","from","England"],"Are you from England?"),
+    b(["where","is","my","pencil case"],"Where is my pencil case?"), b(["what","is","in","the","parcel"],"What is in the parcel?"),
+    b(["who","is","your","class teacher"],"Who is your class teacher?"), b(["why","are","you","here"],"Why are you here?"),
+    b(["is","the","postman","downstairs"],"Is the postman downstairs?"), b(["where","are","your","parents"],"Where are your parents?")
+   ]},
+   {n:3, items:[
+    c("___ is in the parcel? – Two books.",QW,"What",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einer Sache → What (was)."}),
+    c("___ is your friend? – Tom.",QW,"Who",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einer Person → Who (wer)."}),
+    c("___ are you from? – I'm from Germany.",QW,"Where",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einem Ort → Where (wo, woher)."}),
+    c("___ are you here? – Because I need help.",QW,"Why",{lab:"Welches Fragewort passt?",why:"Die Antwort beginnt mit Because (weil) → Why (warum)."}),
+    c("___ is your birthday? – On Monday.",QW,"When",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einem Zeitpunkt → When (wann)."}),
+    c("___ is the postman? – He's downstairs.",QW,"Where",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einem Ort → Where (wo)."}),
+    c("___ is your name? – My name is Lucy.",QW,"What",{lab:"Welches Fragewort passt?",why:"What is your name? – Wie (wörtlich: was) ist dein Name?"}),
+    c("___ is your class teacher? – Mr Green.",QW,"Who",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einer Person → Who (wer)."}),
+    c("___ is your favourite colour? – Blue.",QW,"What",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einer Sache → What (was)."}),
+    c("___ are your parents? – They're at home.",QW,"Where",{lab:"Welches Fragewort passt?",why:"Gefragt wird nach einem Ort → Where (wo)."}),
+    c("___ is Ben upstairs? – Because his room is upstairs.",QW,"Why",{lab:"Welches Fragewort passt?",why:"Die Antwort beginnt mit Because (weil) → Why (warum)."})
+   ]},
+   {n:3, items:[
+    w("She is in my class.","Is she in my class?",{lab:"Mache aus dem Satz eine Frage."}), w("They are your friends.","Are they your friends?",{lab:"Mache aus dem Satz eine Frage."}),
+    w("He is at home.","Is he at home?",{lab:"Mache aus dem Satz eine Frage."}), w("It is your book.","Is it your book?",{lab:"Mache aus dem Satz eine Frage."}),
+    w("You are from Germany.","Are you from Germany?",{lab:"Mache aus dem Satz eine Frage."}), w("The dog is in the garden.","Is the dog in the garden?",{lab:"Mache aus dem Satz eine Frage."}),
+    w("Mia and Ben are upstairs.","Are Mia and Ben upstairs?",{lab:"Mache aus dem Satz eine Frage."}), w("I am lucky.","Am I lucky?",{lab:"Mache aus dem Satz eine Frage."})
+   ]},
+   {n:3, items:[
+    c("Are you from England? – No, I ___.",NOT,"am not",{lab:"Ergänze die Kurzantwort."}),
+    c("Is your sister nice? – Yes, she ___.",BE,"is",{lab:"Ergänze die Kurzantwort."}),
+    c("Are they your friends? – Yes, they ___.",BE,"are",{lab:"Ergänze die Kurzantwort."}),
+    c("Is the parcel big? – No, it ___.",NOT,"isn't",{lab:"Ergänze die Kurzantwort."}),
+    c("Are your parents at home? – No, they ___.",NOT,"aren't",{lab:"Ergänze die Kurzantwort."}),
+    c("Am I in your class? – Yes, you ___.",BE,"are",{lab:"Ergänze die Kurzantwort."}),
+    c("Is Ben your brother? – Yes, he ___.",BE,"is",{lab:"Ergänze die Kurzantwort."}),
+    c("Are you eleven? – Yes, I ___.",BE,"am",{lab:"Ergänze die Kurzantwort."})
+   ]}
+  ] },
+
+/* ------------------------------------------------------------------ 6 */
+{ id:"poss", ico:"🎒", name:"Possessive determiners", desc:"my, your, his, her … – wem gehört was?", lab:"Welches Wort passt?",
+  rule:`<table><tr><th>Person</th><th>Besitz</th><th>Deutsch</th></tr>
+<tr><td>I</td><td><b>my</b></td><td>mein/e</td></tr><tr><td>you</td><td><b>your</b></td><td>dein/e, euer/eure</td></tr>
+<tr><td>he</td><td><b>his</b></td><td>sein/e</td></tr><tr><td>she</td><td><b>her</b></td><td>ihr/e</td></tr>
+<tr><td>it</td><td><b>its</b></td><td>sein/e, ihr/e</td></tr><tr><td>we</td><td><b>our</b></td><td>unser/e</td></tr>
+<tr><td>they</td><td><b>their</b></td><td>ihr/e</td></tr></table>
+<p>Frage dich immer: <mark>Wem</mark> gehört es? Und: <i>its</i> schreibt man ohne Apostroph.</p>`,
+  toepfe:[
+   {n:9, items:[
+    c("This is Emma. ___ brother is called Ben.",POSS,"her",{why:"Emma = she → her."}),
+    c("This is Tom. ___ sister is nine.",POSS,"his",{why:"Tom = he → his."}),
+    c("I am Mia. ___ hometown is Brighton.",POSS,"my",{why:"I → my."}),
+    c("We are in class 7L. ___ classroom is big.",POSS,"our",{why:"we → our."}),
+    c("Tom and Mia are friends. ___ school is in Brighton.",POSS,"their",{why:"Tom and Mia = they → their."}),
+    c("The rabbit is white. ___ name is Snow.",POSS,"its",{why:"The rabbit = it → its."}),
+    c("Hello Ben! Is this ___ bag? – Yes, it's my bag.",POSS,"your",{why:"Ben wird angesprochen (you) → your."}),
+    c("My parents have a car. ___ car is red.",POSS,"their",{why:"My parents = they → their."}),
+    c("My grandma lives in London. ___ house is small.",POSS,"her",{why:"My grandma = she → her."}),
+    c("My uncle has a dog. ___ dog is called Rocky.",POSS,"his",{why:"My uncle = he → his."}),
+    c("My sister and I have a cat. ___ cat is black.",POSS,"our",{why:"My sister and I = we → our."}),
+    c("I have a hobby. ___ hobby is football.",POSS,"my",{why:"I → my."}),
+    c("The school is new. ___ classrooms are big.",POSS,"its",{why:"The school = it → its."}),
+    c("Mr Green is a teacher. ___ class is 7B.",POSS,"his",{why:"Mr Green = he → his."}),
+    c("Mrs Lee teaches art. ___ classroom is upstairs.",POSS,"her",{why:"Mrs Lee = she → her."}),
+    c("What's ___ name? – My name is Tom.",POSS,"your",{why:"Du fragst jemanden (you) → your."}),
+    c("The cats are in the garden. ___ names are Salt and Pepper.",POSS,"their",{why:"The cats = they → their."}),
+    c("We live in Park Road. ___ house is small.",POSS,"our",{why:"we → our."})
+   ]},
+   {n:3, items:[
+    c("unser Klassenzimmer → ___ classroom",POSS,"our",{lab:"Übersetze das Wort in der Lücke."}),
+    c("ihre Namen (von Tom und Mia) → ___ names",POSS,"their",{lab:"Übersetze das Wort in der Lücke."}),
+    c("seine Katze (von Ben) → ___ cat",POSS,"his",{lab:"Übersetze das Wort in der Lücke."}),
+    c("ihr Bruder (von Emma) → ___ brother",POSS,"her",{lab:"Übersetze das Wort in der Lücke."}),
+    c("meine Tante → ___ aunt",POSS,"my",{lab:"Übersetze das Wort in der Lücke."}),
+    c("dein Federmäppchen → ___ pencil case",POSS,"your",{lab:"Übersetze das Wort in der Lücke."}),
+    c("eure Schule → ___ school",POSS,"your",{lab:"Übersetze das Wort in der Lücke.",why:"your heißt dein/e und auch euer/eure."})
+   ]}
+  ] },
+
+/* ------------------------------------------------------------------ 7 */
+{ id:"vok", ico:"📚", name:"Vokabeln im Satz", desc:"Wörter im Zusammenhang und ganze Sätze übersetzen.",
+  rule:`<p><b>So gehst du vor:</b> Erst suchst du das Wort, das in den Satz passt. Dann übersetzt du ganze Sätze ins Englische.</p>
+<p>Denk beim Schreiben an den <mark>großen Satzanfang</mark>, an <mark>I</mark> (immer groß) und an das Satzzeichen am Ende. Kurz- und Langformen (<i>I'm</i> / <i>I am</i>) sind beide richtig.</p>`,
+  toepfe:[
+   {n:6, items:[
+    c("The ___ rings. Maybe it's the postman.",["doorbell","umbrella","glass","sandwich"],"doorbell",{lab:"Welches Wort passt?",mix:true,why:"the doorbell = die Türklingel"}),
+    c("My mother's sister is my ___.",["aunt","uncle","cousin","grandma"],"aunt",{lab:"Welches Wort passt?",mix:true,why:"aunt = die Tante"}),
+    c("My father's brother is my ___.",["uncle","aunt","sister","grandpa"],"uncle",{lab:"Welches Wort passt?",mix:true,why:"uncle = der Onkel"}),
+    c("My pen and my ruler are in my ___.",["pencil case","doorbell","garden","hometown"],"pencil case",{lab:"Welches Wort passt?",mix:true,why:"pencil case = das Federmäppchen"}),
+    c("My parents aren't together. They are ___.",["divorced","lucky","tidy","cute"],"divorced",{lab:"Welches Wort passt?",mix:true,why:"divorced = geschieden"}),
+    c("My bedroom isn't downstairs. It's ___.",["upstairs","under","together","today"],"upstairs",{lab:"Welches Wort passt?",mix:true,why:"upstairs = oben"}),
+    c("Red, blue and green are ___.",["colours","pets","hobbies","days"],"colours",{lab:"Welches Wort passt?",mix:true,why:"colours = Farben"}),
+    c("Be ___, please! I can't hear the teacher.",["quiet","weird","free","big"],"quiet",{lab:"Welches Wort passt?",mix:true,why:"quiet = ruhig, leise"}),
+    c("The ___ has a parcel for you.",["postman","budgie","doorbell","student"],"postman",{lab:"Welches Wort passt?",mix:true,why:"postman = der Postbote"}),
+    c("Can you ___ your name, please? – Yes: T-O-M.",["spell","swim","draw","find"],"spell",{lab:"Welches Wort passt?",mix:true,why:"(to) spell = buchstabieren"}),
+    c("A hamster, a budgie and a rabbit are ___.",["pets","school things","family words","colours"],"pets",{lab:"Welches Wort passt?",mix:true,why:"pets = Haustiere"}),
+    c("My mum and my dad are my ___.",["parents","cousins","friends","teachers"],"parents",{lab:"Welches Wort passt?",mix:true,why:"parents = Eltern"}),
+    c("Monday, Tuesday and Friday are ___.",["days","years","hours","words"],"days",{lab:"Welches Wort passt?",mix:true,why:"days = Tage"}),
+    c("I don't like snakes. They are ___.",["scary","cute","useful","tidy"],"scary",{lab:"Welches Wort passt?",mix:true,why:"scary = unheimlich, gruselig"}),
+    c("I have a ruler, a rubber and a ___ in my pencil case.",["sharpener","seagull","blazer","palace"],"sharpener",{lab:"Welches Wort passt?",mix:true,why:"sharpener = der Anspitzer"}),
+    c("I don't ___ this word. Can you help me?",["understand","dance","live","teach"],"understand",{lab:"Welches Wort passt?",mix:true,why:"(to) understand = verstehen"})
+   ]},
+   {n:6, items:[
+    w("Ich bin elf Jahre alt.",["I am eleven years old.","I am eleven."],{lab:"Übersetze ins Englische."}),
+    w("Mein Name ist Tom.",["My name is Tom."],{lab:"Übersetze ins Englische."}),
+    w("Ich komme aus Deutschland.",["I am from Germany.","I come from Germany."],{lab:"Übersetze ins Englische."}),
+    w("Wie alt bist du?",["How old are you?"],{lab:"Übersetze ins Englische."}),
+    w("Woher kommst du?",["Where are you from?"],{lab:"Übersetze ins Englische."}),
+    w("Wie geht es dir?",["How are you?"],{lab:"Übersetze ins Englische."}),
+    w("Das ist mein Bruder.",["This is my brother.","That is my brother."],{lab:"Übersetze ins Englische."}),
+    w("Ich mag Hunde und Katzen.",["I like dogs and cats."],{lab:"Übersetze ins Englische."}),
+    w("Ich mag keine Spinnen.",["I do not like spiders."],{lab:"Übersetze ins Englische.",why:"Ich mag kein/e … = I don't like …"}),
+    w("Meine Schwester ist oben.",["My sister is upstairs."],{lab:"Übersetze ins Englische."}),
+    w("Der Hund ist im Garten.",["The dog is in the garden."],{lab:"Übersetze ins Englische."}),
+    w("Wo ist mein Federmäppchen?",["Where is my pencil case?"],{lab:"Übersetze ins Englische."}),
+    w("Das Paket ist sehr groß.",["The parcel is very big."],{lab:"Übersetze ins Englische."}),
+    w("Vielleicht ist es der Postbote.",["Maybe it is the postman.","It is maybe the postman."],{lab:"Übersetze ins Englische."}),
+    w("Meine Eltern sind zu Hause.",["My parents are at home."],{lab:"Übersetze ins Englische."}),
+    w("Kannst du mir bitte helfen?",["Can you help me, please?","Can you please help me?","Please can you help me?"],{lab:"Übersetze ins Englische."}),
+    w("Wir sind in der Schule.",["We are at school."],{lab:"Übersetze ins Englische.",why:"in der Schule = at school"}),
+    w("Meine Tante hat ein Kaninchen.",["My aunt has a rabbit."],{lab:"Übersetze ins Englische."}),
+    w("Es sind zwei Katzen im Garten.",["There are two cats in the garden."],{lab:"Übersetze ins Englische.",why:"Es sind … / Es gibt … = There are …"}),
+    w("Du hast Glück.",["You are lucky."],{lab:"Übersetze ins Englische.",why:"Glück haben = (to) be lucky"}),
+    w("Freut mich, dich kennenzulernen.",["Nice to meet you."],{lab:"Übersetze ins Englische."}),
+    w("Ich habe keinen Bruder.",["I do not have a brother."],{lab:"Übersetze ins Englische.",why:"Ich habe kein/e/n … = I don't have …"}),
+    w("Heute ist Montag.",["Today is Monday.","It is Monday today."],{lab:"Übersetze ins Englische."}),
+    w("Sein Wellensittich ist blau.",["His budgie is blue."],{lab:"Übersetze ins Englische."})
+   ]}
+  ] }
+];
+
+/* =====================================================================
+   LOGIK — ab hier musst du nichts ändern.
+   ===================================================================== */
+const $ = s => document.querySelector(s), app = $("#app");
+const esc = t => String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+/* wörtlich vergleichen (nur Groß/Klein, Apostroph-Varianten, Satzzeichen egal) */
+const norm = s => String(s).toLowerCase().replace(/[‘’´`ʼ]/g,"'").replace(/[.,!?;:"“”„]/g," ").replace(/\s+/g," ").trim();
+/* Kurz- und Langformen gleichsetzen */
+const canon = s => norm(s).replace(/\bisn't\b/g,"is not").replace(/\baren't\b/g,"are not").replace(/\bdon't\b/g,"do not")
+  .replace(/(\w)'m\b/g,"$1 am").replace(/(\w)'re\b/g,"$1 are").replace(/(\w)'s\b/g,"$1 is").replace(/\s+/g," ").trim();
+const sterne = p => p>=90?3 : p>=70?2 : p>=50?1 : 0;
+const sternHtml = n => `<span class="stars" aria-label="${n} von 3 Sternen">${[0,1,2].map(i=>`<span class="${i<n?"on":""}">★</span>`).join("")}</span>`;
+const LOB = ["Richtig!","Super!","Genau!","Well done!","Great!","Stark!"];
+
+/* Fortschritt: nur für diese Sitzung (sessionStorage), nichts wird dauerhaft gespeichert */
+const KEY = "u1.lerntheke";
+let stand = {};
+try { stand = JSON.parse(sessionStorage.getItem(KEY) || "{}") || {}; } catch (e) { stand = {}; }
+const merke = () => { try { sessionStorage.setItem(KEY, JSON.stringify(stand)); } catch (e) {} };
+
+let lauf = null; // { st, items, i, res:[], text }
+
+function ziehe(st) {
+  const s = stand[st.id] || {};
+  if (st.texte) {
+    const t = st.texte[(s.n || 0) % st.texte.length];
+    return { text:t, items: shuffle(t.items).slice(0, st.n) };
+  }
+  let items = [];
+  st.toepfe.forEach(tp => { items = items.concat(shuffle(tp.items).slice(0, tp.n)); });
+  return { text:null, items };
+}
+
+/* ------------------------------------------------------------ Übersicht */
+function zeigeTheke() {
+  lauf = null;
+  const best = STATIONEN.map(st => (stand[st.id] || {}).best), gespielt = best.filter(b => b != null).length;
+  const geschafft = best.filter(b => b != null && sterne(b) > 0).length;
+  const sum = best.reduce((a,b) => a + (b != null ? sterne(b) : 0), 0), max = STATIONEN.length * 3;
+  const pct = Math.round(sum / max * 100);
+  let next = STATIONEN.find(st => !stand[st.id]);
+  if (!next) next = STATIONEN.slice().sort((a,b) => stand[a.id].best - stand[b.id].best)[0];
+  const fertig = sum === max;
+  const tipp = fertig ? "Alle Sterne gesammelt – du bist bereit für die Klassenarbeit!"
+    : gespielt === 0 ? "Such dir eine Station aus und leg los."
+    : (stand[next.id] ? "Tipp: Übe noch einmal an Station " : "Tipp: Probiere als Nächstes Station ") + (STATIONEN.indexOf(next)+1) + " – " + next.name + ".";
+  app.innerHTML = `
+  <section class="sheet" aria-label="Dein Fortschritt">
+    <div class="pass">
+      <div class="ring" style="--p:${pct}"><div><span><b>${pct}%</b><small>fit für die KA</small></span></div></div>
+      <div>
+        <h2>Dein Lernpass</h2>
+        <p><b>${geschafft} von ${STATIONEN.length}</b> Stationen geschafft &nbsp;·&nbsp; <b>${sum} von ${max}</b> Sternen</p>
+        <div class="meter"><i style="width:${pct}%"></i></div>
+        <p class="tipp">${esc(tipp)}</p>
+      </div>
+    </div>
+  </section>
+  <section class="sheet">
+    <h2>Die Stationen</h2>
+    <p class="hint">Ab der Hälfte der Punkte gibt es den ersten Stern, ab 70 % zwei, ab 90 % drei. Es zählt dein bestes Ergebnis.</p>
+    <div class="stands">${STATIONEN.map((st,i) => {
+      const s = stand[st.id], n = s ? sterne(s.best) : 0;
+      return `<button type="button" class="stand${n?" done":""}" data-id="${st.id}">
+        <span class="top"><span class="nr">Station ${i+1}</span><span class="ico" aria-hidden="true">${st.ico}</span></span>
+        <b>${esc(st.name)}</b><span class="desc">${esc(st.desc)}</span>
+        ${sternHtml(n)}
+        <span class="mini"><i style="width:${s?s.best:0}%"></i></span>
+        <span class="stat"><span>${s ? "Bestes Ergebnis: "+s.best+" %" : "Noch nicht geübt"}</span><span>${s ? s.n+"× geübt" : ""}</span></span>
+      </button>`; }).join("")}</div>
+  </section>
+  <p class="hint">Dein Fortschritt wird nicht gespeichert. Er bleibt nur, solange dieses Browserfenster offen ist. ${gespielt ? '<button type="button" class="btn ghost" id="reset" style="font-size:.9rem;padding:3px 12px;margin-left:6px">Fortschritt löschen</button>' : ""}</p>`;
+  window.scrollTo(0,0);
+}
+
+/* ------------------------------------------------------------- Einstieg */
+function zeigeIntro(st) {
+  const nr = STATIONEN.indexOf(st) + 1, z = ziehe(st);
+  lauf = { st, items:z.items, text:z.text, i:0, res:[] };
+  app.innerHTML = `<section class="sheet">
+    <div class="bar"><h2>${st.ico} Station ${nr}: ${esc(st.name)}</h2><button type="button" class="btn ghost" data-go="theke">← Zur Theke</button></div>
+    <p>${esc(st.desc)} Dich erwarten <b>${lauf.items.length} Aufgaben</b>.</p>
+    <div class="rule"><p class="hint" style="margin-bottom:4px">Merkzettel</p>${st.rule}</div>
+    <p><button type="button" class="btn" id="los">Los geht's!</button></p></section>`;
+  window.scrollTo(0,0); $("#los").focus();
+}
+
+/* --------------------------------------------------------------- Aufgabe */
+const frage = (q, fill, cls) => esc(q).replace(/___/g, `<span class="gap ${cls||""}">${fill ? esc(fill) : "&nbsp;"}</span>`);
+
+function zeigeAufgabe() {
+  const { st, items, i, res, text } = lauf, it = items[i], nr = STATIONEN.indexOf(st) + 1;
+  const lab = it.lab || st.lab || (it.t === "b" ? "Baue die Frage: Tippe die Wörter in der richtigen Reihenfolge an." : "");
+  let body;
+  if (it.t === "c") {
+    const o = it.mix ? shuffle(it.o) : it.o;
+    body = `<p class="qt" id="qt">${frage(it.q)}</p><div class="tiles" id="opts">${o.map(x => `<button type="button" class="tile" data-v="${esc(x)}">${esc(x)}</button>`).join("")}</div>`;
+  } else if (it.t === "w") {
+    body = `<p class="qt">${esc(it.q)}</p><input type="text" id="inp" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Deine Antwort" placeholder="Schreibe hier …">
+      <div class="row"><button type="button" class="btn" id="check">Prüfen</button></div>`;
+  } else {
+    lauf.build = [];
+    body = `<div class="line" id="line" aria-label="Dein Satz"></div><div class="tiles" id="bank">${shuffle(it.w.map((x,k)=>k)).map(k => `<button type="button" class="tile" data-k="${k}">${esc(it.w[k])}</button>`).join("")}</div>
+      <div class="row"><button type="button" class="btn" id="check" disabled>Prüfen</button><button type="button" class="btn ghost" id="clear">Zurücksetzen</button></div>`;
+  }
+  app.innerHTML = `<section class="sheet">
+    <div class="bar"><b>${st.ico} Station ${nr}: ${esc(st.name)}</b><button type="button" class="btn ghost" data-go="theke">← Zur Theke</button></div>
+    <div class="dots" aria-label="Aufgabe ${i+1} von ${items.length}">${items.map((_,k) => `<i class="${k<res.length?(res[k].ok?"ok":"bad"):k===i?"now":""}"></i>`).join("")}</div>
+    ${text ? `<div class="text"><h3>${esc(text.titel)}</h3>${text.html}</div>` : ""}
+    <p class="lab">Aufgabe ${i+1} von ${items.length}${lab ? " · " + esc(lab) : ""}</p>
+    ${body}
+    <div id="fb" aria-live="polite"></div></section>`;
+  if (it.t === "w") $("#inp").focus();
+  if (it.t === "b") malBau();
+  if (!text || i === 0) window.scrollTo(0,0);
+}
+
+function malBau() {
+  const it = lauf.items[lauf.i], bl = lauf.build;
+  $("#line").innerHTML = bl.map((k,pos) => `<button type="button" class="tile" data-pos="${pos}">${esc(pos===0 ? it.w[k].charAt(0).toUpperCase()+it.w[k].slice(1) : it.w[k])}</button>`).join("") + (bl.length ? '<span class="end">?</span>' : '<span class="hint">Tippe unten die Wörter an …</span>');
+  document.querySelectorAll("#bank .tile").forEach(t => t.classList.toggle("used", bl.includes(+t.dataset.k)));
+  $("#check").disabled = bl.length !== it.w.length;
+}
+
+function werte(given) {
+  const it = lauf.items[lauf.i]; let ok, tips = [], loesung;
+  if (it.t === "c") { ok = given === it.a; loesung = it.q.includes("___") ? it.q.replace(/___/g, it.a) : it.a; }
+  else if (it.t === "w") {
+    const f = it.exact ? norm : canon;
+    ok = it.ok.some(a => f(a) === f(given)); loesung = it.ok[0];
+    if (ok && !it.exact) {
+      const g = given.trim();
+      if (/^[a-zäöü]/.test(g)) tips.push("Der Satzanfang wird großgeschrieben.");
+      if (/(^|\s)i(\s|'|$)/.test(g)) tips.push("I (ich) wird immer großgeschrieben.");
+      if (/\?$/.test(loesung) && !/\?$/.test(g)) tips.push("Vergiss das Fragezeichen nicht.");
+      else if (/\.$/.test(loesung) && !/[.!]$/.test(g)) tips.push("Vergiss den Punkt am Satzende nicht.");
+    }
+  } else { ok = norm(given) === norm(it.a); loesung = it.a; }
+  lauf.res.push({ ok, it, given, loesung });
+  return { ok, tips, loesung };
+}
+
+function zeigeFeedback(r) {
+  const it = lauf.items[lauf.i], letzte = lauf.i === lauf.items.length - 1;
+  const d = document.querySelectorAll(".dots i")[lauf.i]; d.className = r.ok ? "ok" : "bad";
+  $("#fb").innerHTML = `<div class="fb ${r.ok?"ok":"bad"}"><strong>${r.ok ? "✓ " + LOB[Math.floor(Math.random()*LOB.length)] : "✗ Noch nicht ganz."}</strong>
+    ${r.ok ? "" : `<p>Richtig ist: <b>${esc(r.loesung)}</b></p>`}
+    ${!r.ok && it.why ? `<p>${esc(it.why)}</p>` : ""}
+    ${r.tips.map(t => `<p>Achtung: ${esc(t)}</p>`).join("")}</div>
+    <div class="row"><button type="button" class="btn" id="next">${letzte ? "Zur Auswertung" : "Weiter →"}</button></div>`;
+  $("#next").focus({ preventScroll:true }); $("#next").scrollIntoView({ block:"nearest" });
+}
+
+function antwortWahl(btn) {
+  const it = lauf.items[lauf.i], r = werte(btn.dataset.v);
+  document.querySelectorAll("#opts .tile").forEach(t => { t.disabled = true; if (t.dataset.v === it.a) t.classList.add("right"); });
+  if (!r.ok) btn.classList.add("wrong");
+  const qt = $("#qt"); if (it.q.includes("___")) qt.innerHTML = frage(it.q, it.a, r.ok ? "ok" : "bad");
+  zeigeFeedback(r);
+}
+function antwortText() {
+  const inp = $("#inp"); if (!inp || inp.disabled) return;
+  if (!inp.value.trim()) { inp.focus(); return; }
+  const r = werte(inp.value); inp.disabled = true; inp.className = r.ok ? "ok" : "bad"; $("#check").hidden = true;
+  zeigeFeedback(r);
+}
+function antwortBau() {
+  const it = lauf.items[lauf.i], r = werte(lauf.build.map(k => it.w[k]).join(" ") + "?");
+  document.querySelectorAll("#line .tile, #bank .tile").forEach(t => { t.disabled = true; });
+  document.querySelectorAll("#line .tile").forEach(t => t.classList.add(r.ok ? "right" : "wrong"));
+  $("#check").hidden = true; $("#clear").hidden = true;
+  zeigeFeedback(r);
+}
+
+/* ------------------------------------------------------------ Auswertung */
+function zeigeEnde() {
+  const { st, res } = lauf, richtig = res.filter(r => r.ok).length, pct = Math.round(richtig / res.length * 100), n = sterne(pct);
+  const alt = stand[st.id], rekord = !alt || pct > alt.best;
+  stand[st.id] = { best: alt ? Math.max(alt.best, pct) : pct, last:pct, n: (alt ? alt.n : 0) + 1 }; merke();
+  const msg = n === 3 ? "Perfekt vorbereitet! Diese Station sitzt." : n === 2 ? "Sehr gut! Schau dir deine Fehler noch einmal an." : n === 1 ? "Geschafft! Mit einer zweiten Runde holst du noch mehr Sterne." : "Das üben wir noch einmal. Lies den Merkzettel und versuche es erneut.";
+  const fehler = res.filter(r => !r.ok);
+  app.innerHTML = `<section class="sheet end">
+    <h2>${st.ico} ${esc(st.name)} – Auswertung</h2>
+    ${sternHtml(n)}
+    <p class="score">${richtig} von ${res.length} richtig (${pct} %)</p>
+    <p>${msg}${rekord && alt ? " <b>Neuer Bestwert!</b>" : ""}</p>
+    ${fehler.length ? `<div class="miss"><p><b>Das schaust du dir noch einmal an:</b></p><ul>${fehler.map(f => `<li>${esc(f.it.t==="b" ? "Frage bauen" : f.it.q)}<br>${f.it.t==="c" && f.it.q.includes("___") ? "" : `Deine Antwort: <s>${esc(f.given)}</s> · `}Richtig: <b>${esc(f.loesung)}</b></li>`).join("")}</ul></div>` : ""}
+    <div class="row" style="justify-content:center"><button type="button" class="btn" data-go="theke">Zur Theke</button><button type="button" class="btn ghost" data-go="nochmal">Noch eine Runde (neue Aufgaben)</button></div>
+  </section>`;
+  window.scrollTo(0,0);
+}
+
+/* --------------------------------------------------------------- Ereignisse */
+app.addEventListener("click", e => {
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.classList.contains("stand")) return zeigeIntro(STATIONEN.find(s => s.id === t.dataset.id));
+  if (t.dataset.go === "theke") return zeigeTheke();
+  if (t.dataset.go === "nochmal") return zeigeIntro(lauf.st);
+  if (t.id === "reset") { stand = {}; merke(); return zeigeTheke(); }
+  if (t.id === "los") return zeigeAufgabe();
+  if (t.id === "next") { lauf.i++; return lauf.i < lauf.items.length ? zeigeAufgabe() : zeigeEnde(); }
+  if (t.id === "check") return lauf.items[lauf.i].t === "w" ? antwortText() : antwortBau();
+  if (t.id === "clear") { lauf.build = []; return malBau(); }
+  if (t.closest("#opts") && !t.disabled) return antwortWahl(t);
+  if (t.closest("#bank") && !t.disabled) { lauf.build.push(+t.dataset.k); return malBau(); }
+  if (t.closest("#line") && !t.disabled) { lauf.build.splice(+t.dataset.pos, 1); return malBau(); }
+});
+app.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "inp") { e.preventDefault(); antwortText(); } });
+
+zeigeTheke();
+</script>
+</body>
+</html>

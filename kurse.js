@@ -223,6 +223,13 @@ const MATERIAL = [
     stand:"2026-09", neu:true },
 
    { fach:"englisch", klasse:5, bereich:"kap1-5",
+    titel:"Lerntheke Unit 1",
+    typ:"uebung",
+    url:"eng/seki/unit1-lerntheke.html",
+    info:"Sieben Stationen für die Klassenarbeit: Reading, a/an, forms of be, Verneinung, Fragen mit be, possessive determiners und Vokabeln im Satz. Mit Sofortauswertung, Sternen und Lernpass auf der Übersichtsseite.",
+    stand:"2026-11", neu:true},
+
+   { fach:"englisch", klasse:5, bereich:"kap1-5",
     titel:"Klassenarbeitsvorbereitung Unit 1",
     typ:"plan",
     url:"eng/seki/unit1-klassenarbeit.html",
