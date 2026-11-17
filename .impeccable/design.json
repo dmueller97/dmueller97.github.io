@@ -1,0 +1,643 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-17T22:18:03+00:00",
+  "title": "Design System: Unterrichtsmaterial",
+  "extensions": {
+    "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Desk Grey",
+        "canonical": "#F1F0EA",
+        "tonalRamp": [
+          "#2B2922",
+          "#494637",
+          "#68644B",
+          "#928B63",
+          "#ABA687",
+          "#C2BFAD",
+          "#DBDAD1",
+          "#F3F3F1"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Carbon Ink",
+        "canonical": "#1D2422",
+        "tonalRamp": [
+          "#242927",
+          "#3B4542",
+          "#51615D",
+          "#6E8780",
+          "#8FA39D",
+          "#B2BDBA",
+          "#D4D9D7",
+          "#F2F3F3"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Pencil Grey",
+        "canonical": "#4E5855",
+        "tonalRamp": [
+          "#252827",
+          "#3D4241",
+          "#555E5B",
+          "#73827D",
+          "#949E9B",
+          "#B4BBB9",
+          "#D5D8D7",
+          "#F2F3F2"
+        ]
+      },
+      "keyline": {
+        "role": "neutral",
+        "displayName": "Keyline",
+        "canonical": "#1D2422",
+        "tonalRamp": [
+          "#242927",
+          "#3B4542",
+          "#51615D",
+          "#6E8780",
+          "#8FA39D",
+          "#B2BDBA",
+          "#D4D9D7",
+          "#F2F3F3"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Card White",
+        "canonical": "#FFFFFF",
+        "tonalRamp": [
+          "#262626",
+          "#404040",
+          "#595959",
+          "#7A7A7A",
+          "#999999",
+          "#B8B8B8",
+          "#D6D6D6",
+          "#F2F2F2"
+        ]
+      },
+      "field": {
+        "role": "neutral",
+        "displayName": "Pressed Grey",
+        "canonical": "#E4E2DA",
+        "tonalRamp": [
+          "#2A2823",
+          "#474439",
+          "#65604E",
+          "#8D8668",
+          "#A7A18B",
+          "#C0BDAF",
+          "#DAD8D2",
+          "#F3F3F1"
+        ]
+      },
+      "inf-box": {
+        "role": "primary",
+        "displayName": "Schoolbook Green",
+        "canonical": "#2F6B4F",
+        "tonalRamp": [
+          "#1E2F27",
+          "#2E5141",
+          "#3D765B",
+          "#4CA97E",
+          "#76BC9B",
+          "#A3CCB9",
+          "#CDE0D7",
+          "#F0F5F2"
+        ]
+      },
+      "inf-stock": {
+        "role": "primary",
+        "displayName": "Pale Karo Green",
+        "canonical": "#DCEFD9",
+        "tonalRamp": [
+          "#202F1D",
+          "#33522E",
+          "#44773B",
+          "#57AB4A",
+          "#7EBE74",
+          "#A8CDA2",
+          "#CFE0CC",
+          "#F1F5F0"
+        ]
+      },
+      "inf-rule": {
+        "role": "primary",
+        "displayName": "Karo Rule Green",
+        "canonical": "#BCDAB6",
+        "tonalRamp": [
+          "#212E1F",
+          "#364E31",
+          "#497141",
+          "#60A153",
+          "#85B67C",
+          "#ACC9A6",
+          "#D1DECE",
+          "#F1F4F0"
+        ]
+      },
+      "inf-text": {
+        "role": "primary",
+        "displayName": "Deep Leaf",
+        "canonical": "#245740",
+        "tonalRamp": [
+          "#1D2F27",
+          "#2D5242",
+          "#3B785C",
+          "#49AC7F",
+          "#74BE9D",
+          "#A2CDBA",
+          "#CCE0D7",
+          "#F0F5F2"
+        ]
+      },
+      "eng-box": {
+        "role": "secondary",
+        "displayName": "Correction Red",
+        "canonical": "#C2372B",
+        "tonalRamp": [
+          "#341A18",
+          "#5C2823",
+          "#88322B",
+          "#C73A2E",
+          "#D26960",
+          "#D99B96",
+          "#E6C9C7",
+          "#F6EFEF"
+        ]
+      },
+      "eng-stock": {
+        "role": "secondary",
+        "displayName": "Exercise-Book Yellow",
+        "canonical": "#FFE89A",
+        "tonalRamp": [
+          "#3C3210",
+          "#6C5813",
+          "#A28110",
+          "#F2BB03",
+          "#F3CA3F",
+          "#ECD483",
+          "#EEE3BE",
+          "#F8F5EC"
+        ]
+      },
+      "eng-rule": {
+        "role": "secondary",
+        "displayName": "Margin Rule Gold",
+        "canonical": "#E6CD6E",
+        "tonalRamp": [
+          "#362F17",
+          "#5F5220",
+          "#8D7726",
+          "#CFAC26",
+          "#D8BE5A",
+          "#DDCD93",
+          "#E7E0C5",
+          "#F6F5EE"
+        ]
+      },
+      "eng-text": {
+        "role": "secondary",
+        "displayName": "Brick Ink",
+        "canonical": "#9E2A20",
+        "tonalRamp": [
+          "#351A18",
+          "#5D2722",
+          "#8A3029",
+          "#CA382B",
+          "#D5675D",
+          "#DA9A95",
+          "#E6C9C6",
+          "#F6EFEE"
+        ]
+      },
+      "on-box": {
+        "role": "neutral",
+        "displayName": "On-Box White",
+        "canonical": "#FFFFFF",
+        "tonalRamp": [
+          "#262626",
+          "#404040",
+          "#595959",
+          "#7A7A7A",
+          "#999999",
+          "#B8B8B8",
+          "#D6D6D6",
+          "#F2F2F2"
+        ]
+      },
+      "dark-ground": {
+        "role": "neutral",
+        "displayName": "Desk Grey (dark)",
+        "canonical": "#141817",
+        "tonalRamp": [
+          "#242827",
+          "#3C4442",
+          "#53605D",
+          "#708580",
+          "#91A19D",
+          "#B3BCBA",
+          "#D4D8D7",
+          "#F2F3F3"
+        ]
+      },
+      "dark-ink": {
+        "role": "neutral",
+        "displayName": "Carbon Ink (dark)",
+        "canonical": "#E6ECE9",
+        "tonalRamp": [
+          "#232926",
+          "#3A4640",
+          "#4F6359",
+          "#6A8B7A",
+          "#8DA599",
+          "#B0BFB8",
+          "#D3D9D6",
+          "#F1F3F2"
+        ]
+      },
+      "dark-ink-muted": {
+        "role": "neutral",
+        "displayName": "Pencil Grey (dark)",
+        "canonical": "#A9B4B0",
+        "tonalRamp": [
+          "#252827",
+          "#3D4341",
+          "#545E5B",
+          "#72837D",
+          "#939F9B",
+          "#B4BBB9",
+          "#D5D8D7",
+          "#F2F3F2"
+        ]
+      },
+      "dark-keyline": {
+        "role": "neutral",
+        "displayName": "Keyline (dark)",
+        "canonical": "#5C6B66",
+        "tonalRamp": [
+          "#252827",
+          "#3C4341",
+          "#545F5B",
+          "#71837D",
+          "#92A09B",
+          "#B4BCB9",
+          "#D4D8D7",
+          "#F2F3F2"
+        ]
+      },
+      "dark-paper": {
+        "role": "neutral",
+        "displayName": "Card White (dark)",
+        "canonical": "#1C2220",
+        "tonalRamp": [
+          "#242827",
+          "#3B4441",
+          "#52605C",
+          "#6F867E",
+          "#90A29C",
+          "#B3BDB9",
+          "#D4D9D7",
+          "#F2F3F2"
+        ]
+      },
+      "dark-field": {
+        "role": "neutral",
+        "displayName": "Pressed Grey (dark)",
+        "canonical": "#202725",
+        "tonalRamp": [
+          "#242827",
+          "#3B4442",
+          "#52605C",
+          "#6F867F",
+          "#90A29D",
+          "#B2BDBA",
+          "#D4D9D7",
+          "#F2F3F2"
+        ]
+      },
+      "dark-inf-box": {
+        "role": "primary",
+        "displayName": "Schoolbook Green (dark)",
+        "canonical": "#245740",
+        "tonalRamp": [
+          "#1D2F27",
+          "#2D5242",
+          "#3B785C",
+          "#49AC7F",
+          "#74BE9D",
+          "#A2CDBA",
+          "#CCE0D7",
+          "#F0F5F2"
+        ]
+      },
+      "dark-inf-stock": {
+        "role": "primary",
+        "displayName": "Pale Karo Green (dark)",
+        "canonical": "#1A2D24",
+        "tonalRamp": [
+          "#202C27",
+          "#344C40",
+          "#466D5A",
+          "#5A9A7C",
+          "#81B19A",
+          "#AAC6B8",
+          "#D0DDD7",
+          "#F1F4F2"
+        ]
+      },
+      "dark-inf-rule": {
+        "role": "primary",
+        "displayName": "Karo Rule Green (dark)",
+        "canonical": "#24402F",
+        "tonalRamp": [
+          "#202C25",
+          "#334C3D",
+          "#456E55",
+          "#599C73",
+          "#80B294",
+          "#A9C6B4",
+          "#CFDDD5",
+          "#F1F4F2"
+        ]
+      },
+      "dark-inf-text": {
+        "role": "primary",
+        "displayName": "Deep Leaf (dark)",
+        "canonical": "#9FD6B3",
+        "tonalRamp": [
+          "#1D2F24",
+          "#2E523B",
+          "#3C7751",
+          "#4AAA6D",
+          "#75BD8F",
+          "#A3CDB2",
+          "#CDE0D4",
+          "#F0F5F2"
+        ]
+      },
+      "dark-eng-box": {
+        "role": "secondary",
+        "displayName": "Correction Red (dark)",
+        "canonical": "#9E2D24",
+        "tonalRamp": [
+          "#341A18",
+          "#5C2824",
+          "#87322B",
+          "#C63A2F",
+          "#D16961",
+          "#D99B97",
+          "#E5C9C7",
+          "#F6EFEF"
+        ]
+      },
+      "dark-eng-stock": {
+        "role": "secondary",
+        "displayName": "Exercise-Book Yellow (dark)",
+        "canonical": "#3A3218",
+        "tonalRamp": [
+          "#2F2B1D",
+          "#524A2D",
+          "#78693B",
+          "#AC9549",
+          "#BEAD74",
+          "#CDC3A2",
+          "#E0DCCC",
+          "#F5F4F0"
+        ]
+      },
+      "dark-eng-rule": {
+        "role": "secondary",
+        "displayName": "Margin Rule Gold (dark)",
+        "canonical": "#5C4E22",
+        "tonalRamp": [
+          "#302C1C",
+          "#544A2B",
+          "#7B6B38",
+          "#B19743",
+          "#C2AE70",
+          "#D0C49F",
+          "#E1DCCB",
+          "#F5F4F0"
+        ]
+      },
+      "dark-eng-text": {
+        "role": "secondary",
+        "displayName": "Brick Ink (dark)",
+        "canonical": "#F2C9A0",
+        "tonalRamp": [
+          "#372615",
+          "#62401E",
+          "#915922",
+          "#D57A20",
+          "#DD9955",
+          "#DFB890",
+          "#E9D6C4",
+          "#F7F2EE"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Subject name at the top of each box."
+      },
+      "year-numeral": {
+        "displayName": "Year Numeral",
+        "purpose": "Numbers on year tabs; 58px when active."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Search view heading."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Site name and stock heading."
+      },
+      "card-title": {
+        "displayName": "Card Title",
+        "purpose": "Material title on an index card."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default running text."
+      },
+      "body-small": {
+        "displayName": "Body Small",
+        "purpose": "Card info, topic intro, meta, footer."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase type label, tab caption, flag."
+      },
+      "topic-heading": {
+        "displayName": "Topic Heading",
+        "purpose": "Uppercase Themenbereich headings in a stock."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease-out-strong",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "All transitions and the stock slide-in."
+      },
+      {
+        "name": "tab-rise",
+        "value": "height .25s",
+        "purpose": "Year tab height change on hover/active."
+      },
+      {
+        "name": "card-lift",
+        "value": "transform .2s, translateY(-3px)",
+        "purpose": "Index card hover."
+      },
+      {
+        "name": "stock-slide-in",
+        "value": "translateY(14px) to none, .45s, stagger 40ms (max 120ms)",
+        "purpose": "Cards entering when the year changes."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "transition:none; animation:none",
+        "purpose": "All motion off under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "single-box",
+        "value": "900px"
+      },
+      {
+        "name": "narrow",
+        "value": "520px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Index Card",
+      "kind": "card",
+      "refersTo": "index-card",
+      "description": "One material per card: type label, Andika title, two-line info. Lifts 3px on hover.",
+      "html": "<a class=\"ds-karte\" href=\"#\"><span class=\"ds-typ\">Arbeitsblatt</span><b>Unit 1: My new school</b><span class=\"ds-ii\">Vocabulary and phrases for the first week.</span></a>",
+      "css": ".ds-karte{position:relative;display:block;text-decoration:none;color:var(--ink,#1D2422);background:var(--paper,#FFFFFF);border:2px solid var(--line,#1D2422);border-radius:4px;padding:12px 16px;font:16px/1.5 Nunito,system-ui,sans-serif;transition:transform .2s cubic-bezier(.16,1,.3,1)} .ds-karte:hover{transform:translateY(-3px)} .ds-karte:focus-visible{outline:3px solid var(--ink,#1D2422);outline-offset:3px} .ds-typ{float:right;margin:2px 0 4px 12px;font:800 11.5px Nunito,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:var(--inf-text,#245740)} .ds-karte b{display:block;font:700 18px/1.3 Andika,sans-serif} .ds-ii{display:block;margin-top:3px;font-size:14.5px;color:var(--ink2,#4E5855)}"
+    },
+    {
+      "name": "Neu Card (clipped corner)",
+      "kind": "card",
+      "refersTo": "index-card",
+      "description": "New material: top-right corner cut 24px with a keyline drawn along the cut.",
+      "html": "<a class=\"ds-karte-neu\" href=\"#\"><span class=\"ds-typ\">Werkzeug</span><b>RegEx-Labor</b></a>",
+      "css": ".ds-karte-neu{position:relative;display:block;text-decoration:none;color:var(--ink,#1D2422);background:var(--paper,#FFFFFF);border:2px solid var(--line,#1D2422);border-radius:4px;padding:12px 16px;font:16px/1.5 Nunito,sans-serif;clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,0 100%);transition:transform .2s cubic-bezier(.16,1,.3,1)} .ds-karte-neu::after{content:'';position:absolute;top:-2px;right:-2px;width:26px;height:26px;background:linear-gradient(45deg,transparent calc(50% - 2.5px),var(--line,#1D2422) calc(50% - 2.5px),var(--line,#1D2422) calc(50% + 2.5px),transparent 0)} .ds-karte-neu:hover{transform:translateY(-3px)} .ds-karte-neu .ds-typ{float:right;margin:2px 14px 4px 12px;font:800 11.5px Nunito,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:var(--inf-text,#245740)} .ds-karte-neu b{display:block;font:700 18px/1.3 Andika,sans-serif}"
+    },
+    {
+      "name": "Zuletzt geöffnet Flag",
+      "kind": "custom",
+      "refersTo": "last-opened-flag",
+      "description": "Black flag on the top edge of the last opened card.",
+      "html": "<div class=\"ds-flagwrap\"><a class=\"ds-flagkarte\" href=\"#\"><span class=\"ds-zuletzt\">Zuletzt geöffnet</span><b>Logikwerkstatt</b></a></div>",
+      "css": ".ds-flagwrap{padding-top:16px} .ds-flagkarte{position:relative;display:block;text-decoration:none;color:var(--ink,#1D2422);background:var(--paper,#FFFFFF);border:2px solid var(--line,#1D2422);border-radius:4px;padding:12px 16px} .ds-flagkarte b{font:700 18px/1.3 Andika,sans-serif} .ds-zuletzt{position:absolute;left:14px;top:-2px;transform:translateY(-100%);background:var(--ink,#1D2422);color:var(--paper,#FFFFFF);font:800 11px Nunito,sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px 2px;border-radius:4px 4px 0 0}"
+    },
+    {
+      "name": "Subject Box with Year Register (Informatik)",
+      "kind": "nav",
+      "refersTo": "subject-box-inf",
+      "description": "Green box, year divider tabs; active tab merges into the Karo stock.",
+      "html": "<section class=\"ds-box\"><h2>Informatik</h2><ul class=\"ds-register\"><li><a href=\"#\"><small>Klasse</small><b>10</b></a></li><li><a href=\"#\" aria-current=\"page\"><small>Klasse</small><b>11</b></a></li></ul><div class=\"ds-stock\"><h3>Klasse 11</h3></div></section>",
+      "css": ".ds-box{background:var(--inf,#2F6B4F);color:#fff;padding:32px 32px 48px} .ds-box h2{margin:0 0 24px;font:700 48px/1 Andika,sans-serif;letter-spacing:-.02em} .ds-register{display:flex;gap:6px;align-items:flex-end;margin:0;padding:0;list-style:none} .ds-register a{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-decoration:none;min-width:84px;height:80px;padding:6px 12px 4px;border-radius:10px 10px 0 0;background:rgba(0,0,0,.2);color:#fff;transition:height .25s cubic-bezier(.16,1,.3,1),background .2s} .ds-register a:hover{background:rgba(0,0,0,.3);height:86px} .ds-register a:focus-visible{outline:3px solid #fff;outline-offset:3px} .ds-register small{font:700 11.5px Nunito,sans-serif;letter-spacing:.06em;text-transform:uppercase} .ds-register b{font:700 42px/1 Andika,sans-serif;font-variant-numeric:tabular-nums} .ds-register a[aria-current=page]{background:var(--inf-stock,#DCEFD9);color:var(--inf-text,#245740);height:100px} .ds-register a[aria-current=page] b{font-size:58px} .ds-stock{background-color:var(--inf-stock,#DCEFD9);background-image:linear-gradient(var(--inf-rule,#BCDAB6) 1px,transparent 1px),linear-gradient(90deg,var(--inf-rule,#BCDAB6) 1px,transparent 1px);background-size:20px 20px;border-radius:0 10px 10px 10px;padding:22px 26px 26px} .ds-stock h3{margin:0;font:700 22px Andika,sans-serif;color:var(--inf-text,#245740)}"
+    },
+    {
+      "name": "Englisch Lined Stock",
+      "kind": "card",
+      "refersTo": "card-stock-eng",
+      "description": "Yellow lined stock with a red-ruled index card.",
+      "html": "<div class=\"ds-engstock\"><h4>Unit 1</h4><a class=\"ds-engkarte\" href=\"#\"><span>Übung</span><b>Classroom phrases</b></a></div>",
+      "css": ".ds-engstock{background-color:var(--eng-stock,#FFE89A);background-image:linear-gradient(transparent 31px,var(--eng-rule,#E6CD6E) 32px);background-size:100% 32px;border-radius:0 10px 10px 10px;padding:22px 26px 26px;color:var(--ink,#1D2422)} .ds-engstock h4{margin:0 0 4px;font:800 13px/1.3 Nunito,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--eng-text,#9E2A20)} .ds-engkarte{display:block;text-decoration:none;color:inherit;background:var(--paper,#FFFFFF);border:2px solid var(--line,#1D2422);border-top:7px solid var(--eng,#C2372B);border-radius:4px;padding:12px 16px;transition:transform .2s cubic-bezier(.16,1,.3,1)} .ds-engkarte:hover{transform:translateY(-3px)} .ds-engkarte span{float:right;font:800 11.5px Nunito,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:var(--eng-text,#9E2A20)} .ds-engkarte b{display:block;font:700 18px/1.3 Andika,sans-serif}"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "Paper field with magnifier and / key hint in the top bar.",
+      "html": "<label class=\"ds-suche\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5\"/><path d=\"M11 11l3.5 3.5\" stroke-linecap=\"round\"/></svg><input type=\"search\" placeholder=\"Thema, Titel, Klasse …\" aria-label=\"Material durchsuchen\"><kbd>/</kbd></label>",
+      "css": ".ds-suche{display:flex;align-items:center;gap:8px;background:var(--paper,#FFFFFF);border:2px solid var(--line,#1D2422);border-radius:6px;padding:7px 12px;width:min(340px,100%);font:16px Nunito,sans-serif} .ds-suche:focus-within{outline:3px solid var(--ink,#1D2422);outline-offset:3px} .ds-suche input{border:0;outline:0;background:none;width:100%;font:inherit;font-size:15px;color:var(--ink,#1D2422)} .ds-suche input::placeholder{color:var(--ink2,#4E5855)} .ds-suche svg{flex:none;color:var(--ink2,#4E5855)} .ds-suche kbd{font:700 12px Nunito,sans-serif;border:1.5px solid var(--ink2,#4E5855);color:var(--ink2,#4E5855);border-radius:4px;padding:0 5px}"
+    },
+    {
+      "name": "Button",
+      "kind": "button",
+      "refersTo": "button",
+      "description": "The theme toggle: paper button with keyline.",
+      "html": "<button class=\"ds-knopf\" type=\"button\">Dunkel</button>",
+      "css": ".ds-knopf{background:var(--paper,#FFFFFF);color:var(--ink,#1D2422);border:2px solid var(--line,#1D2422);border-radius:6px;padding:7px 12px;cursor:pointer;font:700 14px Nunito,sans-serif;min-height:40px} .ds-knopf:hover{background:var(--field,#E4E2DA)} .ds-knopf:focus-visible{outline:3px solid var(--ink,#1D2422);outline-offset:3px}"
+    },
+    {
+      "name": "Mobile Subject Switch",
+      "kind": "nav",
+      "refersTo": "subject-box-inf",
+      "description": "Two coloured tabs at ≤900px; current subject underlined.",
+      "html": "<nav class=\"ds-fachwahl\" aria-label=\"Fach wählen\"><a class=\"inf\" href=\"#\" aria-current=\"true\">Informatik</a><a class=\"eng\" href=\"#\" aria-current=\"false\">Englisch</a></nav>",
+      "css": ".ds-fachwahl{display:grid;grid-template-columns:1fr 1fr;border-bottom:2px solid var(--line,#1D2422)} .ds-fachwahl a{display:block;text-align:center;text-decoration:none;padding:12px 8px;font:700 19px Andika,sans-serif;color:#fff} .ds-fachwahl a.inf{background:var(--inf,#2F6B4F)} .ds-fachwahl a.eng{background:var(--eng,#C2372B)} .ds-fachwahl a[aria-current=true]{text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:3px} .ds-fachwahl a:focus-visible{outline:3px solid #fff;outline-offset:-6px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Lernkartei",
+    "overview": "The site is a card file box on a desk. Each subject is its own coloured box that owns a whole region of the screen: Informatik a deep green, Englisch a signal red. Inside each box, the years stand up as divider tabs with oversized numerals, and the open year shows its card stock: pale green squared paper for Informatik, yellow lined paper for Englisch. Every material is a white index card with a black keyline. Nothing floats; everything is flat print, stacked and filed.\n\nState is shown as a physical mark on the card, never as a badge or pill: a card that is new has its top-right corner cut off with a drawn diagonal; the card last opened carries a small black flag sticking out of its top edge. The page reads as made by hand for these classes, warm and sturdy rather than slick, with a rounded, school-friendly type pairing (Andika and Nunito) sized for ten-year-olds on tablets.\n\nDensity is moderate. The two boxes sit side by side on desktop and collapse to one at a time on narrow screens, switched by two coloured tabs. Motion is small and mechanical: tabs rise, cards lift a few pixels, a fresh stock slides in.",
+    "keyCharacteristics": [
+      "Subject colour fills whole regions; it is the primary wayfinding.",
+      "Black 2px keylines on paper-grey ground; no soft shadows anywhere.",
+      "Year numerals as the largest type inside each box.",
+      "Card stock texture (Karo vs. lined) distinguishes the subjects a second time.",
+      "State as marks: clipped corner = neu, black flag = zuletzt geöffnet.",
+      "Light and dark themes share one structure; dark deepens the boxes and darkens the stock."
+    ],
+    "rules": [
+      {
+        "name": "The Two Boxes Rule",
+        "body": "Green belongs to Informatik and red to Englisch, everywhere. Never use a subject colour for anything that is not that subject.",
+        "section": "colors"
+      },
+      {
+        "name": "The Stock Text Rule",
+        "body": "Text on card stock uses that subject's text shade (inf-text / eng-text), never the box colour itself.",
+        "section": "colors"
+      },
+      {
+        "name": "The Andika Names Things Rule",
+        "body": "Andika is for names and numbers a student navigates by; Nunito is for everything else. Do not set running text in Andika.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Numbers Rule",
+        "body": "Year numerals, counts and dates use tabular figures.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Print Rule",
+        "body": "No shadows, no blur, no gradients other than the stock rulings and the neu-corner diagonal. If something needs to stand out, give it a keyline, a colour region or a mark.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** let each subject colour fill its whole region (box, mobile tab, card top rule); colour is the first answer to \"which subject am I in\".",
+      "**Do** draw every edge with the 2px keyline token and keep surfaces flat.",
+      "**Do** show state as a mark on the card: the 24px clipped corner for neu, the black flag for last opened.",
+      "**Do** keep Karo stock for Informatik and lined stock for Englisch.",
+      "**Do** use Andika for names and year numerals, Nunito for running text and labels, tabular figures for numbers.",
+      "**Do** keep touch targets at least 40px and year tabs at least 64px wide.",
+      "**Do** keep motion short and mechanical (0.2–0.45s, cubic-bezier(.16,1,.3,1)) and let `prefers-reduced-motion` switch it all off.",
+      "**Do** define every new colour in `:root` and both dark blocks."
+    ],
+    "donts": [
+      "**Don't** add box-shadows, blurs or decorative gradients.",
+      "**Don't** use green or red for anything that is not Informatik or Englisch.",
+      "**Don't** add badges, pills or icon tiles for state or type; the type label is plain uppercase text.",
+      "**Don't** set body text in subject box colours on stock; use the stock text shades.",
+      "**Don't** invent logos, photos or school branding; none exist in the repo.",
+      "**Don't** apply this system to the material pages under `eng/` and `inf/`; they style themselves."
+    ]
+  }
+}

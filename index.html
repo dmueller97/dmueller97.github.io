@@ -4,141 +4,169 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Unterrichtsmaterial</title>
+<link rel="stylesheet" href="fonts/fonts.css">
 <style>
 :root{
-  --bg:#0E1A1C; --panel:#142528; --panel2:#0F1F22; --line:#23393E; --line2:#2E4A50;
-  --ink:#DFEAEB; --ink2:#9FB6B9; --muted:#6F8A8F;
-  --brand:#2FB3A0; --hi:#FFC24B; --ok:#58C08C; --bad:#E4573D;
-  --r:12px;
+  --ground:#F1F0EA; --ink:#1D2422; --ink2:#4E5855; --line:#1D2422; --paper:#FFFFFF; --field:#E4E2DA;
+  /* Informatik: grüner Kasten, karierte Karten */
+  --inf:#2F6B4F; --inf-stock:#DCEFD9; --inf-rule:#BCDAB6; --inf-text:#245740;
+  /* Englisch: roter Kasten, linierte gelbe Karten */
+  --eng:#C2372B; --eng-stock:#FFE89A; --eng-rule:#E6CD6E; --eng-text:#9E2A20;
+  --on-box:#FFFFFF; --on-box2:rgba(255,255,255,.95);
 }
-[data-theme="light"]{
-  --bg:#F2F4F3; --panel:#FFFFFF; --panel2:#F7F9F8; --line:#D8E0DF; --line2:#C2CFCE;
-  --ink:#14242A; --ink2:#4A6066; --muted:#7B8F94;
-  --brand:#17897A; --hi:#E08A00;
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#141817; --ink:#E6ECE9; --ink2:#A9B4B0; --line:#5C6B66; --paper:#1C2220; --field:#202725;
+    --inf:#245740; --inf-stock:#1A2D24; --inf-rule:#24402F; --inf-text:#9FD6B3;
+    --eng:#9E2D24; --eng-stock:#3A3218; --eng-rule:#5C4E22; --eng-text:#F2C9A0;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141817; --ink:#E6ECE9; --ink2:#A9B4B0; --line:#5C6B66; --paper:#1C2220; --field:#202725;
+  --inf:#245740; --inf-stock:#1A2D24; --inf-rule:#24402F; --inf-text:#9FD6B3;
+  --eng:#9E2D24; --eng-stock:#3A3218; --eng-rule:#5C4E22; --eng-text:#F2C9A0;
 }
 *{box-sizing:border-box}
-html,body{height:100%;margin:0}
-body{
-  background:var(--bg); color:var(--ink);
-  font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
-  font-size:15px; line-height:1.5; display:flex; flex-direction:column;
-}
-a{color:inherit;text-decoration:none}
+html{scrollbar-color:var(--line) var(--ground)}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;background:var(--ground);color:var(--ink);
+  font:16px/1.5 Nunito,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+::selection{background:var(--eng-stock);color:#1D2422}
+a{color:inherit}
 button,input{font:inherit;color:inherit}
-button{cursor:pointer}
-:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
-.mono{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px;border-radius:4px}
+.box :focus-visible{outline-color:var(--on-box)}
+.stock :focus-visible{outline-color:var(--ink)}
 
 /* Kopfzeile */
-header{
-  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  padding:11px 20px;background:var(--panel);border-bottom:1px solid var(--line);
-  position:sticky;top:0;z-index:20;
+.top{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:16px clamp(16px,4vw,56px);border-bottom:2px solid var(--line)}
+.marke{text-decoration:none;display:flex;flex-direction:column;line-height:1.2}
+.marke h1{margin:0;font:700 22px Andika,sans-serif}
+.marke span{color:var(--ink2);font-size:13.5px}
+.top .rechts{margin-left:auto;display:flex;gap:10px;align-items:center}
+.suche{display:flex;align-items:center;gap:8px;background:var(--paper);border:2px solid var(--line);border-radius:6px;padding:7px 12px;width:min(340px,100%)}
+.suche input{border:0;outline:0;background:none;width:100%;font-size:15px}
+.suche input::placeholder{color:var(--ink2)}
+.suche svg{flex:none;color:var(--ink2)}
+.suche kbd{font:700 12px Nunito;border:1.5px solid var(--ink2);color:var(--ink2);border-radius:4px;padding:0 5px}
+.knopf{background:var(--paper);border:2px solid var(--line);border-radius:6px;padding:7px 12px;cursor:pointer;font-weight:700;font-size:14px;min-height:40px}
+.knopf:hover{background:var(--field)}
+
+.warn{margin:16px clamp(16px,4vw,56px) 0;border:2px solid var(--eng);border-radius:6px;padding:12px 14px;font-size:14px;background:var(--paper)}
+.warn b{color:var(--eng-text)}
+
+/* Fachwahl (nur schmal) */
+.fachwahl{display:none}
+
+/* Die zwei Kästen */
+.kaesten{display:grid;grid-template-columns:1fr 1fr;flex:1}
+.box{--c:var(--inf);--stock:var(--inf-stock);--rule:var(--inf-rule);--txt:var(--inf-text);
+  background:var(--c);color:var(--on-box);padding:32px clamp(16px,3.6vw,56px) 48px;min-width:0}
+.box.eng{--c:var(--eng);--stock:var(--eng-stock);--rule:var(--eng-rule);--txt:var(--eng-text)}
+.innen{position:sticky;top:16px}
+.box h2{margin:0;font:700 clamp(40px,4.4vw,58px)/1 Andika,sans-serif;letter-spacing:-.02em}
+.box h2 a{text-decoration:none}
+.box .sub{color:var(--on-box2);margin:8px 0 24px;max-width:48ch}
+
+/* Register: Jahrgänge als Trennkarten */
+.register{display:flex;gap:6px;align-items:flex-end;margin:0;padding:0;list-style:none}
+.register a{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-decoration:none;
+  min-width:84px;height:80px;padding:6px 12px 4px;border-radius:10px 10px 0 0;
+  background:rgba(0,0,0,.2);color:var(--on-box);transition:height .25s cubic-bezier(.16,1,.3,1),background .2s}
+.register a small{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.register a b{font:700 42px/1 Andika,sans-serif;font-variant-numeric:tabular-nums}
+.register a:hover{background:rgba(0,0,0,.3);height:86px}
+.register a[aria-current="page"]{background:var(--stock);color:var(--txt);height:100px}
+.register a[aria-current="page"] b{font-size:58px}
+
+/* Kartenstapel */
+.stock{background-color:var(--stock);color:var(--ink);border-radius:0 10px 10px 10px;padding:22px clamp(14px,2vw,26px) 26px}
+.box.inf .stock{background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px);background-size:20px 20px}
+.box.eng .stock{background-image:linear-gradient(transparent 31px,var(--rule) 32px);background-size:100% 32px}
+.stock-kopf{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.stock-kopf h3{margin:0;font:700 22px Andika,sans-serif;color:var(--txt)}
+.stock-kopf span{font-size:13.5px;color:var(--txt);font-weight:700;font-variant-numeric:tabular-nums}
+.thema{margin-top:20px}
+.thema:first-of-type{margin-top:10px}
+.thema h4{margin:0 0 4px;font:800 13px/1.3 Nunito;letter-spacing:.06em;text-transform:uppercase;color:var(--txt)}
+.thema p.i{margin:0 0 10px;font-size:14px;color:var(--ink2)}
+.karten{display:flex;flex-direction:column;gap:10px}
+
+.karte{position:relative;display:block;text-decoration:none;background:var(--paper);border:2px solid var(--line);border-radius:4px;
+  padding:12px 16px 12px;transition:transform .2s cubic-bezier(.16,1,.3,1)}
+.box.eng .karte{border-top:7px solid var(--eng)}
+.karte:hover{transform:translateY(-3px)}
+.karte .typ{float:right;margin:2px 0 4px 12px;font:800 11.5px Nunito;letter-spacing:.07em;text-transform:uppercase;color:var(--txt)}
+.karte b{display:block;font:700 18px/1.3 Andika,sans-serif}
+.karte .ii{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:3px;font-size:14.5px;color:var(--ink2)}
+.karte .meta{display:block;margin-top:6px;font-size:12.5px;color:var(--ink2);font-variant-numeric:tabular-nums}
+/* neu = abgeschnittene Ecke */
+.karte.neu{clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,0 100%)}
+.karte.neu::after{content:"";position:absolute;top:-2px;right:-2px;width:26px;height:26px;
+  background:linear-gradient(45deg,transparent calc(50% - 2.5px),var(--line) calc(50% - 2.5px),var(--line) calc(50% + 2.5px),transparent 0)}
+.box.eng .karte.neu::after{top:-7px}
+.karte.neu .typ{margin-right:14px}
+/* zuletzt geöffnet = Fähnchen */
+.karte .zuletzt{position:absolute;left:14px;top:-2px;transform:translateY(-100%);background:var(--ink);color:var(--paper);
+  font:800 11px Nunito;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px 2px;border-radius:4px 4px 0 0}
+.karte.hat-flag{margin-top:16px}
+.rest{margin-top:22px}
+
+@keyframes einschieben{from{transform:translateY(14px)}to{transform:none}}
+.stock.frisch .karte{animation:einschieben .45s cubic-bezier(.16,1,.3,1) both}
+.stock.frisch .karte:nth-child(2){animation-delay:.04s}
+.stock.frisch .karte:nth-child(3){animation-delay:.08s}
+.stock.frisch .karte:nth-child(n+4){animation-delay:.12s}
+
+/* Suche und Neu-Zeile */
+.unten{padding:32px clamp(16px,4vw,56px) 48px;border-top:2px solid var(--line)}
+.unten h2{margin:0 0 14px;font:700 24px Andika,sans-serif}
+.reihe{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.reihe .karte{border-top-width:7px;border-top-color:var(--inf)}
+.reihe .karte.eng{border-top-color:var(--eng)}
+.reihe .karte .typ{color:var(--ink2)}
+.suchseite{flex:1;padding:32px clamp(16px,4vw,56px) 56px}
+.suchseite h1{margin:0 0 4px;font:700 34px Andika,sans-serif}
+.suchseite p{color:var(--ink2);margin:0 0 20px}
+
+footer{border-top:2px solid var(--line);padding:16px clamp(16px,4vw,56px);font-size:13.5px;color:var(--ink2);display:flex;gap:6px 16px;flex-wrap:wrap}
+footer a{text-underline-offset:3px}
+
+@media (max-width:900px){
+  .kaesten{grid-template-columns:1fr}
+  .fachwahl{display:grid;grid-template-columns:1fr 1fr;border-bottom:2px solid var(--line)}
+  .fachwahl a{display:block;text-align:center;text-decoration:none;padding:12px 8px;font:700 19px Andika,sans-serif;color:var(--on-box)}
+  .fachwahl a.inf{background:var(--inf)}.fachwahl a.eng{background:var(--eng)}
+  .fachwahl a[aria-current="true"]{text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:3px}
+  .box{display:none}
+  .box.aktiv{display:block}
+  .box h2{display:none}
+  .box{padding-top:20px}
+  .box .sub{margin-top:0}
 }
-.brand{display:flex;align-items:baseline;gap:10px}
-.brand b{font-size:18px;font-weight:650;letter-spacing:-.2px}
-.brand span{color:var(--muted);font-size:12.5px}
-.spacer{flex:1}
-.search{
-  display:flex;align-items:center;gap:7px;background:var(--panel2);
-  border:1px solid var(--line2);border-radius:9px;padding:5px 11px;min-width:210px;
+@media (max-width:520px){
+  .top .rechts{width:100%;margin-left:0}
+  .suche{flex:1;width:auto}
+  .suche kbd{display:none}
+  .register a{min-width:64px}
 }
-.search input{background:none;border:0;outline:none;width:100%;font-size:14px}
-.search kbd{border:1px solid var(--line2);border-radius:4px;padding:0 4px;font-size:11px;color:var(--muted)}
-.btn{background:var(--panel2);border:1px solid var(--line2);border-radius:9px;padding:6px 12px;transition:border-color .12s}
-.btn:hover{border-color:var(--brand)}
-.btn.small{padding:4px 9px;font-size:13px}
-
-main{flex:1;width:100%;max-width:1080px;margin:0 auto;padding:22px 20px 60px}
-
-/* Brotkrumen */
-.crumbs{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:13px;margin-bottom:16px;flex-wrap:wrap}
-.crumbs a:hover{color:var(--ink)}
-.crumbs i{font-style:normal;opacity:.5}
-
-h1{font-size:25px;margin:0 0 4px;letter-spacing:-.4px;font-weight:650}
-h2{font-size:17px;margin:26px 0 10px;font-weight:650}
-p.lead{color:var(--ink2);margin:0 0 24px;max-width:62ch}
-p.note{color:var(--muted);font-size:13px;margin:0 0 16px}
-
-/* Fachkacheln */
-.faecher{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:10px}
-.fach{
-  display:block;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
-  padding:20px;border-left:4px solid var(--akz,var(--brand));transition:border-color .14s,transform .14s;
-}
-.fach:hover{border-color:var(--line2);border-left-color:var(--akz);transform:translateY(-2px)}
-.fach b{display:block;font-size:19px;margin-bottom:3px}
-.fach .i{color:var(--ink2);font-size:13.5px}
-.fach .z{color:var(--muted);font-size:12.5px;margin-top:12px}
-
-/* Klassenkacheln */
-.klassen{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:11px}
-.kl{
-  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
-  padding:14px 15px;transition:border-color .14s,transform .14s;display:block;
-}
-.kl:hover{border-color:var(--akz,var(--brand));transform:translateY(-2px)}
-.kl b{display:block;font-size:17px;font-weight:650}
-.kl small{color:var(--muted);font-size:12px}
-.kl .n{color:var(--akz,var(--brand));font-size:12.5px;font-weight:600;margin-top:7px;display:block}
-.kl .n.leer{color:var(--muted);font-weight:400}
-
-/* Themenbereiche */
-.bereich{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:15px 17px;margin-bottom:12px}
-.bereich.leer{background:none;border-style:dashed;opacity:.62}
-.bereich > .h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.bereich .t{font-weight:650;font-size:15.5px}
-.bereich .i{color:var(--muted);font-size:13px;flex:1;min-width:200px}
-.bereich .c{color:var(--muted);font-size:12px}
-.eintraege{margin-top:11px;display:flex;flex-direction:column;gap:8px}
-
-.eintrag{
-  display:flex;gap:12px;align-items:flex-start;background:var(--panel2);
-  border:1px solid var(--line);border-radius:10px;padding:10px 13px;transition:border-color .12s;
-}
-.eintrag:hover{border-color:var(--brand)}
-.eintrag .typ{
-  flex:0 0 auto;width:26px;height:26px;border-radius:7px;display:grid;place-items:center;
-  font-size:12px;font-weight:700;background:var(--line);color:var(--ink2);margin-top:1px;
-}
-.eintrag .tt{font-weight:600}
-.eintrag .ii{color:var(--ink2);font-size:13px;margin-top:1px}
-.eintrag .meta{color:var(--muted);font-size:11.5px;margin-top:3px}
-.tag{display:inline-block;background:var(--brand);color:#06211E;border-radius:5px;padding:0 6px;font-size:10.5px;font-weight:700;margin-left:7px;vertical-align:1px}
-.leerhinweis{color:var(--muted);font-size:13px;margin-top:9px;font-style:italic}
-
-.warn{border:1px solid var(--bad);border-radius:var(--r);padding:13px 15px;margin-bottom:18px;font-size:13.5px}
-.warn b{color:var(--bad)}
-
-.neu-liste{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
-
-footer{
-  border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;
-  padding:14px 20px;text-align:center;
-}
-@media (max-width:620px){
-  main{padding:16px 14px 40px}
-  header{padding:9px 14px}
-  .search{min-width:0;flex:1}
-}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
-<body data-theme="dark">
+<body>
 
-<header>
-  <a class="brand" href="#/"><b id="hTitel">Unterrichtsmaterial</b><span id="hSchule"></span></a>
-  <div class="spacer"></div>
-  <label class="search">
-    <span style="color:var(--muted)">Suche</span>
-    <input id="q" type="search" placeholder="Thema, Titel, Klasse …" aria-label="Material durchsuchen">
-    <kbd>/</kbd>
-  </label>
-  <button class="btn small" id="theme">Hell</button>
+<header class="top">
+  <a class="marke" href="#/"><h1 id="hTitel">Unterrichtsmaterial</h1><span id="hSchule"></span></a>
+  <div class="rechts">
+    <label class="suche">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5" stroke-linecap="round"/></svg>
+      <input id="q" type="search" placeholder="Thema, Titel, Klasse …" aria-label="Material durchsuchen">
+      <kbd>/</kbd>
+    </label>
+    <button class="knopf" id="theme" type="button">Dunkel</button>
+  </div>
 </header>
 
-<main id="app"></main>
+<div id="app" style="flex:1;display:flex;flex-direction:column"></div>
 
 <footer id="foot"></footer>
 
@@ -147,32 +175,43 @@ footer{
 "use strict";
 
 const TYP = {
-  werkzeug:    {k:"W", n:"Werkzeug"},
-  arbeitsblatt:{k:"A", n:"Arbeitsblatt"},
-  uebung:      {k:"Ü", n:"Übung"},
-  video:       {k:"V", n:"Video"},
-  link:        {k:"L", n:"Link"},
-  plan:        {k:"P", n:"Plan"},
-  loesung:     {k:"L", n:"Lösung"}
+  werkzeug:"Werkzeug", arbeitsblatt:"Arbeitsblatt", uebung:"Übung", video:"Video",
+  link:"Link", plan:"Plan", loesung:"Lösung"
 };
-const KLASSEN = [5,6,7,8,9,10,11,12];
+const NEU_TAGE = 45; // "neu" erscheint nur, solange der Stand jünger ist – sonst trägt bald jede Karte die Ecke
 const $ = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
 const app = $("#app");
 const esc = t => String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const lies = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
+const schreib = (k,v) => { try{ localStorage.setItem(k,v); }catch(e){} };
 
-/* ---------- Katalog aufbereiten ---------- */
+/* ---------- Katalog ---------- */
 const fachById = id => FAECHER.find(f=>f.id===id);
+const kurz = id => id==="englisch" ? "eng" : "inf";
 const klassenVon = e => Array.isArray(e.klasse) ? e.klasse : [e.klasse];
 const bereicheVon = (fach,kl) => (LEHRPLAN[fach] && LEHRPLAN[fach][kl]) || [];
+const eintraegeVon = (fach,kl) => MATERIAL.filter(e => e.fach===fach && klassenVon(e).includes(Number(kl)));
+// Nur Jahrgänge mit Material bekommen eine Registerkarte
+const jahrgaenge = fach => [...new Set(MATERIAL.filter(e=>e.fach===fach).flatMap(klassenVon))].sort((a,b)=>a-b);
 
-function eintraegeVon(fach, kl){
-  return MATERIAL.filter(e => e.fach===fach && klassenVon(e).includes(Number(kl)));
+function istNeu(e){
+  if(!e.neu || !e.stand) return false;
+  const [y,m,t] = String(e.stand).split("-").map(Number);
+  const d = t ? new Date(y, m-1, t) : new Date(y, m, 0); // nur Monat angegeben: Monatsende zählt
+  return !isNaN(d) && (Date.now()-d) / 864e5 <= NEU_TAGE;
 }
-function zaehle(fach, kl){ return eintraegeVon(fach,kl).length; }
-function zaehleFach(fach){ return MATERIAL.filter(e=>e.fach===fach).length; }
-
-// Einträge, deren Bereich in keiner Klasse des Fachs vorkommt – Tippfehler sichtbar machen
+// Standard-Jahrgang: der mit dem jüngsten Material
+function standardJahr(fach){
+  const js = jahrgaenge(fach); if(!js.length) return null;
+  const merk = Number(lies("mat.jahr."+fach));
+  if(js.includes(merk)) return merk;
+  let best = js[0], bestStand = "";
+  MATERIAL.filter(e=>e.fach===fach).forEach(e=>{
+    const s = String(e.stand||"");
+    if(s > bestStand){ bestStand = s; best = Math.max(...klassenVon(e)); }
+  });
+  return best;
+}
 function verwaiste(){
   return MATERIAL.filter(e=>{
     const f=LEHRPLAN[e.fach]; if(!f) return true;
@@ -181,141 +220,134 @@ function verwaiste(){
 }
 
 /* ---------- Bausteine ---------- */
-function eintragHtml(e, mitOrt){
-  const t=TYP[e.typ]||TYP.link;
-  const f=fachById(e.fach);
+function karteHtml(e, mitOrt){
+  const f = fachById(e.fach), neu = istNeu(e), zuletzt = lies("mat.zuletzt")===e.url;
+  const extern = /^https?:/.test(e.url) ? ' target="_blank" rel="noopener"' : "";
   const ort = mitOrt ? `${f?f.name:e.fach} · Klasse ${klassenVon(e).join("/")}` : "";
-  const meta=[ort, t.n, e.stand?("Stand "+e.stand):""].filter(Boolean).join(" · ");
-  return `<a class="eintrag" href="${esc(e.url)}"${/^https?:/.test(e.url)?' target="_blank" rel="noopener"':""}>
-    <span class="typ" title="${t.n}">${t.k}</span>
-    <span>
-      <span class="tt">${esc(e.titel)}${e.neu?'<span class="tag">neu</span>':""}</span>
-      ${e.info?`<span class="ii">${esc(e.info)}</span>`:""}
-      <span class="meta">${esc(meta)}</span>
-    </span></a>`;
+  const meta = [ort, neu?"neu":"", e.stand?"Stand "+e.stand:""].filter(Boolean).join(" · ");
+  return `<a class="karte ${mitOrt?kurz(e.fach):""}${neu?" neu":""}${zuletzt?" hat-flag":""}" href="${esc(e.url)}"${extern} data-url="${esc(e.url)}"${e.stand?` title="Stand ${esc(e.stand)}"`:""}>
+    ${zuletzt?'<span class="zuletzt">Zuletzt geöffnet</span>':""}
+    <span class="typ">${TYP[e.typ]||"Link"}</span>
+    <b>${esc(e.titel)}</b>
+    ${e.info?`<span class="ii">${esc(e.info)}</span>`:""}
+    ${mitOrt&&meta?`<span class="meta">${esc(meta)}</span>`:""}
+  </a>`;
 }
-function crumbs(teile){
-  return `<nav class="crumbs">`+teile.map((t,i)=>
-    (i?`<i>›</i>`:"")+(t.href?`<a href="${t.href}">${esc(t.text)}</a>`:`<span>${esc(t.text)}</span>`)
-  ).join("")+`</nav>`;
+
+function boxHtml(f, jahr, aktiv, frisch){
+  const js = jahrgaenge(f.id), k = kurz(f.id);
+  let h = `<section class="box ${k}${aktiv?" aktiv":""}" aria-labelledby="t-${k}"><div class="innen">
+    <h2 id="t-${k}"><a href="#/${f.id}">${esc(f.name)}</a></h2>
+    <p class="sub">${esc(f.info||"")}</p>`;
+  if(!js.length) return h + `<p class="sub">Hier kommt bald Material dazu.</p></div></section>`;
+  h += `<nav aria-label="${esc(f.name)}: Klassenstufe wählen"><ul class="register">`+js.map(j=>
+    `<li><a href="#/${f.id}/${j}"${j===jahr?' aria-current="page"':""}><small>Klasse</small><b>${j}</b></a></li>`).join("")+`</ul></nav>`;
+
+  const alle = eintraegeVon(f.id, jahr), benutzt = new Set();
+  let themen = "";
+  bereicheVon(f.id, jahr).forEach(b=>{
+    const es = alle.filter(e=>e.bereich===b.id); if(!es.length) return;
+    es.forEach(e=>benutzt.add(e));
+    themen += `<div class="thema" id="${esc(b.id)}"><h4>${esc(b.name)}</h4>${b.info?`<p class="i">${esc(b.info)}</p>`:""}
+      <div class="karten">${es.map(e=>karteHtml(e)).join("")}</div></div>`;
+  });
+  const rest = alle.filter(e=>!benutzt.has(e));
+  if(rest.length) themen += `<div class="thema rest"><h4>Weitere Materialien</h4><div class="karten">${rest.map(e=>karteHtml(e)).join("")}</div></div>`;
+
+  h += `<div class="stock${frisch?" frisch":""}">
+    <div class="stock-kopf"><h3>Klasse ${jahr}</h3><span>${alle.length} ${alle.length===1?"Material":"Materialien"}</span></div>
+    ${themen}</div></div></section>`;
+  return h;
 }
 
 /* ---------- Ansichten ---------- */
-function viewHome(){
-  const v=verwaiste();
-  let h = `<h1>${esc(SEITE.titel)}</h1><p class="lead">${esc(SEITE.hinweis)}</p>`;
-  if(v.length) h+=`<div class="warn"><b>Hinweis für die Redaktion:</b> ${v.length} Eintrag${v.length===1?"":"e"} in kurse.js verweist auf einen Themenbereich, den es im Lehrplan nicht gibt: ${v.map(e=>esc(e.titel)+" → "+esc(e.bereich)).join(", ")}</div>`;
-  h += `<div class="faecher">`+FAECHER.map(f=>{
-    const n=zaehleFach(f.id);
-    return `<a class="fach" href="#/${f.id}" style="--akz:${f.akzent}">
-      <b>${esc(f.name)}</b><span class="i">${esc(f.info||"")}</span>
-      <span class="z">Klassen 5 bis 12 · ${n} ${n===1?"Eintrag":"Einträge"}</span></a>`;
+let letzteJahre = {};
+function viewKaesten(fachAktiv, jahrGewaehlt){
+  const v = verwaiste();
+  let h = v.length ? `<div class="warn"><b>Hinweis für die Redaktion:</b> ${v.length} Eintrag${v.length===1?"":"e"} in kurse.js verweist auf einen Themenbereich, den es im Lehrplan nicht gibt: ${v.map(e=>esc(e.titel)+" → "+esc(e.bereich)).join(", ")}</div>` : "";
+  const aktiv = fachById(fachAktiv) ? fachAktiv : (lies("mat.fach") || FAECHER[0].id);
+  h += `<nav class="fachwahl" aria-label="Fach wählen">`+FAECHER.map(f=>
+    `<a class="${kurz(f.id)}" href="#/${f.id}" aria-current="${f.id===aktiv}">${esc(f.name)}</a>`).join("")+`</nav>`;
+  h += `<div class="kaesten">`+FAECHER.map(f=>{
+    const jahr = (f.id===fachAktiv && jahrgaenge(f.id).includes(jahrGewaehlt)) ? jahrGewaehlt : standardJahr(f.id);
+    const frisch = letzteJahre[f.id]!==undefined && letzteJahre[f.id]!==jahr;
+    letzteJahre[f.id] = jahr;
+    return boxHtml(f, jahr, f.id===aktiv, frisch);
   }).join("")+`</div>`;
 
-  const neu = MATERIAL.filter(e=>e.stand).sort((a,b)=>String(b.stand).localeCompare(String(a.stand))).slice(0,5);
-  if(neu.length){
-    h+=`<h2>Zuletzt ergänzt</h2><div class="neu-liste">`+neu.map(e=>eintragHtml(e,true)).join("")+`</div>`;
-  }
-  return h;
-}
-
-function viewFach(fid){
-  const f=fachById(fid); if(!f) return viewHome();
-  let h = crumbs([{text:"Start",href:"#/"},{text:f.name}]);
-  h += `<h1>${esc(f.name)}</h1><p class="lead">${esc(f.info||"")} — wähle deine Klassenstufe.</p>`;
-  h += `<div class="klassen">`+KLASSEN.map(k=>{
-    const n=zaehle(fid,k), b=bereicheVon(fid,k).length;
-    return `<a class="kl" href="#/${fid}/${k}" style="--akz:${f.akzent}">
-      <b>Klasse ${k}</b><small>${b} Themenbereich${b===1?"":"e"}</small>
-      <span class="n${n?"":" leer"}">${n?n+(n===1?" Eintrag":" Einträge"):"noch leer"}</span></a>`;
-  }).join("")+`</div>`;
-  return h;
-}
-
-function viewKlasse(fid, kl){
-  const f=fachById(fid); if(!f) return viewHome();
-  const bereiche=bereicheVon(fid,kl);
-  const alle=eintraegeVon(fid,kl);
-  let h = crumbs([{text:"Start",href:"#/"},{text:f.name,href:"#/"+fid},{text:"Klasse "+kl}]);
-  h += `<h1>${esc(f.name)} — Klasse ${kl}</h1>`;
-  h += `<p class="lead">${alle.length?`${alle.length} ${alle.length===1?"Eintrag":"Einträge"} in ${bereiche.length} Themenbereichen.`:"Für diese Klassenstufe ist noch kein Material eingestellt. Die Gliederung steht schon."}</p>`;
-  if(!bereiche.length) return h+`<p class="note">Für diese Klassenstufe ist in kurse.js noch keine Gliederung hinterlegt.</p>`;
-
-  const benutzt=new Set();
-  const voll=[], leer=[];
-  bereiche.forEach(b=>{ const es=alle.filter(e=>e.bereich===b.id); es.forEach(e=>benutzt.add(e)); (es.length?voll:leer).push([b,es]); });
-  const offen=location.hash.split("/")[2]||"";
-  if(voll.length>1) h += `<p class="note"><button class="btn small" id="alleAuf" type="button">Alle aufklappen</button> <button class="btn small" id="alleZu" type="button">Alle zuklappen</button></p>`;
-  h += voll.map(([b,es])=>`<details class="bereich" id="${esc(b.id)}"${(voll.length===1||offen===b.id)?" open":""}>
-      <summary><span class="t">${esc(b.name)}</span><span class="i">${esc(b.info||"")}</span><span class="c">${es.length} ${es.length===1?"Eintrag":"Einträge"}</span></summary>
-      <div class="eintraege">${es.map(e=>eintragHtml(e)).join("")}</div>
-    </details>`).join("");
-  if(leer.length) h += `<p class="note leerzeile">Noch ohne Material: ${leer.map(([b])=>esc(b.name)).join(" · ")}</p>`;
-
-  const rest=alle.filter(e=>!benutzt.has(e));
-  if(rest.length){
-    h+=`<h2>Weitere Materialien</h2><div class="eintraege">`+rest.map(e=>eintragHtml(e)).join("")+`</div>`;
-  }
+  const neu = MATERIAL.filter(e=>e.stand).sort((a,b)=>String(b.stand).localeCompare(String(a.stand))).slice(0,4);
+  if(neu.length) h += `<section class="unten" aria-labelledby="t-neu"><h2 id="t-neu">Zuletzt ergänzt</h2><div class="reihe">${neu.map(e=>karteHtml(e,true)).join("")}</div></section>`;
   return h;
 }
 
 function viewSuche(q){
-  const s=q.trim().toLowerCase();
-  const treffer=MATERIAL.filter(e=>{
-    const f=fachById(e.fach);
-    const bn=(LEHRPLAN[e.fach]?Object.values(LEHRPLAN[e.fach]).flat().find(b=>b.id===e.bereich):null);
+  const s = q.trim().toLowerCase();
+  const treffer = MATERIAL.filter(e=>{
+    const f = fachById(e.fach);
+    const bn = LEHRPLAN[e.fach] ? Object.values(LEHRPLAN[e.fach]).flat().find(b=>b.id===e.bereich) : null;
     return [e.titel,e.info,e.bereich,bn&&bn.name,f&&f.name,"klasse "+klassenVon(e).join(" ")]
       .filter(Boolean).join(" ").toLowerCase().includes(s);
   });
-  let h=`<h1>Suche</h1><p class="lead">${treffer.length} ${treffer.length===1?"Treffer":"Treffer"} für „${esc(q)}“.</p>`;
-  h+= treffer.length ? `<div class="eintraege">`+treffer.map(e=>eintragHtml(e,true)).join("")+`</div>`
-                     : `<p class="note">Nichts gefunden. Versuche einen kürzeren Suchbegriff.</p>`;
-  return h;
+  return `<section class="suchseite"><h1>Suche</h1><p>${treffer.length} Treffer für „${esc(q)}“. <kbd>Esc</kbd> leert die Suche.</p>`+
+    (treffer.length ? `<div class="reihe">${treffer.map(e=>karteHtml(e,true)).join("")}</div>`
+                    : `<p>Nichts gefunden. Versuche einen kürzeren Suchbegriff, zum Beispiel nur „Unit 1“ oder „Python“.</p>`)+`</section>`;
 }
 
 /* ---------- Wegweiser ---------- */
 function route(){
-  const q=$("#q").value;
-  if(q.trim()){ app.innerHTML=viewSuche(q); return; }
-  const teile=(location.hash.replace(/^#\/?/,"")).split("/").filter(Boolean);
-  if(!teile.length) app.innerHTML=viewHome();
-  else if(teile.length===1) app.innerHTML=viewFach(teile[0]);
-  else app.innerHTML=viewKlasse(teile[0], Number(teile[1]));
-  if(teile[2]){
-    const el=document.getElementById(teile[2]);
-    if(el) el.scrollIntoView({block:"start"});
-  } else window.scrollTo(0,0);
+  const q = $("#q").value;
+  if(q.trim()){ app.innerHTML = viewSuche(q); return; }
+  const [fach, jahr, bereich] = location.hash.replace(/^#\/?/,"").split("/").filter(Boolean);
+  if(fachById(fach)){
+    schreib("mat.fach", fach);
+    if(jahr && jahrgaenge(fach).includes(Number(jahr))) schreib("mat.jahr."+fach, jahr);
+  }
+  app.innerHTML = viewKaesten(fach, Number(jahr));
+  klebe();
+  const el = bereich && document.getElementById(bereich);
+  if(el) el.scrollIntoView({block:"start"});
+  else if(!jahr) window.scrollTo(0,0);
 }
-document.addEventListener("click",e=>{
-  if(e.target.id==="alleAuf") $$("details.bereich").forEach(d=>d.open=true);
-  if(e.target.id==="alleZu") $$("details.bereich").forEach(d=>d.open=false);
+// Der kürzere Kasten bleibt beim Scrollen im Bild; ist er höher als das Fenster, klebt er erst an seiner Unterkante
+function klebe(){
+  document.querySelectorAll(".innen").forEach(el=>{ el.style.top = Math.min(16, innerHeight - el.offsetHeight - 16)+"px"; });
+}
+window.addEventListener("resize", klebe);
+if(document.fonts) document.fonts.ready.then(klebe);
+document.addEventListener("click", e=>{
+  const k = e.target.closest(".karte");
+  if(k) schreib("mat.zuletzt", k.dataset.url);
 });
-window.addEventListener("hashchange",route);
-$("#q").addEventListener("input",route);
-document.addEventListener("keydown",e=>{
+window.addEventListener("hashchange", route);
+$("#q").addEventListener("input", route);
+document.addEventListener("keydown", e=>{
   if(e.key==="/" && document.activeElement!==$("#q")){ e.preventDefault(); $("#q").focus(); }
   if(e.key==="Escape" && $("#q").value){ $("#q").value=""; route(); }
 });
-$("#theme").addEventListener("click",()=>{
-  const d=document.body.dataset.theme==="dark"?"light":"dark";
-  document.body.dataset.theme=d; $("#theme").textContent = d==="dark"?"Hell":"Dunkel";
-  try{ localStorage.setItem("mat.theme",d); }catch(err){}
+// Zurück aus einem Material: Fähnchen neu zeichnen
+window.addEventListener("pageshow", e=>{ if(e.persisted) route(); });
+
+/* ---------- Hell/Dunkel ---------- */
+const root = document.documentElement;
+const dunkelAktiv = () => root.dataset.theme ? root.dataset.theme==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+const themeText = () => { $("#theme").textContent = dunkelAktiv() ? "Hell" : "Dunkel"; };
+$("#theme").addEventListener("click", ()=>{
+  const d = dunkelAktiv() ? "light" : "dark";
+  root.dataset.theme = d; schreib("mat.theme", d); themeText();
 });
 
 /* ---------- Start ---------- */
 (function init(){
-  document.title = SEITE.titel + (SEITE.schule?" · "+SEITE.schule:"");
+  document.title = SEITE.titel + (SEITE.schule ? " · "+SEITE.schule : "");
   $("#hTitel").textContent = SEITE.titel;
-  $("#hSchule").textContent = SEITE.schule||"";
-  $("#foot").textContent = [SEITE.schule, SEITE.lehrer, SEITE.impressum].filter(Boolean).join(" · ");
+  $("#hSchule").textContent = [SEITE.schule, SEITE.lehrer].filter(Boolean).join(" · ");
+  const foot = $("#foot");
+  [SEITE.schule, SEITE.lehrer, SEITE.impressum].filter(Boolean).forEach(t=>{ const s=document.createElement("span"); s.textContent=t; foot.append(s); });
   [["impressum.html","Impressum"],["datenschutz.html","Datenschutz"]].forEach(([href,txt])=>{
-    const a=document.createElement("a"); a.href=href; a.textContent=txt; a.style.textDecoration="underline";
-    $("#foot").append($("#foot").textContent?" · ":"", a);
+    const a=document.createElement("a"); a.href=href; a.textContent=txt; foot.append(a);
   });
-  try{
-    const t=localStorage.getItem("mat.theme");
-    if(t){ document.body.dataset.theme=t; $("#theme").textContent = t==="dark"?"Hell":"Dunkel"; }
-  }catch(err){}
+  const t = lies("mat.theme"); if(t) root.dataset.theme = t;
+  themeText();
   route();
 })();
 </script>
