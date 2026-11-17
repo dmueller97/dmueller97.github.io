@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Impressum · Unterrichtsmaterial</title>
+<meta name="robots" content="noindex">
+<style>
+:root{
+  --bg:#0E1A1C; --panel:#142528; --line:#23393E; --line2:#2E4A50;
+  --ink:#DFEAEB; --ink2:#9FB6B9; --muted:#6F8A8F; --brand:#2FB3A0; --hi:#FFC24B;
+}
+[data-theme="light"]{
+  --bg:#F2F4F3; --panel:#FFFFFF; --line:#D8E0DF; --line2:#C2CFCE;
+  --ink:#14242A; --ink2:#4A6066; --muted:#7B8F94; --brand:#17897A; --hi:#E08A00;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;font-size:15px;line-height:1.6}
+header{display:flex;align-items:center;gap:14px;padding:11px 20px;background:var(--panel);border-bottom:1px solid var(--line)}
+header a{color:inherit;text-decoration:none;font-weight:650;font-size:17px}
+header .sp{flex:1}
+.btn{background:none;border:1px solid var(--line2);border-radius:9px;padding:4px 10px;font:inherit;font-size:13px;color:inherit;cursor:pointer}
+main{max-width:760px;margin:0 auto;padding:26px 20px 70px}
+h1{font-size:26px;margin:0 0 4px;letter-spacing:-.4px}
+h2{font-size:17.5px;margin:32px 0 8px;padding-top:6px;border-top:1px solid var(--line)}
+h3{font-size:15px;margin:18px 0 4px}
+p,li{color:var(--ink2)}
+p strong,li strong{color:var(--ink)}
+a{color:var(--brand)}
+.stand{color:var(--muted);font-size:13px;margin-bottom:22px}
+.kurz{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:12px;padding:14px 18px;margin:18px 0}
+.kurz ul{margin:6px 0 0;padding-left:20px}
+.adr{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;display:inline-block}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink2)}
+th{color:var(--ink);font-weight:600}
+code{font-family:ui-monospace,Consolas,monospace;font-size:13px}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;padding:14px 20px;text-align:center}
+</style>
+</head>
+<body data-theme="dark">
+<header>
+  <a href="index.html">← Unterrichtsmaterial</a>
+  <span class="sp"></span>
+  <button class="btn" id="theme" type="button">Hell</button>
+</header>
+
+<main>
+<h1>Impressum</h1>
+<p class="stand">Angaben nach § 18 Abs. 1 Medienstaatsvertrag (MStV)</p>
+<p class="adr">
+  Dominic Müller<br>
+  Zum Bahnhof 24<br>
+  09669 Frankenberg/Sa.
+</p>
+<h2>Hinweis</h2>
+<p>Diese Seite ist ein privates, nicht kommerzielles Angebot mit Unterrichtsmaterial. Sie ist kein offizielles Angebot des Karl-Schmidt-Rottluff-Gymnasiums Chemnitz oder des Freistaates Sachsen.</p>
+<h2>Links zu anderen Seiten</h2>
+<p>Für Inhalte verlinkter fremder Seiten sind deren Betreiber verantwortlich. Bei der Verlinkung waren keine Rechtsverstöße erkennbar; werden mir welche bekannt, entferne ich den Link.</p>
+<p>Informationen zum Datenschutz findest du in der <a href="datenschutz.html">Datenschutzerklärung</a>.</p>
+</main>
+
+<footer>Unterrichtsmaterial · D. Müller · <a href="datenschutz.html">Datenschutz</a> · <a href="index.html">Zur Startseite</a></footer>
+
+<script>
+(function(){
+  var b=document.getElementById("theme");
+  function set(t){document.body.dataset.theme=t;b.textContent=t==="dark"?"Hell":"Dunkel";}
+  try{var t=localStorage.getItem("mat.theme"); if(t) set(t);}catch(e){}
+  b.addEventListener("click",function(){
+    var t=document.body.dataset.theme==="dark"?"light":"dark"; set(t);
+    try{localStorage.setItem("mat.theme",t);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

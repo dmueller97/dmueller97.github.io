@@ -308,8 +308,10 @@ $("#theme").addEventListener("click",()=>{
   $("#hTitel").textContent = SEITE.titel;
   $("#hSchule").textContent = SEITE.schule||"";
   $("#foot").textContent = [SEITE.schule, SEITE.lehrer, SEITE.impressum].filter(Boolean).join(" · ");
-  const ds=document.createElement("a"); ds.href="datenschutz.html"; ds.textContent="Datenschutz";
-  ds.style.textDecoration="underline"; $("#foot").append($("#foot").textContent?" · ":"", ds);
+  [["impressum.html","Impressum"],["datenschutz.html","Datenschutz"]].forEach(([href,txt])=>{
+    const a=document.createElement("a"); a.href=href; a.textContent=txt; a.style.textDecoration="underline";
+    $("#foot").append($("#foot").textContent?" · ":"", a);
+  });
   try{
     const t=localStorage.getItem("mat.theme");
     if(t){ document.body.dataset.theme=t; $("#theme").textContent = t==="dark"?"Hell":"Dunkel"; }
