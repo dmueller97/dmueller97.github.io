@@ -76,6 +76,7 @@
   .line .end { font-weight:700; font-size:1.3rem; }
   input[type=text] { font:inherit; font-weight:700; font-size:1.1rem; padding:9px 12px; border:2px solid var(--ink); border-radius:8px; width:100%; color:var(--ink); background:var(--tile); }
   input.ok { background:#DDF1E4; border-color:var(--green); } input.bad { background:#FBE1DE; border-color:var(--red); }
+  .pre { display:flex; align-items:center; gap:10px; } .pre .prefix { font-weight:700; font-size:1.3rem; white-space:nowrap; }
   .row { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
   .fb { margin-top:14px; padding:10px 14px; border-radius:10px; border:2px solid; }
   .fb.ok { background:#DDF1E4; border-color:var(--green); } .fb.bad { background:#FBE1DE; border-color:var(--red); }
@@ -106,7 +107,9 @@
      t:"c"  Auswahl      { q, o:[Optionen], a:"richtig", why?, lab?, mix? }
      t:"w"  Schreiben    { q, ok:[akzeptierte Antworten], why?, lab?, exact? }
             (Kurz- und Langformen wie isn't / is not gelten automatisch
-             als gleich; mit exact:true wird wörtlich verglichen)
+             als gleich – außer am Satzende: Yes, he's. ist falsch;
+             mit exact:true wird wörtlich verglichen;
+             mit pre:"Yes," steht die Vorgabe fest vor dem Eingabefeld)
      t:"b"  Satz bauen   { w:[Wörter], a:"Lösung", lab? }
    "___" in q wird als Lücke dargestellt.
    Pro Durchgang werden aus jedem Topf n Aufgaben zufällig gezogen.
@@ -337,7 +340,8 @@ const STATIONEN = [
 <tr><td>Are you sure?</td><td>Yes, I <b>am</b>.</td><td>No, I<b>'m not</b>.</td></tr>
 <tr><td>Is she at home?</td><td>Yes, she <b>is</b>.</td><td>No, she <b>isn't</b>.</td></tr>
 <tr><td>Are they your friends?</td><td>Yes, they <b>are</b>.</td><td>No, they <b>aren't</b>.</td></tr></table>
-<p>Achtung: Bei <mark>Yes</mark> gibt es keine Kurzform – also nie <i>Yes, I'm.</i> Und aus <i>you</i> in der Frage wird <i>I</i> in der Antwort.</p>`,
+<p>Achtung: Bei <mark>Yes</mark> gibt es keine Kurzform – also nie <i>Yes, I'm.</i> Und aus <i>you</i> in der Frage wird <i>I</i> in der Antwort.</p>
+<p>Wenn <i>Yes,</i> oder <i>No,</i> schon dasteht, schreibst du nur noch den Rest: <i>Yes,</i> <mark>he is.</mark></p>`,
   toepfe:[
    {n:5, items:[
     c("Are you from England? – No, I ___.",NOT,"am not"), c("Is your sister nice? – Yes, she ___.",BE,"is"),
@@ -358,16 +362,16 @@ const STATIONEN = [
     ka("Is your uncle from Germany? – No, …",["No, he isn't.","No, he aren't.","No, she isn't."],"your uncle = he → No, he isn't.")
    ]},
    {n:5, items:[
-    w("Is Tom your friend? – Yes, …","Yes, he is.",{lab:"Schreibe die ganze Kurzantwort.",exact:true,why:"In der Kurzantwort mit Yes steht immer die Langform – nie eine Kurzform wie I'm."}),
-    w("Is your sister nine? – Yes, …","Yes, she is.",{lab:"Schreibe die ganze Kurzantwort.",exact:true,why:"In der Kurzantwort mit Yes steht immer die Langform – nie eine Kurzform wie I'm."}),
-    w("Are you lucky? – Yes, …","Yes, I am.",{lab:"Schreibe die ganze Kurzantwort.",exact:true,why:"In der Kurzantwort mit Yes steht immer die Langform – nie eine Kurzform wie I'm."}),
-    w("Are the cats in the garden? – Yes, …","Yes, they are.",{lab:"Schreibe die ganze Kurzantwort.",exact:true,why:"In der Kurzantwort mit Yes steht immer die Langform – nie eine Kurzform wie I'm."}),
-    w("Is Mr Green nice? – Yes, …","Yes, he is.",{lab:"Schreibe die ganze Kurzantwort.",exact:true,why:"In der Kurzantwort mit Yes steht immer die Langform – nie eine Kurzform wie I'm."}),
-    w("Are your parents at home? – No, …","No, they are not.",{lab:"Schreibe die ganze Kurzantwort."}),
-    w("Are you from England? – No, …","No, I am not.",{lab:"Schreibe die ganze Kurzantwort."}),
-    w("Is the parcel small? – No, …","No, it is not.",{lab:"Schreibe die ganze Kurzantwort."}),
-    w("Are you and Mia in class 7B? – No, …","No, we are not.",{lab:"Schreibe die ganze Kurzantwort.",why:"you and Mia → in der Antwort we."}),
-    w("Is your aunt in London? – No, …","No, she is not.",{lab:"Schreibe die ganze Kurzantwort."})
+    w("Is Tom your friend?","Yes, he is.",{pre:"Yes,",lab:"Vervollständige die Kurzantwort."}),
+    w("Is your sister nine?","Yes, she is.",{pre:"Yes,",lab:"Vervollständige die Kurzantwort."}),
+    w("Are you lucky?","Yes, I am.",{pre:"Yes,",lab:"Vervollständige die Kurzantwort."}),
+    w("Are the cats in the garden?","Yes, they are.",{pre:"Yes,",lab:"Vervollständige die Kurzantwort."}),
+    w("Is Mr Green nice?","Yes, he is.",{pre:"Yes,",lab:"Vervollständige die Kurzantwort."}),
+    w("Are your parents at home?","No, they are not.",{pre:"No,",lab:"Vervollständige die Kurzantwort."}),
+    w("Are you from England?","No, I am not.",{pre:"No,",lab:"Vervollständige die Kurzantwort."}),
+    w("Is the parcel small?","No, it is not.",{pre:"No,",lab:"Vervollständige die Kurzantwort."}),
+    w("Are you and Mia in class 7B?","No, we are not.",{pre:"No,",lab:"Vervollständige die Kurzantwort.",why:"you and Mia → in der Antwort we."}),
+    w("Is your aunt in London?","No, she is not.",{pre:"No,",lab:"Vervollständige die Kurzantwort."})
    ]}
   ] },
 
@@ -506,6 +510,7 @@ const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--) { const j=M
 const norm = s => String(s).toLowerCase().replace(/[‘’´`ʼ]/g,"'").replace(/[.,!?;:"“”„]/g," ").replace(/\s+/g," ").trim();
 /* Kurz- und Langformen gleichsetzen */
 const canon = s => norm(s).replace(/\bisn't\b/g,"is not").replace(/\baren't\b/g,"are not").replace(/\bdon't\b/g,"do not")
+  .replace(/\bdoesn't\b/g,"does not").replace(/\bcan't\b/g,"cannot").replace(/\bcan not\b/g,"cannot").replace(/\bhaven't\b/g,"have not").replace(/\bhasn't\b/g,"has not")
   .replace(/(\w)'m\b/g,"$1 am").replace(/(\w)'re\b/g,"$1 are").replace(/(\w)'s\b/g,"$1 is").replace(/\s+/g," ").trim();
 const GESCHAFFT = 80;  // ab so viel Prozent gilt eine Station als geschafft
 const sterne = p => p>=100?3 : p>=90?2 : p>=GESCHAFFT?1 : 0;
@@ -612,7 +617,8 @@ function zeigeAufgabe() {
     const o = it.mix ? shuffle(it.o) : it.o;
     body = `<p class="qt" id="qt">${frage(it.q)}</p><div class="tiles" id="opts">${o.map(x => `<button type="button" class="tile" data-v="${esc(x)}">${esc(x)}</button>`).join("")}</div>`;
   } else if (it.t === "w") {
-    body = `<p class="qt">${esc(it.q)}</p><input type="text" id="inp" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Deine Antwort" placeholder="Schreibe hier …">
+    const feld = `<input type="text" id="inp" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Deine Antwort" placeholder="${it.pre ? "… ergänze hier" : "Schreibe hier …"}">`;
+    body = `<p class="qt">${esc(it.q)}</p>${it.pre ? `<div class="pre"><span class="prefix">${esc(it.pre)}</span>${feld}</div>` : feld}
       <div class="row"><button type="button" class="btn" id="check">Prüfen</button></div>`;
   } else {
     lauf.build = [];
@@ -642,11 +648,17 @@ function werte(given) {
   const it = lauf.items[lauf.i]; let ok, tips = [], loesung;
   if (it.t === "c") { ok = given === it.a; loesung = it.q.includes("___") ? it.q.replace(/___/g, it.a) : it.a; }
   else if (it.t === "w") {
+    /* Bei Kurzantworten mit fest vorgegebenem Yes/No: Vorgabe ergänzen, falls das Kind sie nicht selbst geschrieben hat */
+    if (it.pre && !/^(yes|no)\b/.test(norm(given))) given = it.pre + " " + given.trim();
     const f = it.wort ? (x => norm(x).replace(/^(the|a|an) /,"")) : it.exact ? norm : canon;
     ok = it.ok.some(a => f(a) === f(given)); loesung = it.ok[0];
+    /* Kurzformen sind überall richtig – außer der Satz endet auf am/is/are (Yes, he is. – nicht: Yes, he's.) */
+    if (ok && !it.exact && !it.wort && /\b(am|is|are)\W*$/i.test(loesung) && /'(m|s|re)\W*$/.test(norm(given).replace(/ +$/,""))) {
+      ok = false; tips.push("Am Satzende darf keine Kurzform stehen. Schreibe am, is oder are aus.");
+    }
     if (ok && !it.exact && !it.wort) {
       const g = given.trim();
-      if (/^[a-zäöü]/.test(g)) tips.push("Der Satzanfang wird großgeschrieben.");
+      if (!it.pre && /^[a-zäöü]/.test(g)) tips.push("Der Satzanfang wird großgeschrieben.");
       if (/(^|\s)i(\s|'|$)/.test(g)) tips.push("I (ich) wird immer großgeschrieben.");
       if (/\?$/.test(loesung) && !/\?$/.test(g)) tips.push("Vergiss das Fragezeichen nicht.");
       else if (/\.$/.test(loesung) && !/[.!]$/.test(g)) tips.push("Vergiss den Punkt am Satzende nicht.");
